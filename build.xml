@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Oct 12, 2005 3:59:40 PM                                                        
+
+     project    
+     description
+                   
+     mlb                                                                
+     ====================================================================== -->
+<project name="project" default="jar">
+    <description>
+            description
+    </description>
+
+	<target name="init">
+		<property name="src" value="src"/>
+		<property name="lib" value="dist/lib"/>
+		<property name="testlib" value="test/lib"/>
+		<property name="classes" value="classes"/>
+		<property name="docs" value="docs" />
+		<property name="bin" value="dist/jar" />
+		<property name="reports.tests" value="junit-reports" />
+	</target>
+	
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="build" depends="init" description="--> description">
+    	<delete dir="${classes}"/>
+    	<mkdir dir="${classes}"/>
+        <javac destdir="${classes}"  srcdir="${src}" debug="yes">
+            <classpath>
+                <pathelement location="${lib}/ldap.jar" />
+            	<pathelement location="${testlib}/junit-4.1.jar" />
+		    	<pathelement location="${lib}/apacheds-main-0.9.1.jar" />
+		    	<pathelement location="${lib}/activation.jar" />
+            	<pathelement location="${lib}/commons-logging.jar" />
+            	<pathelement location="${lib}/mail.jar" />
+            	<pathelement location="${lib}/mailapi.jar" />
+            	<pathelement location="${lib}/openspml.jar" />
+            	<pathelement location="${lib}/soap.jar" />
+            	<pathelement location="${lib}/jdbcLdap.jar" />
+            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
+            </classpath>
+        </javac>
+    </target>
+	
+	<target name="jar" depends="build">
+		<mkdir dir="${bin}"/>
+		<delete file="${bin}/myvd.jar"/>
+		<jar jarfile="${bin}/myvd.jar">
+	            <fileset dir="${classes}" includes="**/*.class" excludes="net/sourceforge/myvd/test/**/*.class"/>
+		</jar>
+	</target>
+	
+	<target name="jar-tests" depends="build">
+			<mkdir dir="${bin}"/>
+			<delete file="${bin}/myvd-test.jar"/>
+			<jar jarfile="${bin}/myvd-test.jar">
+		            <fileset dir="${classes}" includes="net/sourceforge/myvd/test/**/*.class"/>
+			</jar>
+		</target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: depends                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="depends">
+    </target>
+
+	<target depends="build,jar,jar-tests" name="unit-test" description="Runs all JUnitTests">
+	        
+	        <delete dir="${reports.tests}" />
+	        <mkdir dir="${reports.tests}"/>
+	        <mkdir dir="${reports.tests}/html"/>
+	        <junit printsummary="yes" haltonfailure="no" fork="yes"  >
+	            
+	        	<test name="net.sourceforge.myvd.test.router.TestChooseRoute" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.router.TestMultiRouteGlobalLDAP" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.router.TestMultiRouteLDAP" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.router.TestRouter" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.router.TestSingleRouteLDAP" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.Server.TestConfigServer" todir="${reports.tests}"/>	        		
+	        	<test name="net.sourceforge.myvd.test.Server.TestStartServer" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.acl.TestGetACI" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.acl.TestValidateSubjects" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.acl.TestACLPlugin" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.acl.TestParseACI" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.jdbc.TestJDBC" todir="${reports.tests}"/> 
+	        	<test name="net.sourceforge.myvd.test.interceptor.TestJDBCLDAP" todir="${reports.tests}"/> 
+	        	<test name="net.sourceforge.myvd.test.ldap.TestLDAP" todir="${reports.tests}"/>
+				<test name="net.sourceforge.myvd.test.ref.TestRefPlugin" todir="${reports.tests}"/>
+	        	<test name="net.sourceforge.myvd.test.chain.TestFilter" todir="${reports.tests}"/>
+				<test name="net.sourceforge.myvd.test.chain.TestLocalChainLDAP" todir="${reports.tests}"/>
+				<test name="net.sourceforge.myvd.test.namespace.TestNamespaceMapper" todir="${reports.tests}"/>
+	        	
+	        
+	            <classpath>
+	            	<pathelement location="${testlib}/junit-4.1.jar" />
+	            	<pathelement location="${bin}/myvd.jar" />
+		        	<pathelement location="${bin}/myvd-test.jar" />
+	            	<pathelement location="${lib}/ldap.jar" />
+			    	<pathelement location="${lib}/apacheds-main-0.9.1.jar" />
+			    	<pathelement location="${lib}/activation.jar" />
+	            	<pathelement location="${lib}/commons-logging.jar" />
+	            	<pathelement location="${lib}/mail.jar" />
+	            	<pathelement location="${lib}/mailapi.jar" />
+	            	<pathelement location="${lib}/openspml.jar" />
+	            	<pathelement location="${lib}/soap.jar" />
+	            	<pathelement location="${lib}/jdbcLdap.jar" />
+	            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
+	            	<pathelement location="${lib}/hsqldb.jar" />
+	            </classpath>
+	            <formatter type="xml" />
+	        </junit>
+	        
+	        
+
+	        <junitreport todir="${reports.tests}">
+	            <fileset dir="${reports.tests}">
+	                <include name="*.xml"/>
+	            </fileset>
+	            <report format="frames" todir="${reports.tests}/html"/>
+	        </junitreport>
+
+
+	    </target>
+	
+	<target depends="build,jar,jar-tests" name="single-test" description="Runs all JUnitTests">
+		        
+		        <delete dir="${reports.tests}" />
+		        <mkdir dir="${reports.tests}"/>
+		        <mkdir dir="${reports.tests}/html"/>
+		        <junit printsummary="yes" haltonfailure="no" fork="yes"  >
+		            
+		        	<test name="${cmd.testclass}" todir="${reports.tests}"/>
+		        	
+		        	
+		        
+		            <classpath>
+		            	<pathelement location="${testlib}/junit-4.1.jar" />
+		            	<pathelement location="${bin}/myvd.jar" />
+			        	<pathelement location="${bin}/myvd-test.jar" />
+		            	<pathelement location="${lib}/ldap.jar" />
+				    	<pathelement location="${lib}/apacheds-main-0.9.1.jar" />
+				    	<pathelement location="${lib}/activation.jar" />
+		            	<pathelement location="${lib}/commons-logging.jar" />
+		            	<pathelement location="${lib}/mail.jar" />
+		            	<pathelement location="${lib}/mailapi.jar" />
+		            	<pathelement location="${lib}/openspml.jar" />
+		            	<pathelement location="${lib}/soap.jar" />
+		            	<pathelement location="${lib}/jdbcLdap.jar" />
+		            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
+		            	<pathelement location="${lib}/hsqldb.jar" />
+		            </classpath>
+		            <formatter type="xml" />
+		        </junit>
+		        
+		        
+
+		        <junitreport todir="${reports.tests}">
+		            <fileset dir="${reports.tests}">
+		                <include name="*.xml"/>
+		            </fileset>
+		            <report format="frames" todir="${reports.tests}/html"/>
+		        </junitreport>
+
+
+		    </target>
+</project>
+
