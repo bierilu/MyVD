@@ -39,6 +39,7 @@ import net.sourceforge.myvd.types.DistinguishedName;
 
 import org.apache.ldap.common.exception.LdapNamingException;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.io.filter.SSLFilter;
 import org.apache.mina.registry.Service;
@@ -52,7 +53,7 @@ import com.novell.ldap.util.DN;
 
 public class Server {
 	
-	static Logger logger = Logger.getLogger(Server.class.getName());
+	static Logger logger;
 	
 	String configFile;
 	Properties props;
@@ -82,6 +83,12 @@ public class Server {
 	
 	public void startServer() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException, LdapNamingException, IOException {
 		String portString;
+		
+		
+		//this is a hack for testing.
+		if (logger == null) {
+			logger = Logger.getLogger(Server.class.getName());
+		}
 		
 		logger.debug("Loading global chain...");
 		this.buildGlobalChain();
@@ -272,6 +279,25 @@ public class Server {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		
+		String home = args[0];
+		home = home.substring(0,home.lastIndexOf('/'));
+		String loghome = home.substring(0,home.lastIndexOf('/'));
+		
+		Properties props = new Properties();
+		props.put("log4j.rootLogger", "info,logfile");
+		props.put("log4j.appender.logfile", "org.apache.log4j.RollingFileAppender");
+		props.put("log4j.appender.logfile.File",loghome + "/logs/myvd.log");
+		props.put("log4j.appender.logfile.MaxFileSize","100KB");
+		props.put("log4j.appender.logfile.MaxBackupIndex","10");
+		props.put("log4j.appender.logfile.layout","org.apache.log4j.PatternLayout");
+		props.put("log4j.appender.logfile.layout.ConversionPattern","[%d][%t] %-5p %c - %m%n");
+		
+		props.load(new FileInputStream(home + "/logging.conf"));
+		
+		PropertyConfigurator.configure(props);
+		
+		Server.logger = Logger.getLogger(Server.class.getName());
 		
 		logger.info("Starting server...");
 		try {
