@@ -108,7 +108,7 @@
 	            	<pathelement location="${lib}/soap.jar" />
 	            	<pathelement location="${lib}/jdbcLdap.jar" />
 	            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
-	            	<pathelement location="${lib}/hsqldb.jar" />
+	            	<pathelement location="${testlib}/hsqldb.jar" />
 	            </classpath>
 	            <formatter type="xml" />
 	        </junit>
