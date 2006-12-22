@@ -30,11 +30,11 @@ if [ $1 = "start" ]; then
 	echo "Classpath : $LOCAL_CLASSPATH"
 
 	
-	export MYVD_CMD="$JAVA_CMD -server net.sourceforge.myvd.server.Server $MYVD_HOME/conf/myvd.conf > $MYVD_HOME/logs/myvd.log 2>&1"
+	export MYVD_CMD="$JAVA_CMD -server net.sourceforge.myvd.server.Server $MYVD_HOME/conf/myvd.conf"
 	
-	echo $MYVD_CMD
+
 	
-	$MYVD_HOME/bin/runserver.sh "$LOCAL_CLASSPATH" "$MYVD_HOME" "$MYVD_CMD" &
+	$MYVD_HOME/bin/runserver.sh "$LOCAL_CLASSPATH" "$MYVD_HOME" "$MYVD_CMD" 2&>1 > /dev/null &
 	
 	
 elif [ $1 = "stop" ]; then
