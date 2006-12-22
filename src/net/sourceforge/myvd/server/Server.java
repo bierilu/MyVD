@@ -15,6 +15,7 @@
  */
 package net.sourceforge.myvd.server;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -281,19 +282,23 @@ public class Server {
 	public static void main(String[] args) throws Exception {
 		
 		String home = args[0];
-		home = home.substring(0,home.lastIndexOf('/'));
-		String loghome = home.substring(0,home.lastIndexOf('/'));
+		home = home.substring(0,home.lastIndexOf(File.separator));
+		String loghome = home.substring(0,home.lastIndexOf(File.separator));
 		
 		Properties props = new Properties();
-		props.put("log4j.rootLogger", "info,logfile");
-		props.put("log4j.appender.logfile", "org.apache.log4j.RollingFileAppender");
-		props.put("log4j.appender.logfile.File",loghome + "/logs/myvd.log");
-		props.put("log4j.appender.logfile.MaxFileSize","100KB");
-		props.put("log4j.appender.logfile.MaxBackupIndex","10");
-		props.put("log4j.appender.logfile.layout","org.apache.log4j.PatternLayout");
-		props.put("log4j.appender.logfile.layout.ConversionPattern","[%d][%t] %-5p %c - %m%n");
+		
 		
 		props.load(new FileInputStream(home + "/logging.conf"));
+		
+		if (! props.containsKey("log4j.rootLogger")) props.put("log4j.rootLogger", "info,logfile");
+		if (! props.containsKey("log4j.appender.logfile")) props.put("log4j.appender.logfile", "org.apache.log4j.RollingFileAppender");
+		if (! props.containsKey("log4j.appender.logfile.File")) props.put("log4j.appender.logfile.File",loghome + "/logs/myvd.log");
+		if (! props.containsKey("log4j.appender.logfile.MaxFileSize")) props.put("log4j.appender.logfile.MaxFileSize","100KB");
+		if (! props.containsKey("log4j.appender.logfile.MaxBackupIndex")) props.put("log4j.appender.logfile.MaxBackupIndex","10");
+		if (! props.containsKey("log4j.appender.logfile.layout")) props.put("log4j.appender.logfile.layout","org.apache.log4j.PatternLayout");
+		if (! props.containsKey("log4j.appender.logfile.layout.ConversionPattern")) props.put("log4j.appender.logfile.layout.ConversionPattern","[%d][%t] %-5p %c{1} - %m%n");
+		
+		
 		
 		PropertyConfigurator.configure(props);
 		
