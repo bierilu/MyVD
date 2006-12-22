@@ -17,6 +17,7 @@ package net.sourceforge.myvd.inserts;
 
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -31,6 +32,9 @@ import com.novell.ldap.LDAPSearchConstraints;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
@@ -61,59 +65,192 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 public class DumpTransaction implements Insert {
 
+	public static final String LOG_LEVEL = "logLevel";
+	public static final String LABEL = "label";
+	Priority logLevel;
+	
+	Logger logger;
+	String label;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		this.logger = Logger.getLogger(DumpTransaction.class);
+		String tmpLogLevel = props.getProperty(LOG_LEVEL,"debug");
+		tmpLogLevel = tmpLogLevel.toUpperCase();
+		Class cls = Priority.class;
+		try {
+			this.logLevel = (Priority) cls.getField(tmpLogLevel).get(null);
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to configure DumpTransaction", e);
+		} catch (SecurityException e) {
+			logger.error("Unable to configure DumpTransaction", e);
+		} catch (IllegalAccessException e) {
+			logger.error("Unable to configure DumpTransaction", e);
+		} catch (NoSuchFieldException e) {
+			logger.error("Unable to configure DumpTransaction", e);
+		}
 
+		this.label = "[" + props.getProperty(DumpTransaction.LABEL,"Default") + "] ";
+	}
+	
+	private void log(String val) {
+		logger.log(logLevel, label + val);
+	}
+	
+	private void log(String val,Throwable t) {
+		logger.log(logLevel, label + val,t);
 	}
 
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
-		System.out.println("-------------------------------------------------");
-		System.out.println("Add : ");
-		System.out.println("dn : " + entry.getEntry().getDN());
+		
+		
+		StringBuffer ldif = new StringBuffer();
+		ldif.append("dn : ").append(entry.getEntry().getDN()).append('\n');
 		Iterator it = entry.getEntry().getAttributeSet().iterator();
 		while (it.hasNext()) {
 			LDAPAttribute attrib = (LDAPAttribute) it.next();
 			for (int i=0,m=attrib.size();i<m;i++) {
-				System.out.println(attrib.getBaseName() + " : " + attrib.getStringValueArray()[i]);
+				ldif.append(attrib.getBaseName()).append(" : ").append(attrib.getStringValueArray()[i]).append('\n');
 			}
 		}
-		System.out.println("-------------------------------------------------");
 		
-		chain.nextAdd(entry,constraints);
+		log("Begin Add : \n" + ldif.toString());
+		
+		try {
+			chain.nextAdd(entry,constraints);
+		} catch (Throwable t) {
+			log("Error Running Add",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Add Complete");
+		}
 
 	}
 
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,
 			Password pwd, LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		log("Begin Bind : " + dn.getDN().toString());
+		
+		try {
+			chain.nextBind(dn, pwd, constraints);
+		} catch (Throwable t) {
+			log("Error Running Bind",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Bind Complete");
+		}
 
 	}
 
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn,
 			Attribute attrib, LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		log("Begin Compare : [" + dn.getDN().toString() + "] " + attrib.getAttribute().getName() + "=" + attrib.getAttribute().getStringValue());
+		
+		try {
+			chain.nextCompare(dn, attrib, constraints);
+		} catch (Throwable t) {
+			log("Error Running Compare",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Compare Complete");
+		}
 
 	}
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		log("Begin Delete : " + dn.getDN().toString());
+		
+		try {
+			chain.nextDelete(dn, constraints);
+		} catch (Throwable t) {
+			log("Error Running Delete",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		}
+		
+		log("Delete Complete");
 
 	}
 
 	public void extendedOperation(ExetendedOperationInterceptorChain chain,
 			ExtendedOperation op, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		log("Begin Extended Operation : " + op.getDn().toString());
+		
+		try {
+			chain.nextExtendedOperations(op, constraints);
+		} catch (Throwable t) {
+			log("Error Running Extended Operation",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Extended Operation Complete");
+		}
 
 	}
 
 	public void modify(ModifyInterceptorChain chain, DistinguishedName dn,
 			ArrayList<LDAPModification> mods, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append("dn: ").append(dn.getDN().toString()).append('\n');
+		buf.append("changeType : modify\n");
+		
+		Iterator<LDAPModification> it = mods.iterator();
+		while (it.hasNext()) {
+			LDAPModification mod = it.next();
+			
+			switch (mod.getOp()) {
+				case LDAPModification.ADD : buf.append("add: ").append(mod.getAttribute().getName()).append("\n"); break;
+				case LDAPModification.REPLACE : buf.append("replace: ").append(mod.getAttribute().getName()).append("\n"); break;
+				case LDAPModification.DELETE : buf.append("delete: ").append(mod.getAttribute().getName()).append("\n"); break;
+			}
+			
+			Enumeration enumer = mod.getAttribute().getStringValues();
+			
+			while (enumer.hasMoreElements()) {
+				buf.append(mod.getAttribute().getName()).append(": ").append(enumer.nextElement().toString()).append('\n');
+			}
+			
+			buf.append("-\n");
+			
+		}
+		
+		log("Begin Modify \n" + buf.toString());
+		
+		try {
+			chain.nextModify(dn, mods, constraints);
+		} catch (Throwable t) {
+			log("Error Running Modify",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Modify Complete");
+		}
 
 	}
 
@@ -122,18 +259,38 @@ public class DumpTransaction implements Insert {
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
 		
-		System.out.println("Filter : " + filter.getValue());
-		System.out.println("base : " + base.toString());
-		System.out.println("Scope : " + scope.getValue());
-		System.out.println("Attributes : " + attributes);
-		chain.nextSearch(base,scope,filter,attributes,typesOnly,results,constraints);
-
+		log("Begin Seach - Filter=" + filter.getValue() + ";Base=" + base.toString() + ";Scope=" + scope.getValue() + ";Attributes=" + attributes);
+		
+		try {
+			chain.nextSearch(base,scope,filter,attributes,typesOnly,results,constraints);
+		} catch (Throwable t) {
+			log("Error Running Search",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Seach submitted");
+		}
 	}
 
 	public void rename(RenameInterceptorChain chain, DistinguishedName dn,
 			DistinguishedName newRdn, Bool deleteOldRdn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		log("Begin Rename - dn=" + dn.toString() + ";newRdn=" + newRdn.toString() + ";deleteOldRdn=" + deleteOldRdn.toString());
+		try {
+			chain.nextRename(dn, newRdn, deleteOldRdn, constraints);
+		} catch (Throwable t) {
+			log("Rename Error",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Rename Complete");
+		}
 
 	}
 
@@ -141,7 +298,20 @@ public class DumpTransaction implements Insert {
 			DistinguishedName newRdn, DistinguishedName newParentDN,
 			Bool deleteOldRdn, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		log("Begin Rename - dn=" + dn.toString() + ";newRdn=" + newRdn.toString() + ";deleteOldRdn=" + deleteOldRdn.toString() + ";newParentDN=" + newParentDN.toString());
+		
+		try {
+		chain.nextRename(dn, newRdn, newParentDN, deleteOldRdn, constraints);
+		} catch (Throwable t) {
+			log("Rename Error",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Rename Complete");
+		}
 
 	}
 
@@ -151,15 +321,62 @@ public class DumpTransaction implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		
 		
-		chain.nextPostSearchEntry(entry,base,scope,filter,attributes,typesOnly,constraints);
-		System.out.println(entry.getEntry());
+		StringBuffer ldif = new StringBuffer();
+		ldif.append("dn : ").append(entry.getEntry().getDN()).append('\n');
+		Iterator it = entry.getEntry().getAttributeSet().iterator();
+		while (it.hasNext()) {
+			LDAPAttribute attrib = (LDAPAttribute) it.next();
+			for (int i=0,m=attrib.size();i<m;i++) {
+				ldif.append(attrib.getBaseName()).append(" : ").append(attrib.getStringValueArray()[i]).append('\n');
+			}
+		}
+		
+		log("Begin Post Search Entry - Filter=" + filter.getValue() + ";Base=" + base.toString() + ";Scope=" + scope.getValue() + ";Attributes=" + attributes  + "\n" + ldif.toString());
+		
+		try {
+			chain.nextPostSearchEntry(entry,base,scope,filter,attributes,typesOnly,constraints);
+		} catch (Throwable t) {
+			log("Post Search Entry Error",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+		
+			ldif = new StringBuffer();
+			ldif.append("dn : ").append(entry.getEntry().getDN()).append('\n');
+			it = entry.getEntry().getAttributeSet().iterator();
+			while (it.hasNext()) {
+				LDAPAttribute attrib = (LDAPAttribute) it.next();
+				for (int i=0,m=attrib.size();i<m;i++) {
+					ldif.append(attrib.getBaseName()).append(" : ").append(attrib.getStringValueArray()[i]).append('\n');
+				}
+			}
+			
+			log("Post Seach Entry Complete\n" + ldif.toString());
+		}
 	}
 
 	public void postSearchComplete(PostSearchCompleteInterceptorChain chain,
 			DistinguishedName base, Int scope, Filter filter,
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
+		
+		log("Begin Post Search Complete - Filter=" + filter.getValue() + ";Base=" + base.toString() + ";Scope=" + scope.getValue() + ";Attributes=" + attributes);
+		
+		try {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
+		} catch (Throwable t) {
+			log("Post Search Complete Error",t);
+			if (t instanceof LDAPException) {
+				throw ((LDAPException) t);
+			} else {
+				throw new RuntimeException(t);
+			}
+		} finally {
+			log("Post Search Complete Complete");
+		}
 
 	}
 
