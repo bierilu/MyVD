@@ -234,7 +234,7 @@ public class JdbcInsert implements Insert {
 		}
 		FilterNode newroot = new FilterNode(FilterType.AND,ands);
 		filter = new Filter(newroot);
-		System.out.println("filter : " + filter.getRoot().toString());
+		//System.out.println("filter : " + filter.getRoot().toString());
 		return filter;
 	}
 

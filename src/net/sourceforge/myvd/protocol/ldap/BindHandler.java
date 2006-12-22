@@ -135,7 +135,7 @@ public class BindHandler implements MessageHandler,LdapInfo
 
         String dn = req.getName();
 
-        System.err.println("Bind credentials : " + dn);
+        //System.err.println("Bind credentials : " + dn);
         
         byte[] creds = req.getCredentials();
 
