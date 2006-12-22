@@ -1,0 +1,259 @@
+ -----
+ MyVD LDAP Virtual Directory
+ -----
+ The MyVD Team
+ -----
+
+Insert Reference
+
+ This guide desibribes how existing inserts work, are configured and any external dependencies they may have.
+
+* Access Controls
+
+
+* Attribute Cleaner
+
+ This insert ensures that the attributes requested by a search request are the only attributes returned to the user.  This insert is usefull when additional attributes are added to an entry for meta data purposes but should not be returned to the user.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.mapping.AttributeCleaner  |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                                 |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|None                                                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* Attribute Mapper
+
+ The attribute mapper insert is used to map the names of attributes.  For instance it could map uid to samaccountname.  This insert works on attribute names in both entries, dns and filters.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.mapping.AttributeMapper   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search,Add,Modify,Delete,Compare,Rename                |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|mapping                                                | Comma seperated list of attribute maps.  For instance "uid=samaccountname"                                     |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
+
+* Attribute Value Mapper
+
+ The attribute value mapper is used to map one entry value to another.  For instance mapping "objectClass: inetOrgPerson" -> "objectClass: user".
+
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.mapping.AttributeValueMapper|                                      |
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|Scope                |Search,Add,Modify,Compare                                |                                      |
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|Configuration Options|mapping                                                  |Comma sepperated list of mappings in the form of "attribute.curvalue=newvalue".  For instance "objectClass.inetOrgPerson=user                                      |
+*---------------------+---------------------------------------------------------+--------------------------------------+
+
+* Create SPML Identity
+
+ The SPML identity insert is designed to create an LDAP compliant DN for use with the LDAP insert in SPML mode.  SPML does not require a full DN as a name (it can for instance use a userid or an email address), but LDAP does.  This insert ensures that the DN  for the user object has the correct RDN for SPML while being LDAP compliant.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.idm.CreateSPMLIdentity    |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Add, Modify, Delete                                    |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|type                                                   |The SPML identity type (ie GenericString                                   |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |attribute                                              |The attribute that will act as the source for the RDN data|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |keepNameAsAttribute                                    |true or false if the rdn's attribute will remain on the user object|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
+* DB Groups
+
+ This insert is used when groups stored in a relational database are stored with a name and not a full DN.  This plugin will create the DN to make it LDAP compliant.
+
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.jdbc.DBGroups             |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                                 |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|memberAttribute                                        |The name of the attribute that represents members (ie uniqueMember)                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |suffix                                                 |The member suffix (ie ou=groups,dc=domain,dc=com|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |rdn                                                    |The name of the rdn attribute (ie uid)|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
+* DumpTransaction
+
+ This insert dumps the details of a request to the log.  DumpTransaction is very usefull when debugging a MyVD deployment. By placing this insert at various points in the server it's possible to see how requests and responses are effected.  Note that this insert can have an adverse effect on performance. 
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.DumpTransaction           |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |All                                                    |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|logLevel                                               |One of info,debug,error,warn          |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |label                                                  |A label to describe this DumpTransaction insert in the logs|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
+* Flatten Namespace
+ 
+ This insert removes components from an LDAP DN and can optionally store them in the user entry.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.idm.FlattenNamespace      |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Add, Delete                                                 |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|attribsToRemove                                        |Comma sepperated list of attributes to remove from the DN           |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |	attributesToStore                                     |Comma sepperated list of attributes in the DN to store in the user entry|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
+* JDBC Insert
+
+ The JDBC insert is used to expose a relational database through MyVD.  This insert only supports a single objectClass and rdn for each configuration of the insert.  
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.jdbc.JdbcInterceptor      |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                               |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|driver|The JDBC driver to use|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |url|The JDBC connection URL|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |user|The database user to connect as|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |password|The password to connect with|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |rdn|The LDAP atribute used as the rdn for all objects generated|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |mapping|Comma sepperated list of ldap=db mapping of attributes|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |objectClass|The objectClass for all octs created by this insert|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |sql|The SQL use to determine what objects this insert will generate.  This SQL must include all attributes included in the mapping configuration|
+*---------------------+-------------------------------------------------------+--------------------------------------+ 
+
+* Joiner
+
+ The joiner is used to combine two LDAP namespaces (note that this means two DN namespace, not two configuration namespaces). The joiner combines entries from each namespace.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.join.Joiner               |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                                 |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|primaryNamespace|LDAP DN that represents a configured namespace that will drive the namespace of the joiner|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |joinedNamespace|LDAP DN that represents a configured namespace that will be joined with the primaryNamespace.  The namespace of the primaryNamespace drives the joiner's namespace|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |joinedAttributes|Attributes to be included in the join|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |joinFilter|A filter that is used to combine objects.  When including an attribute from the joining entry prepend the attribute with "ATTR.".  For instance, to combine a user based on the uid attribute the filter would be "(uid=ATTR.uid)"|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
+* Kerberos Authenticator
+
+ The kerberos authenticator can be used to authenticate users via the Kerberos protocol, such as against LDAP.  Note that all configuration is based on the Java JNDI kerberos authentication file. (need to add a link)
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.kerberos.KerberosInterceptor
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Bind                                                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|None                                                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* LDAP Insert
+
+ The LDAP insert is one of the core inserts.  This insert allows MyVD to communicate with any LDAPv3 compliant directory.  In addtion to LDAP directories, this isnert supports DSMLv2 and SPML.  In order to take advantage of the SPML feautures you must download the OpenSPML toolkit (http://www.openspml.org/) and it's dependencies.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.kerberos.KerberosInterceptor|                                    |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Add, Modify, Rename, Delete, Compare, Search, Bind, Extended Operiations|                     |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|host|The host of the remote server.  If this insert is using DSMLV2 or SPML then this is the URL of the end point.                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |port|The port the remote ldap server is listening on.  Ignored for DSMLV2 and SPML|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |remoteBase|The base of the remote LDAP server that the insert would start at|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |proxyDN|The DN of the user to connect as|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |proxyPass|The password of the remote directory|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |type|One of "ldap","dsmlv2" or "spml"|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |spmlImpl|When using SPML, the class name for the com.novell.ldap.spml.SPMLImpl interface|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+  
+* Master Replica Router
+
+ The Master Replica Router is an insert that should be added to the global chain when you wish to seperate write operations from search operations, such as when utilizing MyVD in a master/replica environment.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.routing.MasterReplicaRouter|                                    |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Add, Modify, Rename, Delete, Compare, Search, Bind, Extended Operiations|                     |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|specifyToInclude|true or false, if the servers included by the readOnly option specifies the namespaces to be read only or those NOT to be considered read only.
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |readOnly|The names of namespaces configured that will be used for search operations|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |master|The nams of a namespace used to write operations|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* NTLM Authenticator
+ 
+ The kerberos authenticator can be used to authenticate users via the Kerberos protocol, such as against LDAP.  Note that all configuration is based on the Java JNDI kerberos authentication file. (need to add a link)
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.jcifs.NTLMAuthenticator
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Bind                                                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|host                                                   |The host of the NTLM server (AD or an NTLM file share)|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* Password Change Operation
+
+ This insert is an example of how an extended operation could be implemented in MyVD.  The insert deconstructs the operation in order to make sure that the request is routed properly.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.extensions.PasswordChangeOperation
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Extended Operation                                     |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|remoteBase|The final base of the operation|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |localBase|The base to expect in the operation|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* RootDSE Insert
+
+ This insert should be placed in a namespace with an empty "nameSpace" property in order to construct a root dse object.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.RootDSE                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                     |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|supportedFeatures|Comma seperated list|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |namingContexts|Pipe "\|" seperated list of DNs|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |supportedControls|Comma seperated list|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |supportedSaslMechanisms|Comma seperated list|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |supportedExtensions|Comma seperated list|
+*---------------------+-------------------------------------------------------+--------------------------------------+
