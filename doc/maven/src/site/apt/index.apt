@@ -23,4 +23,15 @@ MyVD LDAP Virtual Directory
 [images/overview.png] MyVD Overview	
 
 News
+
+* MyVD 0.7 Released December 24, 2006
+
+ The MyVD project is proud to announce the release of MyVD 0.7.  This release has:
+ 
+  * Start scripts for both windows and *nix
   
+  * Documentation of all inserts and functionality
+  
+  * A default configuration
+  
+ MyVD 0.7 can be downloaded at the {{{http://sourceforge.net/project/showfiles.php?group_id=184128} MyVD Downloads}} page

@@ -21,7 +21,10 @@
       <item name="Creating Custom Inserts" href="custominserts.html"/>
       <item name="Deploying MyVD" href="deployment.html" />
       <item name="Running The Unit Tests" href="unittests.html"/>
+      <item name="Downloads" href="http://sourceforge.net/project/showfiles.php?group_id=184128" />
       <item name="SourceForget.net Project Page" href="http://www.sourceforge.net/projects/myvd/"/>
+      <item name="Mailing Lists" href="mail-lists.html"/>
+      <item name="License" href="license.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
   </body>
