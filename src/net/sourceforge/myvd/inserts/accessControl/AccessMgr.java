@@ -98,7 +98,7 @@ public class AccessMgr {
 		Iterator<DN> it = this.acl.keySet().iterator();
 		while (it.hasNext()) {
 			dn = it.next();
-			if (this.isDescendantOf(dn,aci.getDn()) && ! acl.get(dn).acis.contains(aci)) {
+			if (this.isDescendantOf(aci.getDn(),dn) && ! acl.get(dn).acis.contains(aci)) {
 				acl.get(dn).acis.add(aci);
 			}
 		}
@@ -133,6 +133,10 @@ public class AccessMgr {
 		Iterator<AccessControlItem> it = acl.iterator();
 		while (it.hasNext()) {
 			AccessControlItem aci = it.next();
+			
+			if (aci.num == 3) {
+				System.out.println();
+			}
 			
 			//if it's not a subtree aci, then it only applies if its equal
 			if ((! aci.isSubtree) && (! aci.getDn().equals(dn))) {
@@ -186,7 +190,7 @@ public class AccessMgr {
 		Vector<RDN> parentRDNs = parent.getRDNs();
 		Vector<RDN> childRDNs = child.getRDNs();
 		
-		if (childRDNs.size() <= parentRDNs.size()) {
+		if (childRDNs.size() < parentRDNs.size()) {
 			return false;
 		}
 		
