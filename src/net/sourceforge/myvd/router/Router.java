@@ -477,9 +477,9 @@ public class Router {
 		
 		if (oldNs == newNs) {
 			RenameInterceptorChain newChain = new RenameInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,oldNs.getChain(),chain.getSession(),chain.getRequest());
-			newChain.nextRename(dn,newRdn,deleteOldRdn,constraints);
+			newChain.nextRename(dn,newRdn,newParentDN,deleteOldRdn,constraints);
 		} else {
-			System.err.println("Request: " + chain.getRequest());
+			
 			SearchInterceptorChain searchChain = new SearchInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,oldNs.getChain(),chain.getSession(),chain.getRequest());
 			Results results = new Results(globalChain);
 			searchChain.nextSearch(new DistinguishedName(dn.getDN().toString()),new Int(0),new Filter("(objectClass=*)"),new ArrayList<Attribute>(),new Bool(false),results,new LDAPSearchConstraints());
@@ -498,7 +498,7 @@ public class Router {
 			RDN rdn = new RDN(newRdn.getDN().toString());
 			RDN oldRDN = (RDN) dn.getDN().getRDNs().get(0);
 			
-			System.out.println("rdn.getValue : " + rdn.getType()); 
+			 
 			
 			newEntry.getAttributeSet().getAttribute(rdn.getType()).removeValue(oldRDN.getValue());
 			newEntry.getAttributeSet().getAttribute(rdn.getType()).addValue(rdn.getValue());
