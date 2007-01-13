@@ -48,10 +48,10 @@ public class UnBindHandler implements MessageHandler,LdapInfo
     public void messageReceived( ProtocolSession session, Object request )
     {
 //    	reset the session username and pass
-    	HashMap userSession = (HashMap) session.getAttribute("VLDAP_SESSION");
+    	HashMap userSession = (HashMap) session.getAttribute("MYVD_SESSION");
     	userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-    	session.setAttribute("VLDAP_BINDDN",new DistinguishedName(""));
-        session.setAttribute("VLDAP_BINDPASS",new Password());
+    	session.setAttribute("MYVD_BINDDN",new DistinguishedName(""));
+        session.setAttribute("MYVD_BINDPASS",new Password());
     }
 
 	public void setEnv(Insert[] globalChain, Router router) {

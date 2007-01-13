@@ -85,9 +85,9 @@ public class ModifyHandler implements MessageHandler,LdapInfo
 				mods.add(this.createChange(attribs[i].getAttribute(),attribs[i].getModificationOp()));
 			}
 			
-			userSession = (HashMap) session.getAttribute("VLDAP_SESSION");
-            DistinguishedName bindDN = (DistinguishedName) session.getAttribute("VLDAP_BINDDN");
-            Password pass = (Password) session.getAttribute("VLDAP_BINDPASS");
+			userSession = (HashMap) session.getAttribute("MYVD_SESSION");
+            DistinguishedName bindDN = (DistinguishedName) session.getAttribute("MYVD_BINDDN");
+            Password pass = (Password) session.getAttribute("MYVD_BINDPASS");
             
             if (bindDN == null) {
             	bindDN = new DistinguishedName("");

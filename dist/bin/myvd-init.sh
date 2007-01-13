@@ -17,7 +17,7 @@ vldap="java -server net.sourceforge.myvd.server.Server $CONFIG_FILE"
 
 case "$1" in
 	"start")
-		echo -n "Starting VLDAP......"
+		echo -n "Starting MYVD......"
 		daemon $vldap
 		exit $?
 	;;

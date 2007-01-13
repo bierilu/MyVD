@@ -146,9 +146,9 @@ public class BindHandler implements MessageHandler,LdapInfo
         
         try
         {
-            userSession = (HashMap) session.getAttribute("VLDAP_SESSION");
-            DistinguishedName bindDN = (DistinguishedName) session.getAttribute("VLDAP_BINDDN");
-            Password pass = (Password) session.getAttribute("VLDAP_BINDPASS");
+            userSession = (HashMap) session.getAttribute("MYVD_SESSION");
+            DistinguishedName bindDN = (DistinguishedName) session.getAttribute("MYVD_BINDDN");
+            Password pass = (Password) session.getAttribute("MYVD_BINDPASS");
             
             if (bindDN == null) {
             	bindDN = new DistinguishedName("");
@@ -161,8 +161,8 @@ public class BindHandler implements MessageHandler,LdapInfo
             BindInterceptorChain chain = new BindInterceptorChain(bindDN,pass,0,this.globalChain,userSession,new HashMap(),router);
             chain.nextBind(newBindDN,newPass,new LDAPConstraints());
             
-            session.setAttribute("VLDAP_BINDDN",newBindDN);
-            session.setAttribute("VLDAP_BINDPASS",newPass);
+            session.setAttribute("MYVD_BINDDN",newBindDN);
+            session.setAttribute("MYVD_BINDPASS",newPass);
             
         }
         catch( LDAPException e )
@@ -170,8 +170,8 @@ public class BindHandler implements MessageHandler,LdapInfo
            
         	//bind failed, reset the session username and pass
         	userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-        	session.setAttribute("VLDAP_BINDDN",new DistinguishedName(""));
-            session.setAttribute("VLDAP_BINDPASS",new Password());
+        	session.setAttribute("MYVD_BINDDN",new DistinguishedName(""));
+            session.setAttribute("MYVD_BINDPASS",new Password());
         	
             result.setResultCode( ResultCodeEnum.getResultCodeEnum(e.getResultCode())  );
             

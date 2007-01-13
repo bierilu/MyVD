@@ -287,9 +287,9 @@ public class LdapProtocolProvider implements ProtocolProvider
         {
         	HashMap userSession = new HashMap();
         	userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-        	session.setAttribute("VLDAP_SESSION",userSession);
-        	session.setAttribute("VLDAP_BINDDN",new DistinguishedName(""));
-        	session.setAttribute("VLDAP_BINDPASS",new Password());
+        	session.setAttribute("MYVD_SESSION",userSession);
+        	session.setAttribute("MYVD_BINDDN",new DistinguishedName(""));
+        	session.setAttribute("MYVD_BINDPASS",new Password());
         }
 
         public void sessionCreated( ProtocolSession arg0 )
