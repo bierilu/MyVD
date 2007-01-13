@@ -18,7 +18,7 @@ server.db.nameSpace=dc=nam,dc=compinternal,dc=com
 server.db.weight=0
 server.db.LDAPBaseServer.className=net.sourceforge.myvd.inserts.jdbc.JdbcInsert
 server.db.LDAPBaseServer.config.driver=org.hsqldb.jdbcDriver
-server.db.LDAPBaseServer.config.url=jdbc:hsqldb:file:%PROJ_DIR%/MyVD/test/DBAdapter/dbdata
+server.db.LDAPBaseServer.config.url=jdbc:hsqldb:file:%PROJ_DIR%/test/DBAdapter/dbdata
 server.db.LDAPBaseServer.config.user=sa
 server.db.LDAPBaseServer.config.password=
 server.db.LDAPBaseServer.config.rdn=uid
@@ -31,7 +31,7 @@ server.groupdb.nameSpace=ou=groups,dc=compinternal,dc=com
 server.groupdb.weight=0
 server.groupdb.LDAPBaseServer.className=net.sourceforge.myvd.inserts.jdbc.JdbcInsert
 server.groupdb.LDAPBaseServer.config.driver=org.hsqldb.jdbcDriver
-server.groupdb.LDAPBaseServer.config.url=jdbc:hsqldb:file:%PROJ_DIR%/MyVD/test/DBAdapter/dbdata
+server.groupdb.LDAPBaseServer.config.url=jdbc:hsqldb:file:%PROJ_DIR%/test/DBAdapter/dbdata
 server.groupdb.LDAPBaseServer.config.user=sa
 server.groupdb.LDAPBaseServer.config.password=
 server.groupdb.LDAPBaseServer.config.rdn=cn

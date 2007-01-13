@@ -48,9 +48,9 @@ public class TestACLPlugin extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.openldapServer = new StartOpenLDAP();
-		this.openldapServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/ACITest",10983,"cn=admin,dc=domain,dc=com","manager");
+		this.openldapServer.startServer(System.getenv("PROJ_DIR") + "/test/ACITest",10983,"cn=admin,dc=domain,dc=com","manager");
 		
-		server = new Server(System.getenv("PROJ_DIR") + "/MyVD/test/TestServer/testACLs.props");
+		server = new Server(System.getenv("PROJ_DIR") + "/test/TestServer/testACLs.props");
 		server.startServer();
 		
 		this.globalChain = server.getGlobalChain();

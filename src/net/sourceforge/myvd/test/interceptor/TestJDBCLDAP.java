@@ -46,9 +46,9 @@ public class TestJDBCLDAP extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.baseServer = new StartOpenLDAP();
-		this.baseServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/Base",10983,"cn=admin,dc=domain,dc=com","manager");
+		this.baseServer.startServer(System.getenv("PROJ_DIR") + "/test/Base",10983,"cn=admin,dc=domain,dc=com","manager");
 		
-		server = new Server(System.getenv("PROJ_DIR") + "/MyVD/test/TestServer/testJDBCLDAP.props");
+		server = new Server(System.getenv("PROJ_DIR") + "/test/TestServer/testJDBCLDAP.props");
 		server.startServer();
 		
 		this.globalChain = server.getGlobalChain();

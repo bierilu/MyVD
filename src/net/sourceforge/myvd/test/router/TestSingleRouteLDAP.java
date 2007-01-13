@@ -86,7 +86,7 @@ public class TestSingleRouteLDAP extends TestCase {
 		super.setUp();
 		this.server = new StartOpenLDAP();
 		this.server.startServer(
-				System.getenv("PROJ_DIR") + "/MyVD/test/TestLDAP", 10983,
+				System.getenv("PROJ_DIR") + "/test/TestLDAP", 10983,
 				"cn=admin,dc=domain,dc=com", "manager");
 
 		// setup the ldap interceptor

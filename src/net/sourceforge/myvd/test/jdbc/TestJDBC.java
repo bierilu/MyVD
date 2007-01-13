@@ -34,7 +34,7 @@ public class TestJDBC extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		this.server = new Server(System.getenv("PROJ_DIR") + "/MyVD/test/DBAdapter/vldap.props");
+		this.server = new Server(System.getenv("PROJ_DIR") + "/test/DBAdapter/vldap.props");
 		this.server.startServer();
 	}
 

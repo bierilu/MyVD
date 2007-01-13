@@ -42,7 +42,7 @@ import org.apache.mina.protocol.handler.MessageHandler;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import sun.security.krb5.internal.s;
+
 
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPException;

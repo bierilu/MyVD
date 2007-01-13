@@ -87,19 +87,19 @@ public class TestChooseRoute extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.baseServer = new StartOpenLDAP();
-		this.baseServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/Base",10983,"cn=admin,dc=domain,dc=com","manager");
+		this.baseServer.startServer(System.getenv("PROJ_DIR") + "/test/Base",10983,"cn=admin,dc=domain,dc=com","manager");
 		
 		this.internalServer = new StartOpenLDAP();
-		this.internalServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/InternalUsers",11983,"cn=admin,ou=internal,dc=domain,dc=com","manager");
+		this.internalServer.startServer(System.getenv("PROJ_DIR") + "/test/InternalUsers",11983,"cn=admin,ou=internal,dc=domain,dc=com","manager");
 		
 		this.externalServer = new StartOpenLDAP();
-		this.externalServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/ExternalUsers",12983,"cn=admin,ou=external,dc=domain,dc=com","manager");
+		this.externalServer.startServer(System.getenv("PROJ_DIR") + "/test/ExternalUsers",12983,"cn=admin,ou=external,dc=domain,dc=com","manager");
 		
 		this.bogusExternalServer = new StartOpenLDAP();
-		this.bogusExternalServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/BogusExternal",13983,"cn=admin,ou=external,dc=domain,dc=com","manager");
+		this.bogusExternalServer.startServer(System.getenv("PROJ_DIR") + "/test/BogusExternal",13983,"cn=admin,ou=external,dc=domain,dc=com","manager");
 		
 		this.bogusInternalServer = new StartOpenLDAP();
-		this.bogusInternalServer.startServer(System.getenv("PROJ_DIR") + "/MyVD/test/BogusInternal",14983,"cn=admin,ou=external,dc=domain,dc=com","manager");
+		this.bogusInternalServer.startServer(System.getenv("PROJ_DIR") + "/test/BogusInternal",14983,"cn=admin,ou=external,dc=domain,dc=com","manager");
 		
 		//setup the ldap interceptors
 		baseInterceptor = new LDAPInterceptor();
