@@ -37,6 +37,7 @@ import net.sourceforge.myvd.protocol.ldap.LdapProtocolProvider;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.server.Server;
 import net.sourceforge.myvd.test.chain.TestChain;
+import net.sourceforge.myvd.test.util.StartMyVD;
 import net.sourceforge.myvd.test.util.StartOpenLDAP;
 import net.sourceforge.myvd.test.util.Util;
 import net.sourceforge.myvd.types.Attribute;
@@ -53,9 +54,7 @@ import net.sourceforge.myvd.types.Results;
 import net.sourceforge.myvd.types.SessionVariables;
 
 import org.apache.mina.common.TransportType;
-import org.apache.mina.registry.Service;
-import org.apache.mina.registry.ServiceRegistry;
-import org.apache.mina.registry.SimpleServiceRegistry;
+
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
@@ -82,12 +81,13 @@ public class TestStartServer extends TestCase {
 
 	
 	
-	Insert[] globalChain;
-	Router router;
+	//Insert[] globalChain;
+	//Router router;
 	private StartOpenLDAP baseServer;
 	private StartOpenLDAP internalServer;
 	private StartOpenLDAP externalServer;
-	private Server server;
+	private StartMyVD server;
+	//private Server server;
 	
 	
 	protected void setUp() throws Exception {
@@ -101,11 +101,17 @@ public class TestStartServer extends TestCase {
 		this.externalServer = new StartOpenLDAP();
 		this.externalServer.startServer(System.getenv("PROJ_DIR") + "/test/ExternalUsers",12983,"cn=admin,ou=external,dc=domain,dc=com","manager");
 		
-		server = new Server(System.getenv("PROJ_DIR") + "/test/TestServer/testconfig.props");
-		server.startServer();
+		this.server = new StartMyVD();
+		this.server.startServer(System.getenv("PROJ_DIR") + "/test/TestServer/testconfig.props",50983);
 		
-		this.globalChain = server.getGlobalChain();
-		this.router = server.getRouter();
+		
+		//server = new Server(System.getenv("PROJ_DIR") + "/test/TestServer/testconfig.props");
+		//server.startServer();
+		
+		
+		
+		//this.globalChain = server.getGlobalChain();
+		//this.router = server.getRouter();
 		
 		
  	}
@@ -403,7 +409,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-		con.modify("cn=Test Cust,ou=external,o=mycompany",new LDAPModification[0]);
+		con.modify("cn=Test Cust,ou=external,o=mycompany",new LDAPModification[] {new LDAPModification(2,new LDAPAttribute("userPassword","mysecret"))});
 		
 		
 		con = new LDAPConnection();
@@ -418,7 +424,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		attribs.add(new LDAPAttribute("sn","Cust"));
 		attribs.getAttribute("sn").addValue("Second Surname");
 		attribs.add(new LDAPAttribute("uid","testCust"));
-		attribs.add(new LDAPAttribute("userPassword","secret"));
+		attribs.add(new LDAPAttribute("userPassword","mysecret"));
 		//attribs.add(new LDAPAttribute("sn","Second Surname"));
 		entry = new LDAPEntry("cn=Test Cust,ou=external,dc=domain,dc=com",attribs);
 		
@@ -435,7 +441,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
-		con.modify("cn=Test User,ou=internal,o=mycompany",new LDAPModification[0]);
+		con.modify("cn=Test User,ou=internal,o=mycompany",new LDAPModification[] {new LDAPModification(2,new LDAPAttribute("userPassword","mysecret"))});
 		
 		con = new LDAPConnection();
 		con.connect("localhost",11983);
@@ -449,7 +455,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		attribs.add(new LDAPAttribute("sn","User"));
 		attribs.getAttribute("sn").addValue("Second Surname");
 		attribs.add(new LDAPAttribute("uid","testUser"));
-		attribs.add(new LDAPAttribute("userPassword","secret"));
+		attribs.add(new LDAPAttribute("userPassword","mysecret"));
 		//attribs.add(new LDAPAttribute("sn","Second Surname"));
 		entry = new LDAPEntry("cn=Test User,ou=internal,dc=domain,dc=com",attribs);
 		
@@ -668,6 +674,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		this.internalServer.stopServer();
 		this.externalServer.stopServer();
 		this.server.stopServer();
+		//this.server.stopServer();
 	}
 
 	

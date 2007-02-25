@@ -34,13 +34,18 @@ package net.sourceforge.myvd.protocol.ldap;
 
 
 
-import net.sourceforge.myvd.inserts.Insert;
-import net.sourceforge.myvd.router.Router;
+import java.util.HashMap;
 
-import org.apache.ldap.common.NotImplementedException;
-import org.apache.ldap.common.message.AbandonRequest;
-import org.apache.mina.protocol.ProtocolSession;
-import org.apache.mina.protocol.handler.MessageHandler;
+import net.sourceforge.myvd.inserts.Insert;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AbandonRequestImpl;
+import net.sourceforge.myvd.router.Router;
+import net.sourceforge.myvd.types.DistinguishedName;
+import net.sourceforge.myvd.types.Password;
+
+import org.apache.mina.common.IoSession;
+import org.apache.mina.handler.demux.MessageHandler;
+
+
 
 
 
@@ -50,11 +55,11 @@ import org.apache.mina.protocol.handler.MessageHandler;
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  * @version $Rev: 161724 $
  */
-public class AbandonHandler implements MessageHandler,LdapInfo
+public class AbandonHandler extends LDAPOperation
 {
-    public void messageReceived( ProtocolSession session, Object request )
+    public void messageReceived( IoSession session, Object request,HashMap userRequest,HashMap userSession,DistinguishedName bindDN,Password pass )
     {
-        AbandonRequest req = ( AbandonRequest ) request;
+        AbandonRequestImpl req = ( AbandonRequestImpl ) request;
         int abandonedId = req.getAbandoned();
 
         if ( abandonedId < 0 )
@@ -62,11 +67,8 @@ public class AbandonHandler implements MessageHandler,LdapInfo
             return;
         }
         
-        throw new NotImplementedException( "don't know how to do this just yet" );
+        throw new net.sourceforge.myvd.protocol.ldap.mina.ldap.NotImplementedException( "don't know how to do this just yet" );
     }
 
-	public void setEnv(Insert[] globalChain, Router router) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

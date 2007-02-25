@@ -51,15 +51,6 @@ import net.sourceforge.myvd.types.DistinguishedName;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.SessionVariables;
 
-import org.apache.ldap.common.exception.LdapException;
-import org.apache.ldap.common.message.BindRequest;
-import org.apache.ldap.common.message.BindResponse;
-import org.apache.ldap.common.message.BindResponseImpl;
-import org.apache.ldap.common.message.Control;
-import org.apache.ldap.common.message.LdapResult;
-import org.apache.ldap.common.message.LdapResultImpl;
-import org.apache.ldap.common.message.ResultCodeEnum;
-import org.apache.ldap.common.util.ExceptionUtils;
 
 /*
  * I would like to eventually see these newly introduced dependencies
@@ -71,12 +62,20 @@ import org.apache.ldap.common.util.ExceptionUtils;
  * The changes are the two lines below:
  */
 
-import org.apache.ldap.server.configuration.Configuration;
-import org.apache.ldap.server.configuration.StartupConfiguration;
 
-import org.apache.mina.protocol.ProtocolSession;
-import org.apache.mina.protocol.handler.MessageHandler;
 
+
+
+
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.BindRequest;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.BindResponse;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.BindResponseImpl;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.Control;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.LdapResult;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.LdapResultImpl;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.ResultCodeEnum;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.util.ExceptionUtils;
+import org.apache.mina.common.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,28 +90,27 @@ import com.novell.ldap.LDAPException;
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  * @version $Rev: 231083 $
  */
-public class BindHandler implements MessageHandler,LdapInfo
+public class BindHandler extends LDAPOperation
 {
     private static final Logger LOG = LoggerFactory.getLogger( BindHandler.class );
     private static final Control[] EMPTY = new Control[0];
     
-    Insert[] globalChain;
-    Router router;
+   
 
 
-    public void messageReceived( ProtocolSession session, Object request )
+    public void messageReceived( IoSession session, Object request,HashMap userRequest,HashMap userSession,DistinguishedName bindDN,Password pass )
     {
 
         BindRequest req = ( BindRequest ) request;
         BindResponse resp = new BindResponseImpl( req.getMessageId() );
-        LdapResult result = new LdapResultImpl( resp );
-        resp.setLdapResult( result );
+        LdapResult result = req.getResultResponse().getLdapResult();
+        
 
        
         // if the bind request is not simple then we freak: no strong auth yet
         if ( ! req.isSimple() )
         {
-            result.setResultCode( ResultCodeEnum.AUTHMETHODNOTSUPPORTED );
+            result.setResultCode( ResultCodeEnum.AUTH_METHOD_NOT_SUPPORTED );
             result.setErrorMessage( "Only simple binds currently supported" );
             session.write( resp );
             return;
@@ -120,7 +118,7 @@ public class BindHandler implements MessageHandler,LdapInfo
 
        
         boolean emptyCredentials = req.getCredentials() == null || req.getCredentials().length == 0;
-        boolean emptyDn = req.getName() == null || req.getName().length() == 0;
+        boolean emptyDn = req.getName() == null || req.getName().size() == 0;
 
         /*if ( emptyCredentials && emptyDn && ! allowAnonymousBinds )
         {
@@ -133,32 +131,25 @@ public class BindHandler implements MessageHandler,LdapInfo
 
         // clone the environment first then add the required security settings
 
-        String dn = req.getName();
+        String dn = req.getName().toString();
 
         //System.err.println("Bind credentials : " + dn);
         
         byte[] creds = req.getCredentials();
 
         
-        Control[] connCtls = ( Control[] ) req.getControls().toArray( EMPTY );
+        Control[] connCtls = ( Control[] ) req.getControls().values().toArray( EMPTY );
 
-        HashMap userSession = null;
+        
         
         try
         {
-            userSession = (HashMap) session.getAttribute("MYVD_SESSION");
-            DistinguishedName bindDN = (DistinguishedName) session.getAttribute("MYVD_BINDDN");
-            Password pass = (Password) session.getAttribute("MYVD_BINDPASS");
             
-            if (bindDN == null) {
-            	bindDN = new DistinguishedName("");
-            	pass = new Password();
-            }
             
             DistinguishedName newBindDN = new DistinguishedName(dn);
             Password newPass = new Password(creds);
             
-            BindInterceptorChain chain = new BindInterceptorChain(bindDN,pass,0,this.globalChain,userSession,new HashMap(),router);
+            BindInterceptorChain chain = new BindInterceptorChain(bindDN,pass,0,this.globalChain,userSession,userRequest,router);
             chain.nextBind(newBindDN,newPass,new LDAPConstraints());
             
             session.setAttribute("MYVD_BINDDN",newBindDN);
@@ -173,7 +164,7 @@ public class BindHandler implements MessageHandler,LdapInfo
         	session.setAttribute("MYVD_BINDDN",new DistinguishedName(""));
             session.setAttribute("MYVD_BINDPASS",new Password());
         	
-            result.setResultCode( ResultCodeEnum.getResultCodeEnum(e.getResultCode())  );
+            result.setResultCode( ResultCodeEnum.getResultCode(e.getResultCode())  );
             
 
             String msg = "Bind failed ;" + e.getMessage();
@@ -186,7 +177,7 @@ public class BindHandler implements MessageHandler,LdapInfo
 
 
             result.setErrorMessage( msg );
-            session.write( resp );
+            session.write( req.getResultResponse() );
             return;
         }catch (Throwable t) {
         	
@@ -200,14 +191,14 @@ public class BindHandler implements MessageHandler,LdapInfo
             ResultCodeEnum code;
 
             
-                code = ResultCodeEnum.OPERATIONSERROR;
+                code = ResultCodeEnum.OPERATIONS_ERROR;
             
 
             resp.getLdapResult().setResultCode( code );
             resp.getLdapResult().setErrorMessage( msg );
             
 
-            session.write( resp );
+            session.write( req.getResultResponse() );
             return;
         
     }
@@ -215,14 +206,10 @@ public class BindHandler implements MessageHandler,LdapInfo
         
         result.setResultCode( ResultCodeEnum.SUCCESS );
         result.setMatchedDn( req.getName() );
-        session.write( resp );
+        session.write( req.getResultResponse() );
     }
 
 
-	public void setEnv(Insert[] globalChain, Router router) {
-		this.globalChain = globalChain;
-		this.router = router;
-		
-	}
+	
 }
 

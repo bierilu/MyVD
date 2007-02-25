@@ -113,4 +113,8 @@ public class ConnectionWrapper {
 		
 	}
 	
+	public String toString() {
+		return Boolean.toString(this.locked.getValue());
+	}
+	
 }

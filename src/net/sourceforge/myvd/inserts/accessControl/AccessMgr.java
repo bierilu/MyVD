@@ -23,7 +23,7 @@ import java.util.Vector;
 import net.sourceforge.myvd.chain.InterceptorChain;
 import net.sourceforge.myvd.types.DNComparer;
 
-import org.apache.ldap.common.schema.DnComparator;
+
 
 import com.novell.ldap.util.DN;
 import com.novell.ldap.util.RDN;
@@ -134,9 +134,7 @@ public class AccessMgr {
 		while (it.hasNext()) {
 			AccessControlItem aci = it.next();
 			
-			if (aci.num == 3) {
-				System.out.println();
-			}
+
 			
 			//if it's not a subtree aci, then it only applies if its equal
 			if ((! aci.isSubtree) && (! aci.getDn().equals(dn))) {

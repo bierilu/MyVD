@@ -445,6 +445,7 @@ public class TestJDBC extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.stopServer();
+		Thread.sleep(10000);
 	}
 
 }

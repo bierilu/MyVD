@@ -131,8 +131,8 @@ public class StartOpenLDAP {
 		System.out.println(exec);
 		process = Runtime.getRuntime().exec(exec);
 		
-		StreamReader reader = new StreamReader(process.getInputStream());
-		StreamReader errReader = new StreamReader(process.getErrorStream());
+		StreamReader reader = new StreamReader(process.getInputStream(),false);
+		StreamReader errReader = new StreamReader(process.getErrorStream(),false);
 		
 		reader.start();
 		errReader.start();
@@ -192,25 +192,3 @@ public class StartOpenLDAP {
 	}
 }
 
-class StreamReader extends Thread {
-	InputStream in;
-	
-	public StreamReader(InputStream in ) {
-		this.in = in;
-	}
-	
-	public void run() {
-		BufferedReader in = new BufferedReader(new InputStreamReader(this.in));
-		
-		String line;
-		try {
-			while ((line = in.readLine()) != null) {
-				//System.out.println(line);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
-		
-	}
-}

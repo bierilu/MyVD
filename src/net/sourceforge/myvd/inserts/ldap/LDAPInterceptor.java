@@ -104,7 +104,7 @@ public class LDAPInterceptor implements Insert {
 			throw new LDAPLocalException("Unrecognized ldap interceptor type : " + type, LDAPException.OPERATIONS_ERROR);
 		}
 		
-		this.pool = new LDAPConnectionPool(this, Integer.parseInt(props.getProperty("minimumConnections","5")), Integer.parseInt(props.getProperty("maximumConnections","10")), Integer.parseInt(props.getProperty("maximumRetries","5")),this.type,this.spmlImpl,this.isSoap);
+		this.pool = new LDAPConnectionPool(this, Integer.parseInt(props.getProperty("minimumConnections","5")), Integer.parseInt(props.getProperty("maximumConnections","30")), Integer.parseInt(props.getProperty("maximumRetries","5")),this.type,this.spmlImpl,this.isSoap);
 		
 		this.utils = new NamingUtils();
 	}
@@ -119,6 +119,7 @@ public class LDAPInterceptor implements Insert {
 		}
 		
 		if (wrapper == null) {
+			System.out.println("pool : " + pool.pool.toString());
 			throw new LDAPException("Could not get remote connection",LDAPException.SERVER_DOWN,base.toString());
 		} else {
 			return wrapper;

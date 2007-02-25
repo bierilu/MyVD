@@ -6,10 +6,99 @@
 
 Insert Reference
 
- This guide desibribes how existing inserts work, are configured and any external dependencies they may have.
+ This guide desibribes how existing inserts work, are configured and any external dependencies they may have.  
 
 * Access Controls
 
+ The access controls for MyVD are based on a draft RFC.  The RFC can be read [[www.cnn.com] here].  The access control system utilizes a list of access control items.  Each item is structured as:
+
+** Configuring The Access Control Insert
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.ldap.LDAPInterceptor      |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search,Compare,Bind,Add,Modify,Delete,Rename           |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|numACIs                                                | The number of ACIs to be processed   |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |aci.X                                                  | An ACI to process based on the below configuration.  "X" is the number of the ACI and should begin with 0.  |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+** Speifying an ACI 
+
++--------------+
+scope-base#scope#grant/deny:permisions#scope#users
++--------------+
+ 
+ The below table explains each part of the ACI:
+ 
+*-------------+----------------------------+----------------------------------------+
+|Component    |Description                 |Example                                 |
+*-------------+----------------------------+----------------------------------------+
+|scope-domain |The base of the scope this ACI applies to.  This ACI will only be considered for operations that are subordinates of this DN|ou=people,dc=domain,dc=com|
+*-------------+----------------------------+----------------------------------------+
+|scope        |The scope of this ACI.  The scope can either be "subtree" to apply to all subordinates of the scope-base or "entry" to apply only to the scope-domain.|subtree OR entry|
+*-------------+----------------------------+----------------------------------------+
+|grant/deny   |Determines if the outcome of this ACI should result in a grant or deny|grant OR deny|
+*-------------+----------------------------+----------------------------------------+
+|permisions   |Which permisions this ACI grants or denys. See the below table for a list of permisions|
+*-------------+----------------------------+----------------------------------------+
+|scope        |Whether this applies to entry results or attributes. The below table explains the different options|[entry] OR [all] OR a comma sepperated list of attribute names|
+*-------------+----------------------------+----------------------------------------+
+|users        |Which users this ACI applies to.  The below table lists the possible values for this option|See the below table|
+*-------------+----------------------------+----------------------------------------+
+
+*** Entry Permisions
+
+*--------------------+------------------+---------------------+
+|Permision           |Letter            |Description          |
+*--------------------+------------------+---------------------+
+|Create              |c                 |Determines if entries may be created|
+*--------------------+------------------+---------------------+
+|Delete              |d                 |Determines if the entry may be deleted|
+*--------------------+------------------+---------------------+
+|View                |v                 |Determines if the entry may be viewed|
+*--------------------+------------------+---------------------+
+|Rename              |n                 |Determines if the entry can be renamed|
+*--------------------+------------------+---------------------+
+
+*** Attribute Permisions
+
+*--------------------+------------------+---------------------+
+|Permision           |Letter            |Description          |
+*--------------------+------------------+---------------------+
+|Read                |r                 |Determines if the attribute can be read|
+*--------------------+------------------+---------------------+
+|Write               |w                 |Determines if the attribute can be written to|
+*--------------------+------------------+---------------------+
+|Obliterate          |o                 |Determines if the attribute can be removed from the entry|
+*--------------------+------------------+---------------------+
+|Search              |s                 |Determines if the attribute can be included in a search filter|
+*--------------------+------------------+---------------------+
+|Compare             |c                 |Determines if the attribute can be included in a compare operation|
+*--------------------+------------------+---------------------+
+|Presence Search     |p                 |Determines if a filter on the presence of the attribute in the entry|
+*--------------------+------------------+---------------------+
+
+
+
+*** Users Options
+
+*------------------+--------------------+--------------------+-------------------------+
+|Users Option      |Description         |Syntax              |Example                  |
+*------------------+--------------------+--------------------+-------------------------+
+|Sub Tree          |This ACI applies to all users beneath the given DN|subtree:DN|subtree:ou=users,dc=domain,dc=com|
+*------------------+--------------------+--------------------+--------------------------+
+|DN                |This ACI applies to the specified DN only|dn:DN|dn:cn=admin,ou=admins,dc=domain,dc=com|
+*------------------+--------------------+--------------------+--------------------------+
+|This              |The ACI applies to the currently bound user.  This is useful for permisions such as letting a user rest their own password|this:|
+*------------------+--------------------+--------------------+--------------------------+
+|Group             |An LDAP static group is used to apply this ACI|group:DN_OF_GROUP|group:cn=admins,ou=groups,dc=domain,dc=com|
+*------------------+--------------------+--------------------+--------------------------+
+|Dynamic Group     |An LDAP dynamic group is used to apply this ACI|dynamic-group:DN_OF_DYNAMIC_GROUP|dynamic-group:cn=admins,ou=groups,dc=domain,dc=com|
+*------------------+--------------------+--------------------+--------------------------+
+|Public            |This ACI applies to all users, bound an anonymouse|
+*------------------+--------------------+--------------------+--------------------------+
 
 * Attribute Cleaner
 

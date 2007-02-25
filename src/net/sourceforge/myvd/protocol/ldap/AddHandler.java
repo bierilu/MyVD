@@ -35,6 +35,7 @@ package net.sourceforge.myvd.protocol.ldap;
 
 import java.util.HashMap;
 
+import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -42,20 +43,23 @@ import javax.naming.ldap.LdapContext;
 
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.inserts.Insert;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.exception.LdapException;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AddRequest;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AddResponse;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AddResponseImpl;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.LdapResult;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.ResultCodeEnum;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.name.LdapDN;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.util.ExceptionUtils;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
 import net.sourceforge.myvd.types.Entry;
 import net.sourceforge.myvd.types.Password;
 
-import org.apache.ldap.common.exception.LdapException;
-import org.apache.ldap.common.message.AddRequest;
-import org.apache.ldap.common.message.AddResponse;
-import org.apache.ldap.common.message.AddResponseImpl;
-import org.apache.ldap.common.message.LdapResultImpl;
-import org.apache.ldap.common.message.ResultCodeEnum;
-import org.apache.ldap.common.util.ExceptionUtils;
-import org.apache.mina.protocol.ProtocolSession;
-import org.apache.mina.protocol.handler.MessageHandler;
+
+
+
+import org.apache.mina.common.IoSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,36 +77,30 @@ import com.novell.ldap.LDAPException;
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  * @version $Rev: 231083 $
  */
-public class AddHandler implements MessageHandler,LdapInfo
+public class AddHandler extends LDAPOperation
 {
     private static final Logger LOG = LoggerFactory.getLogger( AddHandler.class );
 
-    Insert[] globalChain;
-    Router router;
     
-    public void messageReceived( ProtocolSession session, Object request ) 
+    
+    public void messageReceived( IoSession session, Object request,HashMap userRequest,HashMap userSession,DistinguishedName bindDN,Password pass ) 
     {
         AddRequest req = ( AddRequest ) request;
-        AddResponse resp = new AddResponseImpl( req.getMessageId() );
-        resp.setLdapResult( new LdapResultImpl( resp ) );
-
-        HashMap userSession = null;
+        LdapResult result = req.getResultResponse().getLdapResult();
         
-        userSession = (HashMap) session.getAttribute("MYVD_SESSION");
-        DistinguishedName bindDN = (DistinguishedName) session.getAttribute("MYVD_BINDDN");
-        Password pass = (Password) session.getAttribute("MYVD_BINDPASS");
+
         
         try
         {
         	
-        	LDAPAttributeSet set = new LDAPAttributeSet();
+        	/*LDAPAttributeSet set = new LDAPAttributeSet();
 			
-			NamingEnumeration nenum = req.getEntry().getAll();
+			NamingEnumeration nenum = req.getAttributes().getAll();
 			while (nenum.hasMore()) {
 				Attribute attrib = (Attribute) nenum.next();
 				/*if (this.toIgnore.contains(attrib.getID().toLowerCase())) {
 					continue;
-				}*/
+				}
 				LDAPAttribute ldapAttrib = new LDAPAttribute(attrib.getID());
 				NamingEnumeration vals = attrib.getAll();
 				while (vals.hasMore()) {
@@ -110,14 +108,14 @@ public class AddHandler implements MessageHandler,LdapInfo
 				}
 				
 				set.add(ldapAttrib);
-	   		}
+	   		}*/
         	
-            AddInterceptorChain chain = new AddInterceptorChain(bindDN,pass,0,this.globalChain,userSession,new HashMap(),this.router);
-            chain.nextAdd(new Entry(new LDAPEntry(req.getName(),set)),new LDAPConstraints());
+            AddInterceptorChain chain = new AddInterceptorChain(bindDN,pass,0,this.globalChain,userSession,userRequest,this.router);
+            chain.nextAdd(new Entry(new LDAPEntry(req.getEntry().toNormName(),req.getAttribSet())),new LDAPConstraints());
         }
         catch( LDAPException e )
         {
-            String msg = "failed to add entry " + req.getName() + "; " + e.getLDAPErrorMessage();
+            String msg = "failed to add entry " + req.getEntry() + "; " + e.getLDAPErrorMessage();
 
             if ( LOG.isDebugEnabled() )
             {
@@ -127,53 +125,31 @@ public class AddHandler implements MessageHandler,LdapInfo
             ResultCodeEnum code;
 
             
-                code = ResultCodeEnum.getResultCodeEnum(e.getResultCode());
+                code = ResultCodeEnum.getResultCode(e.getResultCode());
             
 
-            resp.getLdapResult().setResultCode( code );
-            resp.getLdapResult().setErrorMessage( msg );
+            
+            result.setResultCode( code );
+            result.setErrorMessage( msg );
+            
+            
             if( e.getMatchedDN() != null )
             {
-                resp.getLdapResult().setMatchedDn(
-                        e.getMatchedDN() );
+            	try {
+					result.setMatchedDn(
+					        new LdapDN(e.getMatchedDN()) );
+				} catch (InvalidNameException e1) {
+					LOG.error("Error",e1);
+				}
             }
 
-            session.write( resp );
+            session.write( req.getResultResponse() );
             return;
-        }
-        catch( NamingException e )
-        {
-            String msg = "failed to add entry " + req.getName();
-
-            if ( LOG.isDebugEnabled() )
-            {
-                msg += ":\n" + ExceptionUtils.getStackTrace( e );
-            }
-
-            ResultCodeEnum code;
-
-            if( e instanceof LdapException )
-            {
-                code = ( ( LdapException ) e ).getResultCode();
-            }
-            else
-            {
-                code = ResultCodeEnum.getBestEstimate( e, req.getType() );
-            }
-
-            resp.getLdapResult().setResultCode( code );
-            resp.getLdapResult().setErrorMessage( msg );
-            if( e.getResolvedName() != null )
-            {
-                resp.getLdapResult().setMatchedDn(
-                        e.getResolvedName().toString() );
-            }
-
-            session.write( resp );
-            return;
+        
+        
         } catch (Throwable t) {
         	
-                String msg = "failed to add entry " + req.getName() + "; " + t.toString();
+                String msg = "failed to add entry " + req.getEntry() + "; " + t.toString();
 
               
                     msg += ":\n" + ExceptionUtils.getStackTrace( t );
@@ -183,27 +159,24 @@ public class AddHandler implements MessageHandler,LdapInfo
                 ResultCodeEnum code;
 
                 
-                    code = ResultCodeEnum.OPERATIONSERROR;
+                    code = ResultCodeEnum.OPERATIONS_ERROR;
                 
 
-                resp.getLdapResult().setResultCode( code );
-                resp.getLdapResult().setErrorMessage( msg );
+                result.setResultCode( code );
+                result.setErrorMessage( msg );
                 
 
-                session.write( resp );
+                session.write( req.getResultResponse() );
                 return;
             
         }
 
-        resp.getLdapResult().setResultCode( ResultCodeEnum.SUCCESS );
-        resp.getLdapResult().setMatchedDn( req.getName() );
-        session.write( resp );
+        result.setResultCode( ResultCodeEnum.SUCCESS );
+        
+        session.write( req.getResultResponse() );
     }
 
-	public void setEnv(Insert[] globalChain, Router router) {
-		this.globalChain = globalChain;
-		this.router = router;
-		
-	}
+	
+	
 }
 

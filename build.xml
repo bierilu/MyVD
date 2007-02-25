@@ -22,6 +22,8 @@
 		<property name="reports.tests" value="junit-reports" />
 	</target>
 	
+	
+	
     <!-- ================================= 
           target: default              
          ================================= -->
@@ -29,18 +31,13 @@
     	<delete dir="${classes}"/>
     	<mkdir dir="${classes}"/>
         <javac destdir="${classes}"  srcdir="${src}" debug="yes">
-            <classpath>
-                <pathelement location="${lib}/ldap.jar" />
-            	<pathelement location="${testlib}/junit-4.1.jar" />
-		    	<pathelement location="${lib}/apacheds-main-0.9.1.jar" />
-		    	<pathelement location="${lib}/activation.jar" />
-            	<pathelement location="${lib}/commons-logging.jar" />
-            	<pathelement location="${lib}/mail.jar" />
-            	<pathelement location="${lib}/mailapi.jar" />
-            	<pathelement location="${lib}/openspml.jar" />
-            	<pathelement location="${lib}/soap.jar" />
-            	<pathelement location="${lib}/jdbcLdap.jar" />
-            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
+        	<classpath>
+            	<fileset dir="${lib}">
+        	          <include name="**/*.jar" />
+        		</fileset>
+        		<fileset dir="${testlib}">
+        	          <include name="**/*.jar" />
+        		</fileset>
             </classpath>
         </javac>
     </target>
@@ -95,20 +92,15 @@
 	        	
 	        
 	            <classpath>
-	            	<pathelement location="${testlib}/junit-4.1.jar" />
-	            	<pathelement location="${bin}/myvd.jar" />
-		        	<pathelement location="${bin}/myvd-test.jar" />
-	            	<pathelement location="${lib}/ldap.jar" />
-			    	<pathelement location="${lib}/apacheds-main-0.9.1.jar" />
-			    	<pathelement location="${lib}/activation.jar" />
-	            	<pathelement location="${lib}/commons-logging.jar" />
-	            	<pathelement location="${lib}/mail.jar" />
-	            	<pathelement location="${lib}/mailapi.jar" />
-	            	<pathelement location="${lib}/openspml.jar" />
-	            	<pathelement location="${lib}/soap.jar" />
-	            	<pathelement location="${lib}/jdbcLdap.jar" />
-	            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
-	            	<pathelement location="${testlib}/hsqldb.jar" />
+	            	<fileset dir="${lib}">
+	        	          <include name="**/*.jar" />
+	        		</fileset>
+	        		<fileset dir="${testlib}">
+	        	          <include name="**/*.jar" />
+	        		</fileset>
+	            	<fileset dir="${bin}">
+	        	          <include name="**/*.jar" />
+	        		</fileset>
 	            </classpath>
 	            <formatter type="xml" />
 	        </junit>
@@ -136,21 +128,16 @@
 		        	
 		        	
 		        
-		            <classpath>
-		            	<pathelement location="${testlib}/junit-4.1.jar" />
-		            	<pathelement location="${bin}/myvd.jar" />
-			        	<pathelement location="${bin}/myvd-test.jar" />
-		            	<pathelement location="${lib}/ldap.jar" />
-				    	<pathelement location="${lib}/apacheds-main-0.9.1.jar" />
-				    	<pathelement location="${lib}/activation.jar" />
-		            	<pathelement location="${lib}/commons-logging.jar" />
-		            	<pathelement location="${lib}/mail.jar" />
-		            	<pathelement location="${lib}/mailapi.jar" />
-		            	<pathelement location="${lib}/openspml.jar" />
-		            	<pathelement location="${lib}/soap.jar" />
-		            	<pathelement location="${lib}/jdbcLdap.jar" />
-		            	<pathelement location="${lib}/jcifs-1.2.4.jar" />
-		            	<pathelement location="${lib}/hsqldb.jar" />
+		        	<classpath>
+		            	<fileset dir="${lib}">
+		        	          <include name="**/*.jar" />
+		        		</fileset>
+		        		<fileset dir="${testlib}">
+		        	          <include name="**/*.jar" />
+		        		</fileset>
+		            	<fileset dir="${bin}">
+		        	          <include name="**/*.jar" />
+		        		</fileset>
 		            </classpath>
 		            <formatter type="xml" />
 		        </junit>

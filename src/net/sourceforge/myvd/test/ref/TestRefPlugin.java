@@ -53,9 +53,7 @@ import net.sourceforge.myvd.types.Results;
 import net.sourceforge.myvd.types.SessionVariables;
 
 import org.apache.mina.common.TransportType;
-import org.apache.mina.registry.Service;
-import org.apache.mina.registry.ServiceRegistry;
-import org.apache.mina.registry.SimpleServiceRegistry;
+
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;

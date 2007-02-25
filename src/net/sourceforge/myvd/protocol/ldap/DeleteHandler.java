@@ -20,6 +20,7 @@ package net.sourceforge.myvd.protocol.ldap;
 
 import java.util.HashMap;
 
+import javax.naming.InvalidNameException;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
@@ -29,16 +30,16 @@ import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
 import net.sourceforge.myvd.types.Password;
 
-import org.apache.ldap.common.exception.LdapException;
-import org.apache.ldap.common.message.DeleteRequest;
-import org.apache.ldap.common.message.DeleteResponse;
-import org.apache.ldap.common.message.DeleteResponseImpl;
-import org.apache.ldap.common.message.LdapResultImpl;
-import org.apache.ldap.common.message.ResultCodeEnum;
-import org.apache.ldap.common.util.ExceptionUtils;
-import org.apache.mina.protocol.ProtocolSession;
-import org.apache.mina.protocol.handler.MessageHandler;
 
+
+
+
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.DeleteRequest;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.LdapResult;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.ResultCodeEnum;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.name.LdapDN;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.util.ExceptionUtils;
+import org.apache.mina.common.IoSession;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -54,36 +55,27 @@ import com.novell.ldap.LDAPException;
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  * @version $Rev: 231083 $
  */
-public class DeleteHandler implements MessageHandler,LdapInfo
+public class DeleteHandler extends LDAPOperation
 {
     private static final Logger LOG = LoggerFactory.getLogger( DeleteHandler.class );
-	private Insert[] globalChain;
-	private Router router;
+	
 
-
-    public void messageReceived( ProtocolSession session, Object request )
+    public void messageReceived( IoSession session, Object request,HashMap userRequest,HashMap userSession,DistinguishedName bindDN,Password pass )
     {
         DeleteRequest req = ( DeleteRequest ) request;
-        DeleteResponse resp = new DeleteResponseImpl( req.getMessageId() );
-        resp.setLdapResult( new LdapResultImpl( resp ) );
+        LdapResult result = req.getResultResponse().getLdapResult();
 
-        HashMap userSession = null;
+        
         
         
         
         try
         {
         	userSession = (HashMap) session.getAttribute("MYVD_SESSION");
-            DistinguishedName bindDN = (DistinguishedName) session.getAttribute("MYVD_BINDDN");
-            Password pass = (Password) session.getAttribute("MYVD_BINDPASS");
             
-            if (bindDN == null) {
-            	bindDN = new DistinguishedName("");
-            	pass = new Password();
-            }
             
-            DeleteInterceptorChain chain = new DeleteInterceptorChain(bindDN,pass,0,this.globalChain,userSession,new HashMap(),router);
-            chain.nextDelete(new DistinguishedName(req.getName()),new LDAPConstraints());
+            DeleteInterceptorChain chain = new DeleteInterceptorChain(bindDN,pass,0,this.globalChain,userSession,userRequest,router);
+            chain.nextDelete(new DistinguishedName(req.getName().toString()),new LDAPConstraints());
             
         }
         catch( LDAPException e )
@@ -98,17 +90,21 @@ public class DeleteHandler implements MessageHandler,LdapInfo
             ResultCodeEnum code;
 
            
-           code = ResultCodeEnum.getResultCodeEnum(e.getResultCode());
+           code = ResultCodeEnum.getResultCode(e.getResultCode());
            
-            resp.getLdapResult().setResultCode( code );
-            resp.getLdapResult().setErrorMessage( msg );
+            result.setResultCode( code );
+            result.setErrorMessage( msg );
 
             if( e.getMatchedDN() != null )
             {
-                resp.getLdapResult().setMatchedDn( e.getMatchedDN().toString() );
+                try {
+					result.setMatchedDn( new LdapDN(e.getMatchedDN()) );
+				} catch (InvalidNameException e1) {
+					LOG.error("Error",e1);
+				}
             }
 
-            session.write( resp );
+            session.write( req.getResultResponse() );
             return;
         }catch (Throwable t) {
         	
@@ -122,27 +118,23 @@ public class DeleteHandler implements MessageHandler,LdapInfo
             ResultCodeEnum code;
 
             
-                code = ResultCodeEnum.OPERATIONSERROR;
+                code = ResultCodeEnum.OPERATIONS_ERROR;
             
 
-            resp.getLdapResult().setResultCode( code );
-            resp.getLdapResult().setErrorMessage( msg );
+            result.setResultCode( code );
+            result.setErrorMessage( msg );
             
 
-            session.write( resp );
+            session.write( req.getResultResponse() );
             return;
         
     }
 
-        resp.getLdapResult().setResultCode( ResultCodeEnum.SUCCESS );
-        resp.getLdapResult().setMatchedDn( req.getName() );
-        session.write( resp );
+        result.setResultCode( ResultCodeEnum.SUCCESS );
+        result.setMatchedDn( req.getName() );
+        session.write( req.getResultResponse() );
     }
 
 
-	public void setEnv(Insert[] globalChain, Router router) {
-		this.globalChain = globalChain;
-		this.router = router;
-		
-	}
+	
 }

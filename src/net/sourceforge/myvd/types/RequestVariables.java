@@ -19,11 +19,18 @@ public class RequestVariables {
 	/**
 	 * Used to specify the route of a 
 	 */
-	public static final String ROUTE_NAMESPACE = "VDAP_ROUTE_NAMESPACE";
+	public static final String ROUTE_NAMESPACE = "MYVD_ROUTE_NAMESPACE";
 	
-	public static final String ROUTE_NAMESPACE_RENAME = "VDAP_ROUTE_NAMESPACE_RENAME";
+	public static final String ROUTE_NAMESPACE_RENAME = "MYVD_ROUTE_NAMESPACE_RENAME";
 
-	public static final String ROUTE_NAMESPACE_EXCLUDE = "VDAP_ROUTE_NAMESPACE_EXCLUDE";
+	public static final String ROUTE_NAMESPACE_EXCLUDE = "MYVD_ROUTE_NAMESPACE_EXCLUDE";
 	
-	public static final String ROUTE_NAMESPACE_EXCLUDE_RENAME = "VDAP_ROUTE_NAMESPACE_EXCLUDE_RENAME";
+	public static final String ROUTE_NAMESPACE_EXCLUDE_RENAME = "MYVD_ROUTE_NAMESPACE_EXCLUDE_RENAME";
+	
+	public static final String MYVD_LOCAL_ADDR = "MYVD_LOCAL_ADDR";
+	public static final String MYVD_LOCAL_IP = "MYVD_LOCAL_IP";
+	public static final String MYVD_LOCAL_PORT = "MYVD_LOCAL_PORT";
+	public static final String MYVD_REMOTE_ADDR = "MYVD_REMOTE_ADDR";
+	public static final String MYVD_REMOTE_IP = "MYVD_REMOTE_IP";
+	public static final String MYVD_REMOTE_PORT = "MYVD_REMOTE_PORT";
 }

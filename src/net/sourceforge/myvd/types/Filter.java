@@ -235,4 +235,8 @@ public class Filter {
 					   
 		}
 	}
+	
+	private int computeLength() {
+		return this.root.computeLength();
+	}
 }
