@@ -15,15 +15,19 @@
 
     <menu name="MyVD Virtual Directory">
       <item name="Home" href="index.html"/>
+      <item name="Virtual Directory Use Cases" href="usecases.html"/>
+      <item name="Latest News" href="http://myvd.sourceforge.net/wiki/index.php/News"/>
+      <item name="MyVD Road Map" href="http://myvd.sourceforge.net/wiki/index.php/RoadMap"/>
       <item name="Introduction to MyVD" href="intro.html"/>
       <item name="Configuring MyVD" href="configureprops.html"/>
       <item name="Insert Reference" href="inserts.html"/>
       <item name="Creating Custom Inserts" href="custominserts.html"/>
       <item name="Deploying MyVD" href="deployment.html" />
       <item name="Running The Unit Tests" href="unittests.html"/>
-      <item name="Downloads" href="http://sourceforge.net/project/showfiles.php?group_id=184128" />
+      <item name="Downloads" href="downloads.html" />
       <item name="SourceForget.net Project Page" href="http://www.sourceforge.net/projects/myvd/"/>
       <item name="Mailing Lists" href="mail-lists.html"/>
+      <item name="Virtual Directory Resources" href="resources.html"/>
       <item name="License" href="license.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
