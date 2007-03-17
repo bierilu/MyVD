@@ -76,6 +76,8 @@ public class Server {
 	private Insert[] globalChain;
 	private Router router;
 
+	private ServerCore serverCore;
+
 	
 	public Insert[] getGlobalChain() {
 		return globalChain;
@@ -105,12 +107,12 @@ public class Server {
 			getDefaultLog();
 		}
 		
-		logger.debug("Loading global chain...");
-		this.buildGlobalChain();
-		logger.debug("Global chain loaded");
-		logger.debug("Loading local chain...");
-		this.buildNamespaces();
-		logger.debug("Local chain loaded");
+		this.serverCore = new ServerCore(this.props);
+		
+		this.serverCore.startService();
+		
+		this.globalChain = serverCore.getGlobalChain();
+		this.router = serverCore.getRouter();
 		
 		portString = props.getProperty("server.listener.port","");
 		if (! portString.equals("")) {
@@ -122,7 +124,7 @@ public class Server {
 		}
 		
 		portString = props.getProperty("server.secure.listener.port","");
-		System.out.println("port string : " + portString);
+		
 		if (! portString.equals("")) {
 			String keyStorePath = props.getProperty("server.secure.keystore","");
 			logger.debug("Key store : " + keyStorePath);
@@ -236,124 +238,7 @@ public class Server {
 		logger.info("Server Stopped");
 	}
 	
-	private Insert configureInterceptor(String name,String prefix,NameSpace ns) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
-		logger.debug("Insert : " + name + "; " + prefix);
-		
-		String className = props.getProperty(prefix + "className");
-		
-		logger.debug("Insert Class Name : " + className);
-		
-		String cfgPrefix = prefix + "config.";
-		Insert interceptor;
-		
-		interceptor = (Insert) Class.forName(className).newInstance();
-		String propName;
-		Properties localProps = new Properties();
-		Iterator it = props.keySet().iterator();
-		while (it.hasNext()) {
-			propName = (String) it.next();
-			if (propName.startsWith(cfgPrefix)) {
-				String localPropName = propName.substring(cfgPrefix.length());
-				String localVal = props.getProperty(propName);
-				localVal = envVars(localVal);
-				logger.debug("Config : " + localPropName + "=" + localVal);
-				localProps.setProperty(localPropName,localVal);
-			}
-		}
-		
-		interceptor.configure(name,localProps,ns);
-		
-		return interceptor;
-		
-		
-	}
 	
-	private String envVars(String localVal) {
-		int start = localVal.indexOf('%');
-		int last = 0;
-		if (start == -1) {
-			return localVal;
-		}
-		
-		StringBuffer buf = new StringBuffer();
-		
-		while (start != -1) {
-			int end = localVal.indexOf('%',start + 1);
-			buf.append(localVal.substring(last,start));
-			buf.append(System.getenv().get(localVal.substring(start + 1,end)));
-			last = end + 1;
-			start = localVal.indexOf('%',last);
-		}
-		
-		buf.append(localVal.substring(last));
-		
-		return buf.toString();
-	}
-
-	private void configureChain(String prefix,ArrayList<String> links,Insert[] chain,NameSpace ns) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
-		Iterator<String> it = links.iterator();
-		int i=0;
-		
-		while (it.hasNext()) {
-			String name = it.next();
-			chain[i] = this.configureInterceptor(name,prefix +  name + ".",ns);
-			i++;
-		}
-	}
-	
-	private void buildGlobalChain() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
-		String links = props.getProperty("server.globalChain");
-		ArrayList<String> linkList = new ArrayList<String>();
-		
-		StringTokenizer toker = new StringTokenizer(links,",");
-		
-		while (toker.hasMoreTokens()) {
-			linkList.add(toker.nextToken());
-		}
-		
-		Insert[] chain = new Insert[linkList.size()];
-		
-		this.configureChain("server.globalChain.",linkList,chain,null);
-		
-		this.globalChain = chain;
-		
-	}
-	
-	private void buildNamespaces() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
-		String nss = props.getProperty("server.nameSpaces");
-		StringTokenizer toker = new StringTokenizer(nss,",");
-		Router router = new Router(this.globalChain);
-		while (toker.hasMoreTokens()) {
-			
-			
-			String nsName = toker.nextToken();
-			
-			logger.debug("Loading namespace : " + nsName);
-			
-			String prefix = "server." + nsName + ".";
-			int weight = Integer.parseInt(props.getProperty(prefix + "weight","0"));
-			String nsBase = props.getProperty(prefix + "nameSpace");
-			
-			String nsChain = props.getProperty(prefix + "chain");
-			StringTokenizer chainToker = new StringTokenizer(nsChain,",");
-			
-			ArrayList<String> chainList = new ArrayList<String>();
-			
-			while (chainToker.hasMoreTokens()) {
-				chainList.add(chainToker.nextToken());
-			}
-			
-			Insert[] chain = new Insert[chainList.size()];
-			
-			NameSpace ns = new NameSpace(nsName,new DistinguishedName(nsBase),weight,chain);
-			
-			this.configureChain(prefix,chainList,chain,ns);
-			
-			router.addBackend(nsName,new DN(nsBase),ns);
-		}
-		
-		this.router = router;
-	}
 	
 	public static void main(String[] args) throws Exception {
 		
