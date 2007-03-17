@@ -38,6 +38,7 @@ import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
 import net.sourceforge.myvd.chain.DeleteInterceptorChain;
 import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
+import net.sourceforge.myvd.chain.InterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchCompleteInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchEntryInterceptorChain;
@@ -70,6 +71,8 @@ import com.novell.ldap.util.RDN;
 public class JdbcInsert implements Insert {
 
 	public static final String MYVD_DB_CON = "MYVD_DB_CON_";
+	public static final String MYVD_DB_LDAP2DB = "MYVD_DB_LDAP2DB_";
+	public static final String MYVD_DB_DB2LDAP = "MYVD_DB_DB2LDAP_";
 	String driver;
 	String url;
 	String user;
@@ -167,7 +170,7 @@ public class JdbcInsert implements Insert {
 		
 		try {
 			con = this.getCon();
-			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			loadRequest(chain, con);
 			chain.nextAdd(entry, constraints);
 		} catch (Throwable t) {
 			if (t instanceof LDAPException) {
@@ -177,11 +180,18 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			unloadRequest(chain, con);
 			returnCon(con);
 		}
 		
 
+	}
+
+	private void loadRequest(InterceptorChain chain, Connection con) {
+		chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+		chain.getRequest().put(JdbcInsert.MYVD_DB_DB2LDAP + this.name, this.db2ldap.clone());
+		
+		chain.getRequest().put(JdbcInsert.MYVD_DB_LDAP2DB + this.name, this.ldap2db.clone());
 	}
 
 	public void returnCon(Connection con) {
@@ -209,10 +219,16 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
-			returnCon(con);
+			unloadRequest(chain, con);
 		}
 
+	}
+
+	private void unloadRequest(InterceptorChain chain, Connection con) {
+		chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+		returnCon(con);
+		chain.getRequest().remove(JdbcInsert.MYVD_DB_DB2LDAP + this.name);
+		chain.getRequest().remove(JdbcInsert.MYVD_DB_LDAP2DB + this.name);
 	}
 
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn,
@@ -237,8 +253,7 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
-			returnCon(con);
+			unloadRequest(chain, con);
 		}
 
 	}
@@ -260,8 +275,7 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
-			returnCon(con);
+			unloadRequest(chain, con);
 		}
 
 	}
@@ -273,7 +287,7 @@ public class JdbcInsert implements Insert {
 		
 		try {
 			con = this.getCon();
-			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			this.loadRequest(chain, con);
 			chain.nextModify(dn, mods, constraints);
 		} catch (Throwable t) {
 			if (t instanceof LDAPException) {
@@ -283,8 +297,7 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
-			returnCon(con);
+			unloadRequest(chain, con);
 		}
 
 	}
@@ -392,8 +405,8 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
-			returnCon(con);
+			unloadRequest(chain, con);
+			
 		}
 
 	}
@@ -416,8 +429,8 @@ public class JdbcInsert implements Insert {
 			}
 			
 		} finally {
-			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
-			returnCon(con);
+			unloadRequest(chain, con);
+			
 		}
 
 	}
