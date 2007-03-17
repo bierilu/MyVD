@@ -15,6 +15,14 @@
  */
 package net.sourceforge.myvd.test.jdbc;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
 import net.sourceforge.myvd.server.Server;
 import net.sourceforge.myvd.test.util.Util;
 
@@ -23,6 +31,7 @@ import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchResults;
 
 import junit.framework.TestCase;
@@ -34,12 +43,259 @@ public class TestJDBC extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
+		File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter/dbdata.log");
+		File dbdata = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter/dbdata.script.orig");
+		File dbdatascript = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter/dbdata.script");
+		
+		if (dbdatascript.exists()) {
+			dbdatascript.delete();
+		}
+		
+		if (dbdatalog.exists()) {
+			dbdatalog.delete();
+		}
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(dbdata)));
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(dbdatascript)));
+		String line;
+		
+		while ((line = in.readLine()) != null) {
+			out.println(line);
+		}
+		
+		in.close();
+		out.close();
+		
+		
 		this.server = new Server(System.getenv("PROJ_DIR") + "/test/DBAdapter/vldap.props");
 		this.server.startServer();
 	}
 
 	public void testStartup() {
 		//do notthing
+	}
+	
+	public void testAdd() throws Exception {
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","add"));
+		LDAPAttribute l = new LDAPAttribute("l");
+		l.addValue("LA");
+		l.addValue("NY");
+		attribs.add(l);
+		LDAPEntry entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		
+		con.add(entry);
+		
+		LDAPSearchResults res = con.search("uid=testadd,dc=nam,dc=compinternal,dc=com", 0, "(objectClass=*)", new String[0], false);
+		
+		if (! res.hasMore()) {
+			fail("Entry not added");
+			return;
+		}
+		
+		LDAPEntry fromdir = res.next();
+		
+		if (res.hasMore()) {
+			fail("Entry added too many times?");
+			return;
+		}
+		
+		Util util = new Util();
+		
+		if (! util.compareEntry(fromdir, entry)) {
+			fail("Entries not the same : " + fromdir.toString());
+		}
+		
+		con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+		
+		con.disconnect();
+	}
+	
+	public void testModReplace() throws Exception {
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","add"));
+		LDAPAttribute l = new LDAPAttribute("l");
+		l.addValue("LA");
+		l.addValue("NY");
+		attribs.add(l);
+		LDAPEntry entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		
+		con.add(entry);
+		
+		LDAPModification mod = new LDAPModification(LDAPModification.REPLACE,new LDAPAttribute("sn","theadd"));
+		con.modify("uid=testadd,dc=nam,dc=compinternal,dc=com",mod);
+		
+		mod = new LDAPModification(LDAPModification.REPLACE,new LDAPAttribute("l","Boston"));
+		con.modify("uid=testadd,dc=nam,dc=compinternal,dc=com",mod);
+		
+		attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","theadd"));
+		l = new LDAPAttribute("l");
+		l.addValue("Boston");
+		
+		attribs.add(l);
+		entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPSearchResults res = con.search("uid=testadd,dc=nam,dc=compinternal,dc=com", 0, "(objectClass=*)", new String[0], false);
+		
+		if (! res.hasMore()) {
+			fail("Entry not added");
+			return;
+		}
+		
+		LDAPEntry fromdir = res.next();
+		
+		if (res.hasMore()) {
+			fail("Entry added too many times?");
+			return;
+		}
+		
+		Util util = new Util();
+		
+		if (! util.compareEntry(fromdir, entry)) {
+			con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+			fail("Entries not the same : " + fromdir.toString());
+		}
+		
+		con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+		
+		con.disconnect();
+	}
+	
+	public void testModAdd() throws Exception {
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","add"));
+		LDAPAttribute l = new LDAPAttribute("l");
+		l.addValue("LA");
+		l.addValue("NY");
+		attribs.add(l);
+		LDAPEntry entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		
+		con.add(entry);
+		
+		
+		
+		LDAPModification mod = new LDAPModification(LDAPModification.ADD,new LDAPAttribute("l","Boston"));
+		con.modify("uid=testadd,dc=nam,dc=compinternal,dc=com",mod);
+		
+		attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","add"));
+		l = new LDAPAttribute("l");
+		l.addValue("LA");
+		l.addValue("NY");
+		l.addValue("Boston");
+		
+		attribs.add(l);
+		entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPSearchResults res = con.search("uid=testadd,dc=nam,dc=compinternal,dc=com", 0, "(objectClass=*)", new String[0], false);
+		
+		if (! res.hasMore()) {
+			fail("Entry not added");
+			return;
+		}
+		
+		LDAPEntry fromdir = res.next();
+		
+		if (res.hasMore()) {
+			fail("Entry added too many times?");
+			return;
+		}
+		
+		Util util = new Util();
+		
+		if (! util.compareEntry(fromdir, entry)) {
+			con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+			fail("Entries not the same : " + fromdir.toString());
+		}
+		
+		con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+		
+		con.disconnect();
+	}
+	
+	public void testModDelValue() throws Exception {
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","add"));
+		LDAPAttribute l = new LDAPAttribute("l");
+		l.addValue("LA");
+		l.addValue("NY");
+		attribs.add(l);
+		LDAPEntry entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		
+		con.add(entry);
+		
+		
+		
+		LDAPModification mod = new LDAPModification(LDAPModification.DELETE,new LDAPAttribute("l","NY"));
+		con.modify("uid=testadd,dc=nam,dc=compinternal,dc=com",mod);
+		
+		attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","testadd"));
+		attribs.add(new LDAPAttribute("givenName","test"));
+		attribs.add(new LDAPAttribute("sn","add"));
+		l = new LDAPAttribute("l");
+		l.addValue("LA");
+		
+		
+		attribs.add(l);
+		entry = new LDAPEntry("uid=testadd,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		LDAPSearchResults res = con.search("uid=testadd,dc=nam,dc=compinternal,dc=com", 0, "(objectClass=*)", new String[0], false);
+		
+		if (! res.hasMore()) {
+			fail("Entry not added");
+			return;
+		}
+		
+		LDAPEntry fromdir = res.next();
+		
+		if (res.hasMore()) {
+			fail("Entry added too many times?");
+			return;
+		}
+		
+		Util util = new Util();
+		
+		if (! util.compareEntry(fromdir, entry)) {
+			con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+			fail("Entries not the same : " + fromdir.toString());
+		}
+		
+		con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
+		
+		con.disconnect();
 	}
 	
 	public void testAllUsers() throws LDAPException {
@@ -121,7 +377,7 @@ public class TestJDBC extends TestCase {
 		}
 		
 		if (res.hasMore()) {
-			fail("too many entries");
+			fail("too many entries " + res.next().toString() );
 		}
 	}
 	
@@ -445,7 +701,7 @@ public class TestJDBC extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.stopServer();
-		Thread.sleep(10000);
+		//Thread.sleep(10000);
 	}
 
 }

@@ -34,8 +34,8 @@ public abstract class LDAPOperation implements MessageHandler {
 			userSession = new HashMap();
 			session.setAttribute("MYVD_SESSION", userSession);
 		}
-	    DistinguishedName bindDN = (DistinguishedName) session.getAttribute("MYVD_BINDDN");
-	    Password pass = (Password) session.getAttribute("MYVD_BINDPASS");
+	    DistinguishedName bindDN = (DistinguishedName) userSession.get("MYVD_BINDDN");
+	    Password pass = (Password) userSession.get("MYVD_BINDPASS");
 	    
 	    if (bindDN == null) {
 	    	bindDN = new DistinguishedName("");
@@ -44,8 +44,8 @@ public abstract class LDAPOperation implements MessageHandler {
 	    	
 	    	
 	    	userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-	    	session.setAttribute("MYVD_BINDDN",new DistinguishedName(""));
-	        session.setAttribute("MYVD_BINDPASS",new Password());
+	    	userSession.put("MYVD_BINDDN",new DistinguishedName(""));
+	    	userSession.put("MYVD_BINDPASS",new Password());
 	       
 	    }
 	    
@@ -56,20 +56,28 @@ public abstract class LDAPOperation implements MessageHandler {
 	    String ip = addr.substring(addr.indexOf('/') + 1,addr.indexOf(':'));
 	    int port = Integer.parseInt(addr.substring(addr.lastIndexOf(':') + 1));
 	    
-	    userRequest.put(RequestVariables.MYVD_LOCAL_ADDR, host);
-	    userRequest.put(RequestVariables.MYVD_LOCAL_IP, ip);
-	    userRequest.put(RequestVariables.MYVD_LOCAL_PORT, port);
+	    setLocalConInfo(userRequest, host, ip, port);
 	    
 	    addr = session.getRemoteAddress().toString();
 	    host = addr.substring(0,addr.indexOf('/'));
 	    ip = addr.substring(addr.indexOf('/') + 1,addr.indexOf(':'));
 	    port = Integer.parseInt(addr.substring(addr.lastIndexOf(':') + 1));
 	    
-	    userRequest.put(RequestVariables.MYVD_REMOTE_ADDR, host);
-	    userRequest.put(RequestVariables.MYVD_REMOTE_IP, ip);
-	    userRequest.put(RequestVariables.MYVD_REMOTE_PORT, port);
+	    setRemoteConInfo(userRequest, host, ip, port);
 	    
 	    messageReceived(session,request,userRequest,userSession,bindDN,pass);
+	}
+
+	private void setRemoteConInfo(HashMap<Object, Object> userRequest, String host, String ip, int port) {
+		userRequest.put(RequestVariables.MYVD_REMOTE_ADDR, host);
+	    userRequest.put(RequestVariables.MYVD_REMOTE_IP, ip);
+	    userRequest.put(RequestVariables.MYVD_REMOTE_PORT, port);
+	}
+
+	private void setLocalConInfo(HashMap<Object, Object> userRequest, String host, String ip, int port) {
+		userRequest.put(RequestVariables.MYVD_LOCAL_ADDR, host);
+	    userRequest.put(RequestVariables.MYVD_LOCAL_IP, ip);
+	    userRequest.put(RequestVariables.MYVD_LOCAL_PORT, port);
 	}
 
 	

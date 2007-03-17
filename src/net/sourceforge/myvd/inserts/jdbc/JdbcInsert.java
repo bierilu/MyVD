@@ -28,6 +28,11 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.cpdsadapter.DriverAdapterCPDS;
+import org.apache.commons.dbcp.datasources.SharedPoolDataSource;
+
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
@@ -64,10 +69,17 @@ import com.novell.ldap.util.RDN;
 
 public class JdbcInsert implements Insert {
 
+	public static final String MYVD_DB_CON = "MYVD_DB_CON_";
 	String driver;
 	String url;
 	String user;
 	String pwd;
+	
+	
+	int maxCons;
+	int maxIdleCons;
+	
+	DataSource ds;
 	
 	String base;
 	String SQL;
@@ -81,13 +93,42 @@ public class JdbcInsert implements Insert {
 	
 	
 	HashMap<String,String> ldap2db,db2ldap;
+	private String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		
+		this.name = name;
+		
 		driver = props.getProperty("driver");
 		url = props.getProperty("url");
 		user = props.getProperty("user");
 		pwd = props.getProperty("password");
+		
+		
+		this.maxCons = Integer.parseInt(props.getProperty("maxCons","5"));
+		this.maxIdleCons = Integer.parseInt(props.getProperty("maxIdleCons","5"));
+		
+		
+		DriverAdapterCPDS pool = new DriverAdapterCPDS();
+		
+		try {
+			pool.setDriver(driver);
+		} catch (ClassNotFoundException e) {
+			throw new LDAPException("Could not load JDBC Driver",LDAPException.OPERATIONS_ERROR,driver,e);
+		}
+		pool.setUrl(url);
+		pool.setUser(user);
+		pool.setPassword(pwd);
+		pool.setMaxActive(maxCons);
+		pool.setMaxIdle(maxIdleCons);
+		
+		SharedPoolDataSource tds = new SharedPoolDataSource();
+        tds.setConnectionPoolDataSource(pool);
+        tds.setMaxActive(maxCons);
+        tds.setMaxWait(50);
+        
+        this.ds = tds;
 		
 		base = nameSpace.getBase().toString();
 		
@@ -122,13 +163,55 @@ public class JdbcInsert implements Insert {
 
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextAdd(entry, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
+		
 
+	}
+
+	public void returnCon(Connection con) {
+		try {
+			con.close();
+		} catch (SQLException e) {
+			
+		}
+		
 	}
 
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,
 			Password pwd, LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextBind(dn, pwd, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
 
 	}
 
@@ -140,21 +223,69 @@ public class JdbcInsert implements Insert {
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextDelete(dn, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
 
 	}
 
 	public void extendedOperation(ExetendedOperationInterceptorChain chain,
 			ExtendedOperation op, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextExtendedOperations(op, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
 
 	}
 
 	public void modify(ModifyInterceptorChain chain, DistinguishedName dn,
 			ArrayList<LDAPModification> mods, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextModify(dn, mods, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
 
 	}
 
@@ -239,14 +370,31 @@ public class JdbcInsert implements Insert {
 	}
 
 	private Connection getCon() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		Class.forName(this.driver).newInstance();
-		return DriverManager.getConnection(this.url,this.user,this.pwd);
+		
+		return this.ds.getConnection();
+		
 	}
 
 	public void rename(RenameInterceptorChain chain, DistinguishedName dn,
 			DistinguishedName newRdn, Bool deleteOldRdn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextRename(dn, newRdn, deleteOldRdn, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
 
 	}
 
@@ -254,7 +402,23 @@ public class JdbcInsert implements Insert {
 			DistinguishedName newRdn, DistinguishedName newParentDN,
 			Bool deleteOldRdn, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		Connection con = null;
+		
+		try {
+			con = this.getCon();
+			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
+			chain.nextRename(dn, newRdn, newParentDN, deleteOldRdn, constraints);
+		} catch (Throwable t) {
+			if (t instanceof LDAPException) {
+				throw (LDAPException) t;
+			} else {
+				throw new LDAPException("Error",LDAPException.OPERATIONS_ERROR,"Error",t);
+			}
+			
+		} finally {
+			chain.getRequest().remove(JdbcInsert.MYVD_DB_CON + this.name);
+			returnCon(con);
+		}
 
 	}
 
@@ -262,7 +426,7 @@ public class JdbcInsert implements Insert {
 			Entry entry, DistinguishedName base, Int scope, Filter filter,
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		//no need for post search entry code
 
 	}
 
@@ -270,7 +434,7 @@ public class JdbcInsert implements Insert {
 			DistinguishedName base, Int scope, Filter filter,
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		//no need for post search complete code
 
 	}
 	
