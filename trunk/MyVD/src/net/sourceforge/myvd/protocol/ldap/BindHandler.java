@@ -152,8 +152,8 @@ public class BindHandler extends LDAPOperation
             BindInterceptorChain chain = new BindInterceptorChain(bindDN,pass,0,this.globalChain,userSession,userRequest,router);
             chain.nextBind(newBindDN,newPass,new LDAPConstraints());
             
-            session.setAttribute("MYVD_BINDDN",newBindDN);
-            session.setAttribute("MYVD_BINDPASS",newPass);
+            userSession.put("MYVD_BINDDN",newBindDN);
+            userSession.put("MYVD_BINDPASS",newPass);
             
         }
         catch( LDAPException e )
@@ -161,8 +161,8 @@ public class BindHandler extends LDAPOperation
            
         	//bind failed, reset the session username and pass
         	userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-        	session.setAttribute("MYVD_BINDDN",new DistinguishedName(""));
-            session.setAttribute("MYVD_BINDPASS",new Password());
+        	userSession.put("MYVD_BINDDN",new DistinguishedName(""));
+        	userSession.put("MYVD_BINDPASS",new Password());
         	
             result.setResultCode( ResultCodeEnum.getResultCode(e.getResultCode())  );
             

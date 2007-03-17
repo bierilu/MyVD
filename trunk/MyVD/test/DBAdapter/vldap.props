@@ -13,7 +13,7 @@ server.Root.RootDSE.config.namingContexts=dc=nam,dc=compinternal,dc=com
 
 
 
-server.db.chain=LDAPBaseServer
+server.db.chain=LDAPBaseServer,UpdateDB
 server.db.nameSpace=dc=nam,dc=compinternal,dc=com
 server.db.weight=0
 server.db.LDAPBaseServer.className=net.sourceforge.myvd.inserts.jdbc.JdbcInsert
@@ -21,10 +21,13 @@ server.db.LDAPBaseServer.config.driver=org.hsqldb.jdbcDriver
 server.db.LDAPBaseServer.config.url=jdbc:hsqldb:file:%PROJ_DIR%/test/DBAdapter/dbdata
 server.db.LDAPBaseServer.config.user=sa
 server.db.LDAPBaseServer.config.password=
+server.db.LDAPBaseServer.config.maxCons=1
+server.db.LDAPBaseServer.config.maxConsIdle=100
 server.db.LDAPBaseServer.config.rdn=uid
 server.db.LDAPBaseServer.config.mapping=uid=username,givenName=first,sn=last,l=name
 server.db.LDAPBaseServer.config.objectClass=inetOrgPerson
 server.db.LDAPBaseServer.config.sql=SELECT Users.first,Users.last,Users.username, locations.name FROM Users, Locations INNER JOIN LocationMap ON Users.id = LocationMap.person AND LocationMap.location = Locations.id
+server.db.UpdateDB.className=net.sourceforge.myvd.test.jdbc.UpdateDB
 
 server.groupdb.chain=DBGroups,LDAPBaseServer
 server.groupdb.nameSpace=ou=groups,dc=compinternal,dc=com
@@ -35,6 +38,8 @@ server.groupdb.LDAPBaseServer.config.url=jdbc:hsqldb:file:%PROJ_DIR%/test/DBAdap
 server.groupdb.LDAPBaseServer.config.user=sa
 server.groupdb.LDAPBaseServer.config.password=
 server.groupdb.LDAPBaseServer.config.rdn=cn
+server.groupdb.LDAPBaseServer.config.maxCons=1
+server.groupdb.LDAPBaseServer.config.maxConsIdle=100
 server.groupdb.LDAPBaseServer.config.mapping=cn=name,uniquemember=username
 server.groupdb.LDAPBaseServer.config.objectClass=groupOfUniqueNames
 server.groupdb.LDAPBaseServer.config.sql=SELECT name,username FROM Users INNER JOIN GroupMap ON Users.id=GroupMap.user INNER JOIN Groups ON GroupMap.GroupID=Groups.id

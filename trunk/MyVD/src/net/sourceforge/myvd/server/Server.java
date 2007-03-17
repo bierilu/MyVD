@@ -156,7 +156,7 @@ public class Server {
 
 	private static void getDefaultLog() {
 		Properties props = new Properties();
-		props.put("log4j.rootLogger", "info,console");
+		props.put("log4j.net.sourceforge.myvd", "info,console");
 		props.put("log4j.appender.console","org.apache.log4j.ConsoleAppender");
 		props.put("log4j.appender.console.layout","org.apache.log4j.PatternLayout");
 		props.put("log4j.appender.console.layout.ConversionPattern","[%d][%t] %-5p %c{1} - %m%n");
