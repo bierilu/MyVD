@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -52,11 +53,13 @@ public class UpdateDB implements Insert {
 			// begin the transaction
 			con.setAutoCommit(false);
 			
+			HashMap<String,String> db2ldap = (HashMap<String, String>) chain.getRequest().get(JdbcInsert.MYVD_DB_DB2LDAP + "LDAPBaseServer");
+			
 			PreparedStatement ps = con.prepareStatement("INSERT INTO USERS (id,first,last,username) VALUES (?,?,?,?)");
 			ps.setInt(1, 5); //this is horrible practice
-			ps.setString(2, entry.getEntry().getAttribute("givenName").getStringValue());
-			ps.setString(3, entry.getEntry().getAttribute("sn").getStringValue());
-			ps.setString(4, entry.getEntry().getAttribute("uid").getStringValue());
+			ps.setString(2, entry.getEntry().getAttribute(db2ldap.get("first")).getStringValue());
+			ps.setString(3, entry.getEntry().getAttribute(db2ldap.get("last")).getStringValue());
+			ps.setString(4, entry.getEntry().getAttribute(db2ldap.get("username")).getStringValue());
 			
 			ps.executeUpdate();
 			
@@ -64,7 +67,7 @@ public class UpdateDB implements Insert {
 			
 			ps = con.prepareStatement("SELECT id FROM LOCATIONS WHERE name=?");
 			PreparedStatement inst = con.prepareStatement("INSERT INTO LOCATIONMAP (person,location) VALUES (?,?)");
-			LDAPAttribute l = entry.getEntry().getAttribute("l");
+			LDAPAttribute l = entry.getEntry().getAttribute(db2ldap.get("name"));
 			
 			if (l == null) {
 				con.rollback();
@@ -133,7 +136,7 @@ public class UpdateDB implements Insert {
 			// begin the transaction
 			con.setAutoCommit(false);
 			int id = getId(dn,con);
-			
+			HashMap<String,String> db2ldap = (HashMap<String, String>) chain.getRequest().get(JdbcInsert.MYVD_DB_DB2LDAP + "LDAPBaseServer");
 			
 			PreparedStatement ps = con.prepareStatement("DELETE FROM users WHERE id=?");
 			ps.setInt(1, id);
@@ -194,6 +197,8 @@ public class UpdateDB implements Insert {
 		try {
 			// begin the transaction
 			con.setAutoCommit(false);
+			HashMap<String,String> db2ldap = (HashMap<String, String>) chain.getRequest().get(JdbcInsert.MYVD_DB_DB2LDAP + "LDAPBaseServer");
+			
 			Iterator<LDAPModification> it = mods.iterator();
 			String uid = ((RDN) dn.getDN().getRDNs().get(0)).getValue();
 			int id = this.getId(dn, con);
@@ -201,15 +206,15 @@ public class UpdateDB implements Insert {
 				LDAPModification mod = it.next();
 				if (mod.getOp() == LDAPModification.REPLACE) {
 					String attributeName = mod.getAttribute().getName();
-					if (attributeName.equals("givenName") || attributeName.equals("sn")) {
-						PreparedStatement ps = con.prepareStatement("UPDATE USERS SET " + (attributeName.equals("givenName") ? "first" : "last") + "=? WHERE username=?");
+					if (attributeName.equals(db2ldap.get("first")) || attributeName.equals(db2ldap.get("last"))) {
+						PreparedStatement ps = con.prepareStatement("UPDATE USERS SET " + (attributeName.equals(db2ldap.get("first")) ? "first" : "last") + "=? WHERE username=?");
 						ps.setString(1, mod.getAttribute().getStringValue());
 						ps.setString(2, uid);
 						ps.executeUpdate();
 						ps.close();
-					} else if (attributeName.equals("uid")) {
+					} else if (attributeName.equals(db2ldap.get("username"))) {
 						throw new LDAPException("Can not modify the rdn",LDAPException.NOT_ALLOWED_ON_RDN,"Can not perform modify");	
-					} else if (attributeName.equals("l")) {
+					} else if (attributeName.equals(db2ldap.get("name"))) {
 						
 						PreparedStatement ps = con.prepareStatement("DELETE FROM locationmap WHERE person=?");
 						ps.setInt(1,id);
@@ -238,7 +243,7 @@ public class UpdateDB implements Insert {
 						pssel.close();
 					}
 				} else if (mod.getOp() == LDAPModification.DELETE) {
-					if (mod.getAttribute().getName().equals("l")) {
+					if (mod.getAttribute().getName().equals(db2ldap.get("name"))) {
 						String[] vals = mod.getAttribute().getStringValueArray();
 						if (vals.length == 0) {
 							PreparedStatement  ps = con.prepareStatement("DELETE FROM locationmap WHERE person=?");
@@ -271,7 +276,7 @@ public class UpdateDB implements Insert {
 						throw new LDAPException("Can not delete attribute " + mod.getAttribute().getName(),LDAPException.INVALID_ATTRIBUTE_SYNTAX,"");
 					}
 				}  else if (mod.getOp() == LDAPModification.ADD) {
-					if (mod.getAttribute().getName().equals("l")) {
+					if (mod.getAttribute().getName().equals(db2ldap.get("name"))) {
 						String[] vals = mod.getAttribute().getStringValueArray();
 						
 							PreparedStatement ps = con.prepareStatement("INSERT INTO locationmap (person,location) VALUES (?,?)");
