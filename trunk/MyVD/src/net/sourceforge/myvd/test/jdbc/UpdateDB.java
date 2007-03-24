@@ -40,7 +40,7 @@ import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
 
 public class UpdateDB implements Insert {
-
+	String name ;
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
 		Connection con = (Connection) chain.getRequest().get(JdbcInsert.MYVD_DB_CON + "LDAPBaseServer");
@@ -358,4 +358,7 @@ public class UpdateDB implements Insert {
 
 	}
 
+	public String getName() {
+		return this.name;
+	}
 }

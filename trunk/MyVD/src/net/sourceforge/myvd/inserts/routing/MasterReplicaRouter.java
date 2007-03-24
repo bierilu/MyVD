@@ -58,6 +58,7 @@ public class MasterReplicaRouter implements Insert {
 	HashSet<String> writeOnlySet;
 	String writeOnly;
 	
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
@@ -77,7 +78,7 @@ public class MasterReplicaRouter implements Insert {
 		writeOnlySet = new HashSet<String>();
 		writeOnlySet.add(writeOnly);
 		
-		
+		this.name = name;
 
 	}
 
@@ -184,4 +185,7 @@ public class MasterReplicaRouter implements Insert {
 
 	}
 
+	public String getName() {
+		return this.name;
+	}
 }

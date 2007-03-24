@@ -46,6 +46,7 @@ public class Util {
 			String[] vals2 = attrib2.getStringValueArray();
 			
 			if (vals2.length != vals1.length) {
+				System.out.println(attrib1.getName());
 				return false;
 			}
 			
@@ -58,6 +59,7 @@ public class Util {
 				}
 				
 				if (! found) {
+					System.out.println(attrib1.getName() + "/" + vals1[i]);
 					return false;
 				}
 			}

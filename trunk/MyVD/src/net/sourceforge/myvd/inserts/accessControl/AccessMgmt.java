@@ -54,9 +54,11 @@ import com.novell.ldap.util.DN;
 public class AccessMgmt implements Insert {
 
 	AccessMgr accessMgr;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		this.name = name;
 		accessMgr = new AccessMgr();
 		int numAcis = Integer.parseInt(props.getProperty("numACIs","0"));
 		
@@ -261,6 +263,10 @@ public class AccessMgmt implements Insert {
 		}
 		
 		
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 }

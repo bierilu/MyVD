@@ -17,6 +17,7 @@ package net.sourceforge.myvd.inserts.join;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
@@ -43,6 +44,7 @@ import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
 import net.sourceforge.myvd.chain.DeleteInterceptorChain;
 import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
+import net.sourceforge.myvd.chain.InterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchCompleteInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchEntryInterceptorChain;
@@ -74,6 +76,16 @@ import com.novell.ldap.util.DN;
 
 public class Joiner implements Insert {
 	
+	public static final String MYVD_JOIN_JATTRIBS = "MYVD_JOIN_JATTRIBS_";
+
+	public static final String MYVD_JOIN_JDN = "MYVD_JOIN_JDN_";
+
+	public static final String MYVD_JOIN_PDN = "MYVD_JOIN_PDN_";
+
+	private static  Filter OBJ_CLASS_FILTER = null;
+
+	public static final String PRIMARY_DN = "primaryDN";
+
 	public static final String PRIMARY = "PRIMARY";
 	
 	public static final String JOINED = "JOINED";
@@ -108,8 +120,21 @@ public class Joiner implements Insert {
 	
 	FilterNode joinFilter;
 	
+	String name;
+	
+	static {
+		try {
+			OBJ_CLASS_FILTER = new Filter("(objectClass=*)");
+		} catch (LDAPException e) {
+			//can't happen
+		}
+	}
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		
+		this.name = name;
+		
 		this.primaryNamespace = new DN(props.getProperty("primaryNamespace"));
 		this.explodedPrimaryNamespace = this.primaryNamespace.explodeDN(false);
 		
@@ -152,7 +177,9 @@ public class Joiner implements Insert {
 
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		this.loadRequestADD(chain);
+		chain.nextAdd(entry, constraints);
+		this.unloadRequest(chain);
 
 	}
 
@@ -174,7 +201,7 @@ public class Joiner implements Insert {
 		Results res = new Results(new Insert[0]);
 		ArrayList<Attribute> attribs = new ArrayList<Attribute>();
 		attribs.add(new Attribute("joinedDNs"));
-		searchChain.nextSearch(dn,new Int(0),new Filter("(objectClass=*)"),attribs,new Bool(false),res,new LDAPSearchConstraints());
+		searchChain.nextSearch(dn,new Int(0),Joiner.OBJ_CLASS_FILTER,attribs,new Bool(false),res,new LDAPSearchConstraints());
 		
 		res.start();
 		if (! res.hasMore() && primaryBindFailed) {
@@ -218,7 +245,9 @@ public class Joiner implements Insert {
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		this.loadRequest(chain, dn);
+		chain.nextDelete(dn, constraints);
+		this.unloadRequest(chain);
 
 	}
 
@@ -232,7 +261,9 @@ public class Joiner implements Insert {
 	public void modify(ModifyInterceptorChain chain, DistinguishedName dn,
 			ArrayList<LDAPModification> mods, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		this.loadRequest(chain, dn);
+		chain.nextModify(dn, mods, constraints);
+		this.unloadRequest(chain);
 
 	}
 
@@ -292,7 +323,7 @@ public class Joiner implements Insert {
 		try {
 			node = trimPrimaryFilter(filter.getRoot(),primaryAttribsToUse);
 			if (node == null) {
-				primaryFilter = new Filter("(objectClass=*)");
+				primaryFilter = Joiner.OBJ_CLASS_FILTER;
 				
 			} else {
 				primaryFilter = new Filter(node);
@@ -301,7 +332,7 @@ public class Joiner implements Insert {
 			
 			node = trimJoinedFilter(filter.getRoot(),joinedAttribsToUse);
 			if (node == null) {
-				joinedFilter = new Filter("(objectClass=*)");
+				joinedFilter = Joiner.OBJ_CLASS_FILTER;
 			} else {
 				joinedFilter = new Filter(node);
 			}
@@ -551,7 +582,9 @@ public class Joiner implements Insert {
 		boolean first = true;
 		
 		if (isPrimary) {
+			DN origPrimaryName = new DN(entry.getEntry().getDN());
 			entry.setDN(util.getLocalMappedDN(new DN(entry.getEntry().getDN()),this.explodedPrimaryNamespace,this.explodedLocalNameSpace));
+			entry.getEntry().getAttributeSet().add(new LDAPAttribute(Joiner.PRIMARY_DN,origPrimaryName.toString()));
 		}
 		
 		while (res.hasMore()) {
@@ -559,8 +592,10 @@ public class Joiner implements Insert {
 			if (! isPrimary) {
 				
 				LDAPEntry orig = entry.getEntry();
+				DN origPrimaryName = new DN(jentry.getEntry().getDN());
 				entry.setEntry(new LDAPEntry(util.getLocalMappedDN(new DN(jentry.getEntry().getDN()),this.explodedJoinedNamespace,this.explodedLocalNameSpace).toString(),jentry.getEntry().getAttributeSet()));
 				jentry.setEntry(orig);
+				entry.getEntry().getAttributeSet().add(new LDAPAttribute(Joiner.PRIMARY_DN,origPrimaryName.toString()));
 				res.finish();
 			} 
 			
@@ -704,6 +739,53 @@ public class Joiner implements Insert {
 		}
 		
 		
+	}
+	
+	
+	private void unloadRequest(InterceptorChain chain) {
+		chain.getRequest().remove(Joiner.MYVD_JOIN_JATTRIBS + name);
+		chain.getRequest().remove(Joiner.MYVD_JOIN_PDN + name);
+		chain.getRequest().remove(Joiner.MYVD_JOIN_JDN + name);
+	}
+	
+	private void loadRequest(InterceptorChain chain, DistinguishedName userdn) throws LDAPException {
+		SearchInterceptorChain nchain = chain.createSearchChain(chain.getPositionInChain(this));
+		Results res = new Results(null,chain.getPositionInChain(this));
+		ArrayList<net.sourceforge.myvd.types.Attribute> attribs = new ArrayList<net.sourceforge.myvd.types.Attribute>();
+		attribs.add(new Attribute("1.1"));
+		nchain.nextSearch(userdn, new Int(0), Joiner.OBJ_CLASS_FILTER, attribs, new Bool(false), res, new LDAPSearchConstraints());
+		
+		res.start();
+		if (! res.hasMore()) {
+			res.finish();
+			throw new LDAPException("Object not found",LDAPException.NO_SUCH_OBJECT,"");
+		}
+		
+		LDAPEntry entry = res.next().getEntry();
+		
+		LDAPAttribute pdn = entry.getAttribute("primaryDN");
+		chain.getRequest().put(Joiner.MYVD_JOIN_PDN + this.name, new DistinguishedName(pdn.getStringValue()));
+		
+		ArrayList<DistinguishedName> joinedDns = new ArrayList<DistinguishedName>();
+		LDAPAttribute jdn = entry.getAttribute("joinedDns");
+		
+		String[] vals = jdn.getStringValueArray();
+		for (int i=0;i<vals.length;i++) {
+			joinedDns.add(new DistinguishedName(vals[i]));
+		}
+		
+		chain.getRequest().put(Joiner.MYVD_JOIN_JDN + this.name, joinedDns);
+		
+		loadRequestADD(chain);
+		
+	}
+
+	private void loadRequestADD(InterceptorChain chain) {
+		chain.getRequest().put(Joiner.MYVD_JOIN_JATTRIBS + this.name, this.joinedAttrbutes.clone());
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

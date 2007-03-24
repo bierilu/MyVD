@@ -49,10 +49,12 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 public class TestglobalChain implements Insert {
 
+	String name;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		// TODO Auto-generated method stub
-
+		this.name = name;
 	}
 
 	public void add(AddInterceptorChain chain, Entry entry,
@@ -147,6 +149,10 @@ public class TestglobalChain implements Insert {
 		
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

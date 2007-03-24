@@ -64,12 +64,13 @@ public class KerberosInterceptor implements Insert {
 	private static final String CREATE_ENTRY = "createEntry";
 	String base;
 	boolean createEntry;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		base = nameSpace.getBase().getDN().toString();
 		createEntry = props.getProperty(KerberosInterceptor.CREATE_ENTRY) != null && props.getProperty(KerberosInterceptor.CREATE_ENTRY).equalsIgnoreCase("true");
-		
+		this.name = name;
 	}
 
 	public void add(AddInterceptorChain chain, Entry entry,
@@ -220,6 +221,10 @@ public class KerberosInterceptor implements Insert {
 		
 		
 		return new LDAPEntry(dn,attribSet);
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

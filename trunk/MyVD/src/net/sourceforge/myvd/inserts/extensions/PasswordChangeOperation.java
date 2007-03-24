@@ -63,6 +63,7 @@ public class PasswordChangeOperation implements Insert {
 	String[] explodedRemoteBase;
 	String[] explodedLocalBase;
 	NamingUtils utils;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
@@ -180,6 +181,10 @@ public class PasswordChangeOperation implements Insert {
 	public void postSearchComplete(PostSearchCompleteInterceptorChain chain, DistinguishedName base, Int scope, Filter filter, ArrayList<Attribute> attributes, Bool typesOnly, LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 		
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

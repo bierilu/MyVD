@@ -55,9 +55,10 @@ import com.novell.ldap.LDAPSearchConstraints;
 public class AttributeMapper implements Insert {
 
 	HashMap<String,String> remoteMap,localMap;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace) throws LDAPException {
-		// TODO Auto-generated method stub
+		this.name = name;
 		remoteMap = new HashMap<String,String>();
 		localMap = new HashMap<String,String>();
 		
@@ -210,6 +211,10 @@ public class AttributeMapper implements Insert {
 		}
 		
 		
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

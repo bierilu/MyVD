@@ -23,6 +23,7 @@ import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -94,6 +95,8 @@ public class JdbcInsert implements Insert {
 	
 	DN baseDN;
 	
+	boolean addBaseToFilter;
+	
 	
 	HashMap<String,String> ldap2db,db2ldap;
 	private String name;
@@ -161,6 +164,8 @@ public class JdbcInsert implements Insert {
 		this.searchSQL = "SELECT " + ldap2db.get(this.rdn.toLowerCase()) + " " + SQL.substring(SQL.indexOf(" FROM "));
 		
 		this.baseDN = new DN(base);
+		
+		this.addBaseToFilter = Boolean.parseBoolean(props.getProperty("addBaseToFilter","true"));
 
 	}
 
@@ -320,7 +325,7 @@ public class JdbcInsert implements Insert {
 			}
 			
 			
-		} else if (scope.getValue() == 2 && ! base.getDN().equals(this.baseDN)) {
+		} else if (this.addBaseToFilter && scope.getValue() == 2 && ! base.getDN().equals(this.baseDN)) {
 			filter = addBaseToFilter(base, filter);
 		}
 		
@@ -365,6 +370,7 @@ public class JdbcInsert implements Insert {
 
 	private Filter addBaseToFilter(DistinguishedName base, Filter filter) {
 		String rdnName,rdnVal;
+		
 		RDN rdn = (RDN) base.getDN().getRDNs().get(0); 
 		rdnName = rdn.getType();
 		rdnVal = rdn.getValue();
@@ -682,5 +688,21 @@ public class JdbcInsert implements Insert {
         
         return attribName;
     }
+	
+	public String getName() {
+		return this.name;
+	}
+
+	public HashMap<String, String> getDB2LDAPMap() {
+		return this.db2ldap;
+	}
+
+	public String getRDNField() {
+		return this.rdn;
+	}
+
+	public HashMap<String, String> getLDAP2DBMap() {
+		return this.ldap2db;
+	}
 
 }

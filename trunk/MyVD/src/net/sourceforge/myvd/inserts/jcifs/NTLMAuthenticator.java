@@ -228,4 +228,7 @@ public void bind(BindInterceptorChain chain, DistinguishedName dn,
 
 	}
 
+	public String getName() {
+		return this.name;
+	}
 }

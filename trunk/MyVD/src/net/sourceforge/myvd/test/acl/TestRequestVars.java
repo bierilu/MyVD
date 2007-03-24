@@ -32,6 +32,7 @@ import net.sourceforge.myvd.types.Results;
 
 public class TestRequestVars implements Insert {
 
+	String name;
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
 		// TODO Auto-generated method stub
@@ -53,7 +54,7 @@ public class TestRequestVars implements Insert {
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		// TODO Auto-generated method stub
-
+		this.name = name;
 	}
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
@@ -115,4 +116,7 @@ public class TestRequestVars implements Insert {
 
 	}
 
+	public String getName() {
+		return this.name;
+	}
 }

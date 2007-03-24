@@ -54,9 +54,11 @@ public class DBGroups implements Insert {
 	private String attribName;
 	private String suffix;
 	private String rdnAttrib;
-
+	String name;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		this.name = name;
 		this.attribName = props.getProperty("memberAttribute");
 		this.suffix = props.getProperty("suffix");
 		this.rdnAttrib = props.getProperty("rdn");
@@ -187,6 +189,10 @@ public class DBGroups implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

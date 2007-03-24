@@ -59,7 +59,7 @@ import com.novell.ldap.LDAPUrl;
 public class ReferallInterceptor implements Insert {
 
 	HashMap<String,String> hostToNS;
-	
+	String name;
 	/* (non-Javadoc)
 	 * @see net.sourceforge.myvd.inserts.Insert#configure(java.lang.String, java.util.Properties, net.sourceforge.myvd.core.NameSpace)
 	 */
@@ -77,6 +77,8 @@ public class ReferallInterceptor implements Insert {
 			
 			hostToNS.put(local.toLowerCase(),remote);
 		}
+		
+		this.name = name;
 
 	}
 	
@@ -306,6 +308,10 @@ public class ReferallInterceptor implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

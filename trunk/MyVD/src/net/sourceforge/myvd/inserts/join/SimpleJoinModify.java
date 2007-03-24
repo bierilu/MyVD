@@ -1,14 +1,18 @@
-package net.sourceforge.myvd.inserts.virtualHost;
+package net.sourceforge.myvd.inserts.join;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConstraints;
+import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
+import com.novell.ldap.util.DN;
 
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
@@ -22,6 +26,7 @@ import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
+import net.sourceforge.myvd.inserts.join.Joiner;
 import net.sourceforge.myvd.types.Attribute;
 import net.sourceforge.myvd.types.Bool;
 import net.sourceforge.myvd.types.DistinguishedName;
@@ -31,15 +36,22 @@ import net.sourceforge.myvd.types.Filter;
 import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
+import net.sourceforge.myvd.util.NamingUtils;
 
-public class VirtualHost implements Insert {
+public class SimpleJoinModify implements Insert {
+	
+	NameSpace ns;
 
-	HashMap<String,VHost> hosts;
 	String name;
+	
+	String joinerName;
+	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
-
+		
+		chain.nextAdd(entry, constraints);
+		
+		
 	}
 
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,
@@ -56,34 +68,26 @@ public class VirtualHost implements Insert {
 
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
-		
+		this.ns = nameSpace;
 		this.name = name;
-		String hostNames = props.getProperty("hosts");
-		StringTokenizer toker = new StringTokenizer(hostNames,",");
-		
-		while (toker.hasMoreTokens()) {
-			String hostName = toker.nextToken();
-			VHost host = new VHost();
-			String vhostid = props.getProperty("vhost." + host + ".hostname");
-			host.id = vhostid;
-			host.name = hostName;
-			String namespaces = props.getProperty("vhost." + host + ".namespaces");
-			
-			StringTokenizer toker1 = new StringTokenizer(namespaces,",");
-			
-			while (toker1.hasMoreTokens()) {
-				host.namespaces.add(toker1.nextToken());
-			}
-			
-			this.hosts.put(hostName, host);
-		}
 
+		this.joinerName = props.getProperty("joinerName");
 	}
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		DistinguishedName primaryDN = (DistinguishedName) chain.getRequest().get(Joiner.MYVD_JOIN_PDN + this.joinerName);
+		ArrayList<DistinguishedName> joinedDns = (ArrayList<DistinguishedName>) chain.getRequest().get(Joiner.MYVD_JOIN_JDN + this.joinerName);
+		HashSet joinAttribs = (HashSet) chain.getRequest().get(Joiner.MYVD_JOIN_JATTRIBS + this.joinerName);
 
+		
+		DeleteInterceptorChain nchain = null;
+		
+		nchain = new DeleteInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		nchain.nextDelete(primaryDN, constraints);
+		
+		nchain = new DeleteInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		nchain.nextDelete(joinedDns.get(0), constraints);
 	}
 
 	public void extendedOperation(ExetendedOperationInterceptorChain chain,
@@ -96,7 +100,37 @@ public class VirtualHost implements Insert {
 	public void modify(ModifyInterceptorChain chain, DistinguishedName dn,
 			ArrayList<LDAPModification> mods, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		
+		DistinguishedName primaryDN = (DistinguishedName) chain.getRequest().get(Joiner.MYVD_JOIN_PDN + this.joinerName);
+		ArrayList<DistinguishedName> joinedDns = (ArrayList<DistinguishedName>) chain.getRequest().get(Joiner.MYVD_JOIN_JDN + this.joinerName);
+		HashSet joinAttribs = (HashSet) chain.getRequest().get(Joiner.MYVD_JOIN_JATTRIBS + this.joinerName);
+		
+		ArrayList<LDAPModification> primaryMods = new ArrayList<LDAPModification>();
+		ArrayList<LDAPModification> joinedMods = new ArrayList<LDAPModification>();
+		
+		Iterator<LDAPModification> it = mods.iterator();
+		
+		while (it.hasNext()) {
+			LDAPModification mod = it.next();
+			
+			if (joinAttribs.contains(mod.getAttribute().getName())) {
+				joinedMods.add(mod);
+			} else {
+				primaryMods.add(mod);
+			}
+		}
+		
+		ModifyInterceptorChain modchain = null;
+		
+		if (primaryMods.size() != 0) {
+			modchain = new ModifyInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+			modchain.nextModify(primaryDN, primaryMods, constraints);
+		}
+		
+		if (joinedMods.size() != 0) {
+			modchain = new ModifyInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+			modchain.nextModify(joinedDns.get(0), joinedMods, constraints);
+		}
 
 	}
 
@@ -143,15 +177,4 @@ public class VirtualHost implements Insert {
 		return this.name;
 	}
 
-}
-
-class VHost {
-	
-	public VHost() {
-		this.namespaces = new ArrayList();
-	}
-	
-	String name;
-	String id;
-	ArrayList<String> namespaces;
 }
