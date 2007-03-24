@@ -59,10 +59,10 @@ import com.novell.ldap.LDAPSearchConstraints;
 public class ExceptionInterceptor implements Insert {
 
 	public static final String FLAG = "TEST_FLAG";
-	
+	String name;
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		this.name = name;
 
 	}
 
@@ -197,6 +197,10 @@ public class ExceptionInterceptor implements Insert {
 		chain.getRequest().put(FLAG,FLAG);
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 		chain.getRequest().remove(FLAG);
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

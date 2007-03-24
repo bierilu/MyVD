@@ -53,9 +53,11 @@ public class CreateSPMLIdentity implements Insert {
 	String idType;
 	String idAttrib;
 	boolean keepNameAsAttribute;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		this.name = name;
 		this.idType = props.getProperty("type");
 		this.idAttrib = props.getProperty("attribute").toLowerCase();
 		this.keepNameAsAttribute = props.getProperty("keepNameAsAttribute","").equalsIgnoreCase("1");
@@ -200,6 +202,10 @@ public class CreateSPMLIdentity implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

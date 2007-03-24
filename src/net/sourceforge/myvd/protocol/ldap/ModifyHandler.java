@@ -102,12 +102,11 @@ public class ModifyHandler extends LDAPOperation
         }
         catch (Throwable t) {
         	
-            String msg = "failed to add entry " + req.getName() + "; " + t.toString();
+            String msg = "failed to modify entry " + req.getName() + "; " + t.toString();
 
-            if ( LOG.isDebugEnabled() )
-            {
+            
                 msg += ":\n" + ExceptionUtils.getStackTrace( t );
-            }
+            
 
             ResultCodeEnum code;
 
@@ -119,7 +118,7 @@ public class ModifyHandler extends LDAPOperation
             result.setErrorMessage( msg );
             
 
-            session.write( result );
+            session.write( req.getResultResponse() );
             return;
         
     }

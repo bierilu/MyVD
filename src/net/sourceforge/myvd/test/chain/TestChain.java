@@ -50,10 +50,13 @@ import com.novell.ldap.util.DN;
 
 public class TestChain implements Insert {
 
+	String name;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		// TODO Auto-generated method stub
 
+		this.name = name;
 	}
 
 	public void add(AddInterceptorChain chain, Entry entry,
@@ -130,6 +133,10 @@ public class TestChain implements Insert {
 	public void postSearchComplete(PostSearchCompleteInterceptorChain chain, DistinguishedName base, Int scope, Filter filter, ArrayList<Attribute> attributes, Bool typesOnly, LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 		
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

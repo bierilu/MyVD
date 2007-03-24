@@ -47,6 +47,8 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 public interface Insert {
 	
+	public String getName();
+	
 	/**
 	 * Called to configure the current interceptor
 	 * @param name

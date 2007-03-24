@@ -71,9 +71,11 @@ public class DumpTransaction implements Insert {
 	
 	Logger logger;
 	String label;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		this.name = name;
 		this.logger = Logger.getLogger(DumpTransaction.class);
 		String tmpLogLevel = props.getProperty(LOG_LEVEL,"debug");
 		tmpLogLevel = tmpLogLevel.toUpperCase();
@@ -378,6 +380,10 @@ public class DumpTransaction implements Insert {
 			log("Post Search Complete Complete");
 		}
 
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

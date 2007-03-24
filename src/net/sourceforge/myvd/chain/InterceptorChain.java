@@ -94,11 +94,35 @@ public class InterceptorChain {
 		}
 	}
 	
+	public AddInterceptorChain createAddChain(int pos) {
+		if (this.router != null) {
+			return new AddInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new AddInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
+		}
+	}
+	
 	public BindInterceptorChain createBindChain() {
 		if (this.router != null) {
 			return new BindInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request,this.router);
 		} else {
 			return new BindInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request);
+		}
+	}
+	
+	public BindInterceptorChain createBindChain(int pos) {
+		if (this.router != null) {
+			return new BindInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new BindInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
+		}
+	}
+	
+	public CompareInterceptorChain createCompareChain(int pos) {
+		if (this.router != null) {
+			return new CompareInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new CompareInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
 		}
 	}
 	
@@ -118,11 +142,27 @@ public class InterceptorChain {
 		}
 	}
 	
+	public ModifyInterceptorChain createModifyChain(int pos) {
+		if (this.router != null) {
+			return new ModifyInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new ModifyInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
+		}
+	}
+	
 	public DeleteInterceptorChain createDeleteChain() {
 		if (this.router != null) {
 			return new DeleteInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request,this.router);
 		} else {
 			return new DeleteInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request);
+		}
+	}
+	
+	public DeleteInterceptorChain createDeleteChain(int pos) {
+		if (this.router != null) {
+			return new DeleteInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new DeleteInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
 		}
 	}
 	
@@ -134,11 +174,27 @@ public class InterceptorChain {
 		}
 	}
 	
+	public RenameInterceptorChain createRenameChain(int pos) {
+		if (this.router != null) {
+			return new RenameInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new RenameInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
+		}
+	}
+	
 	public ExetendedOperationInterceptorChain createExtendedOpChain() {
 		if (this.router != null) {
 			return new ExetendedOperationInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request,this.router);
 		} else {
 			return new ExetendedOperationInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request);
+		}
+	}
+	
+	public ExetendedOperationInterceptorChain createExtendedOpChain(int pos) {
+		if (this.router != null) {
+			return new ExetendedOperationInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new ExetendedOperationInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
 		}
 	}
 	
@@ -148,6 +204,24 @@ public class InterceptorChain {
 		} else {
 			return new SearchInterceptorChain(this.bindDN,this.password,this.pos,this.chain,this.session,this.request);
 		}
+	}
+	
+	public SearchInterceptorChain createSearchChain(int pos) {
+		if (this.router != null) {
+			return new SearchInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request,this.router);
+		} else {
+			return new SearchInterceptorChain(this.bindDN,this.password,pos,this.chain,this.session,this.request);
+		}
+	}
+	
+	public int getPositionInChain(Insert insert) {
+		for (int i=0;i<this.chain.length;i++) {
+			if (this.chain[i] == insert) {
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 	
 

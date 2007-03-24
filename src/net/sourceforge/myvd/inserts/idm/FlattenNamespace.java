@@ -77,8 +77,12 @@ public class FlattenNamespace implements Insert {
 	HashSet<String> attribsToRemove;
 	HashSet<String> attribsToStore;
 	
+	String name;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		
+		this.name = name;
 		String vals = props.getProperty("attribsToRemove");
 		StringTokenizer toker = new StringTokenizer(vals,",");
 		this.attribsToRemove = new HashSet<String>();
@@ -199,6 +203,10 @@ public class FlattenNamespace implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 
 }

@@ -68,9 +68,11 @@ public class AttributeCleaner implements Insert {
 
 	public static final Attribute ALL_ATTRIBS = new Attribute("*");
 	String key;
+	String name;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
+		this.name = name;
 		if (nameSpace == null) {
 			key = "ATTRIB_CLEANER." + name;
 		} else {
@@ -157,6 +159,7 @@ public class AttributeCleaner implements Insert {
 		ArrayList<Attribute> origAttributes = (ArrayList<Attribute>) chain.getRequest().get(key);
 		
 		attributes.clear();
+		
 		attributes.addAll(origAttributes);
 		
 		if (attributes.size() != 0 && ! attributes.contains(ALL_ATTRIBS)) {
@@ -182,5 +185,8 @@ public class AttributeCleaner implements Insert {
 		chain.nextPostSearchComplete(base,scope,filter,attributes,typesOnly,constraints);
 
 	}
-
+	
+	public String getName() {
+		return this.name;
+	}
 }

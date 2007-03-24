@@ -60,6 +60,8 @@ public class RootDSE implements Insert {
 	LDAPAttribute subSchemaSubEntry;
 	LDAPAttribute supportedLDAPVersions;
 	
+	String name;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		
@@ -100,6 +102,8 @@ public class RootDSE implements Insert {
 		this.supportedLDAPVersions = new LDAPAttribute("supportedLDAPVersion");
 		this.supportedLDAPVersions.addValue("2");
 		this.supportedLDAPVersions.addValue("3");
+		
+		this.name = name;
 
 	}
 
@@ -227,4 +231,7 @@ public class RootDSE implements Insert {
 
 	}
 
+	public String getName() {
+		return this.name;
+	}
 }

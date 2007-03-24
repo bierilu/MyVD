@@ -1,14 +1,18 @@
-package net.sourceforge.myvd.inserts.virtualHost;
+package net.sourceforge.myvd.inserts.join;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConstraints;
+import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
+import com.novell.ldap.util.DN;
 
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
@@ -31,14 +35,61 @@ import net.sourceforge.myvd.types.Filter;
 import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
+import net.sourceforge.myvd.util.NamingUtils;
 
-public class VirtualHost implements Insert {
+public class JoinAddFlatNS implements Insert {
 
-	HashMap<String,VHost> hosts;
 	String name;
+	String joinerName;
+	
+	NameSpace ns;
+	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		HashSet joinAttribs = (HashSet) chain.getRequest().get(Joiner.MYVD_JOIN_JATTRIBS + this.joinerName);
+		LDAPAttributeSet primaryAttribs = new LDAPAttributeSet(),joinedAttribs = new LDAPAttributeSet();
+		
+		LDAPAttributeSet toadd = entry.getEntry().getAttributeSet();
+		
+		Iterator it = toadd.iterator();
+		
+		while (it.hasNext()) {
+			LDAPAttribute attrib = (LDAPAttribute) it.next();
+			if (! joinAttribs.contains(attrib.getName())) {
+				primaryAttribs.add(attrib);
+			} else {
+				joinedAttribs.add(attrib);
+			}
+			
+			if (attrib.getName().equalsIgnoreCase("objectclass")) {
+				attrib.removeValue("appPerson");
+			} else if (attrib.getName().equals("uid")) {
+				primaryAttribs.add(attrib);
+				joinedAttribs.add(attrib);
+			}
+			
+			
+		}
+		
+		LDAPAttribute oc = new LDAPAttribute("objectClass","appPerson");
+		joinedAttribs.add(oc);
+		
+		NamingUtils nameutil = new NamingUtils();
+		
+		DN primaryDN = nameutil.getRemoteMappedDN(new DN(entry.getEntry().getDN()), new String[] {"o=mycompany","c=us"}, new String[] {"o=enterprise"});
+		
+		DN joinedDN = nameutil.getRemoteMappedDN(new DN(entry.getEntry().getDN()), new String[] {"ou=people","o=mycompany","c=us"}, new String[] {"o=appdb"});
+		
+		LDAPEntry primary = new LDAPEntry(primaryDN.toString(),primaryAttribs); 
+		LDAPEntry joined  = new LDAPEntry(joinedDN.toString(),joinedAttribs);
+		
+		AddInterceptorChain nchain = null;
+		
+		nchain = new AddInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		nchain.nextAdd(new Entry(primary), constraints);
+		
+		nchain = new AddInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		nchain.nextAdd(new Entry(joined),constraints);
 
 	}
 
@@ -56,27 +107,9 @@ public class VirtualHost implements Insert {
 
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
-		
 		this.name = name;
-		String hostNames = props.getProperty("hosts");
-		StringTokenizer toker = new StringTokenizer(hostNames,",");
-		
-		while (toker.hasMoreTokens()) {
-			String hostName = toker.nextToken();
-			VHost host = new VHost();
-			String vhostid = props.getProperty("vhost." + host + ".hostname");
-			host.id = vhostid;
-			host.name = hostName;
-			String namespaces = props.getProperty("vhost." + host + ".namespaces");
-			
-			StringTokenizer toker1 = new StringTokenizer(namespaces,",");
-			
-			while (toker1.hasMoreTokens()) {
-				host.namespaces.add(toker1.nextToken());
-			}
-			
-			this.hosts.put(hostName, host);
-		}
+		this.ns = nameSpace;
+		this.joinerName = props.getProperty("joinerName");
 
 	}
 
@@ -91,6 +124,10 @@ public class VirtualHost implements Insert {
 			throws LDAPException {
 		// TODO Auto-generated method stub
 
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	public void modify(ModifyInterceptorChain chain, DistinguishedName dn,
@@ -138,20 +175,5 @@ public class VirtualHost implements Insert {
 		// TODO Auto-generated method stub
 
 	}
-	
-	public String getName() {
-		return this.name;
-	}
 
-}
-
-class VHost {
-	
-	public VHost() {
-		this.namespaces = new ArrayList();
-	}
-	
-	String name;
-	String id;
-	ArrayList<String> namespaces;
 }
