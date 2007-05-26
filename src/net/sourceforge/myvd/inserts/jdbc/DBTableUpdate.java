@@ -1,3 +1,18 @@
+/*
+ * Copyright 2007 Marc Boorshtein 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * 
+ * 		http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ */
 package net.sourceforge.myvd.inserts.jdbc;
 
 import java.sql.Connection;
@@ -204,7 +219,7 @@ public class DBTableUpdate implements Insert {
 		try {
 			// begin the transaction
 			con.setAutoCommit(false);
-			HashMap<String,String> db2ldap = (HashMap<String, String>) chain.getRequest().get(JdbcInsert.MYVD_DB_DB2LDAP + this.dbInsertName);
+			HashMap<String,String> ldap2db = (HashMap<String, String>) chain.getRequest().get(JdbcInsert.MYVD_DB_LDAP2DB + this.dbInsertName);
 			
 			Iterator<LDAPModification> it = mods.iterator();
 			
@@ -217,7 +232,7 @@ public class DBTableUpdate implements Insert {
 				if (mod.getOp() != LDAPModification.REPLACE) {
 					throw new LDAPException("Only modify replace allowed",LDAPException.OBJECT_CLASS_VIOLATION,"");
 				}
-				sql += db2ldap.get( mod.getAttribute().getName()) + "=? ";
+				sql += ldap2db.get( mod.getAttribute().getName()) + "=? ";
 			}
 			
 			sql += " WHERE " + this.rdnField + "=?";

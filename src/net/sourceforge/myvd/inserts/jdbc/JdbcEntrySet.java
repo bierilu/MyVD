@@ -121,10 +121,14 @@ public class JdbcEntrySet implements EntrySet {
 			LDAPEntry tmpentry = new LDAPEntry(interceptor.rdn + "=" + rdnVal + "," + interceptor.base,ldapAttribs);
 			
 			boolean toReturn = false;
+			
+			System.out.println("entry to return : " + tmpentry.getDN());
 			if (filter.getRoot().checkEntry(tmpentry)) {
 				this.entry = tmpentry;
 				toReturn = true;
 			} 
+			
+			System.out.println("Filter : " + filter.getRoot().toString() + ";passed = " + toReturn);
 			
 			if (newRdnVal.equalsIgnoreCase(rdnVal)) {
 				this.hasMore = false;

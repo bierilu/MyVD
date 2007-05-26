@@ -23,6 +23,10 @@
       <item name="Insert Reference" href="inserts.html"/>
       <item name="Creating Custom Inserts" href="custominserts.html"/>
       <item name="Deploying MyVD" href="deployment.html" />
+      <item name="Integration Guides" href="">
+	      <item name="Databases" href="databases.html" />
+	  </item>
+      <item name="Joining Identity Sources" href="joins.html" />
       <item name="Running The Unit Tests" href="unittests.html"/>
       <item name="Downloads" href="downloads.html" />
       <item name="SourceForget.net Project Page" href="http://www.sourceforge.net/projects/myvd/"/>
