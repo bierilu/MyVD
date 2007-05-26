@@ -350,6 +350,7 @@ public class JdbcInsert implements Insert {
 		
 		
 		String querySQL = "SELECT * FROM (" + SQL + ") X WHERE " + this.dbRdn + " IN (" + mappedSearch + ") ORDER BY " + this.dbRdn;
+		System.out.println(querySQL);
 		try {
 			PreparedStatement ps = con.prepareStatement(querySQL);
 			ResultSet rs = ps.executeQuery();

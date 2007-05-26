@@ -138,6 +138,24 @@ scope-base#scope#grant/deny:permisions#scope#users
 |Configuration Options|mapping                                                  |Comma sepperated list of mappings in the form of "attribute.curvalue=newvalue".  For instance "objectClass.inetOrgPerson=user                                      |
 *---------------------+---------------------------------------------------------+--------------------------------------+
 
+* Composite Attribute Insert
+
+ The composite attribute insert is designed to create a singe attribute from multiple attributes.  Uses include creating a CN attribute from the givenName and sn as well as creating a uid from the same two attributes.
+
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.jdbc.CompositeAttrib        |                                      |
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                                   |                                      |
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|Configuration Options|attribute                                                |The name of the attribute that will be created (ie uid or cn)|
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|                     |components                                               |Comma seperated list of component attributes with a colon to determine how much of the attribute.  The length of the compoenent can be a number, fs for the first space, ls for the last space and * for the entire attribute.  ie "givenName:1,sn:*"|
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|                     |properCase                                               |true or false.  This configurate determines if the first letter of a component should be upper case on inbound transactions and lowercase in outbound transactions.|
+*---------------------+---------------------------------------------------------+--------------------------------------+
+|                     |objectClass                                              |The objectClass that this insert will apply to.|
+*---------------------+---------------------------------------------------------+--------------------------------------+
+
 * Create SPML Identity
 
  The SPML identity insert is designed to create an LDAP compliant DN for use with the LDAP insert in SPML mode.  SPML does not require a full DN as a name (it can for instance use a userid or an email address), but LDAP does.  This insert ensures that the DN  for the user object has the correct RDN for SPML while being LDAP compliant.
@@ -152,6 +170,21 @@ scope-base#scope#grant/deny:permisions#scope#users
 |                     |attribute                                              |The attribute that will act as the source for the RDN data|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |keepNameAsAttribute                                    |true or false if the rdn's attribute will remain on the user object|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* Database Table Update
+
+ This insert contains the logic to update a single database table.  It is configured BEHIND a database insert in order to utilize that insert's
+ connection pool and mapping.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.jdbc.DBTableUpdate        |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Add,Modify,Delete,Rename                               |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|tableName                                              |The name of the table to update in the database|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |dbInsertName                                           |The name of the insert used by this insert|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 
 
@@ -345,4 +378,19 @@ scope-base#scope#grant/deny:permisions#scope#users
 |                     |supportedSaslMechanisms|Comma seperated list|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |supportedExtensions|Comma seperated list|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* SetRDN Insert
+
+ This insert allows for the RDN of an entry to be changed.  For instance if the current RDN is the "CN" attribute this
+ insert can change it to the "uid" attribute.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.setrdn.SetRDN             |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search,Add,Modify,Delete,Rename,Bind                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|internalRDN|The current RDN attribute name.|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |externalRDN|The RDN attribute that will be presented|
 *---------------------+-------------------------------------------------------+--------------------------------------+

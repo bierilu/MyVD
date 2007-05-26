@@ -1,0 +1,22 @@
+server.listener.port=50983
+server.globalChain=
+
+#Test global
+
+server.nameSpaces=ExternalServer
+
+
+server.ExternalServer.chain=SetRDN,LDAPExternalServer
+server.ExternalServer.nameSpace=ou=external,o=mycompany,c=us
+server.ExternalServer.weight=15
+
+server.ExternalServer.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
+server.ExternalServer.SetRDN.config.internalRDN=cn
+server.ExternalServer.SetRDN.config.externalRDN=uid
+
+server.ExternalServer.LDAPExternalServer.className=net.sourceforge.myvd.inserts.ldap.LDAPInterceptor
+server.ExternalServer.LDAPExternalServer.config.host=localhost
+server.ExternalServer.LDAPExternalServer.config.port=12983
+server.ExternalServer.LDAPExternalServer.config.remoteBase=ou=external,dc=domain,dc=com
+server.ExternalServer.LDAPExternalServer.config.proxyDN=cn=admin,ou=external,dc=domain,dc=com
+server.ExternalServer.LDAPExternalServer.config.proxyPass=manager

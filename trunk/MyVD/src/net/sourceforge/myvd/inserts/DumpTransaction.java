@@ -261,7 +261,13 @@ public class DumpTransaction implements Insert {
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
 		
-		log("Begin Seach - Filter=" + filter.getValue() + ";Base=" + base.toString() + ";Scope=" + scope.getValue() + ";Attributes=" + attributes);
+		StringBuffer buf = new StringBuffer();
+		Iterator<Attribute> it = attributes.iterator();
+		while (it.hasNext()) {
+			buf.append(it.next().getAttribute().getName()).append(' ');
+		}
+		
+		log("Begin Seach - Filter=" + filter.getValue() + ";Base=" + base.toString() + ";Scope=" + scope.getValue() + ";Attributes=" + buf.toString());
 		
 		try {
 			chain.nextSearch(base,scope,filter,attributes,typesOnly,results,constraints);

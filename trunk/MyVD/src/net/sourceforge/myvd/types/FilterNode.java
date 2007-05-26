@@ -217,7 +217,24 @@ public class FilterNode implements Cloneable {
 		
 		switch (this.type) {
 			case PRESENCE : return entry.getAttributeSet().getAttribute(this.name) != null;
-			case SUBSTR: return false; //TODO Add substring support
+			case SUBSTR: 
+					   attribs = entry.getAttributeSet();
+					   attrib = attribs.getAttribute(this.name);
+					   
+					   if (attrib == null) {
+						   return false;
+					   }
+					   
+					   enumer = attrib.getStringValues();
+					   String compval = this.value.replaceAll("\\*", ".*");
+					   while (enumer.hasMoreElements()) {
+						   if (enumer.nextElement().toString().matches(compval)) {
+							   return true;
+						   }
+					   }
+					   
+					   return false;
+				   
 			case EQUALS :  attribs = entry.getAttributeSet();
 						   attrib = attribs.getAttribute(this.name);
 						   
