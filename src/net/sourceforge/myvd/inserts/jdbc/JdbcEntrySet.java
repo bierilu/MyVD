@@ -18,6 +18,7 @@ package net.sourceforge.myvd.inserts.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,9 +87,15 @@ public class JdbcEntrySet implements EntrySet {
 			
 			do {
 				Iterator<String> it = interceptor.db2ldap.keySet().iterator();
-				while (it.hasNext()) {
-					String dbField = it.next();
-					String ldapField = interceptor.db2ldap.get(dbField);
+				ResultSetMetaData rsmd = rs.getMetaData();
+				for (int i=1,m=rsmd.getColumnCount();i<=m;i++) {
+					String dbField = rsmd.getColumnName(i);
+					String ldapField = interceptor.db2ldap.get(dbField.toLowerCase());
+					
+					if (ldapField == null) {
+						continue;
+					}
+					
 					HashSet<String> attrib = attribs.get(ldapField);
 					if (attrib == null) {
 						attrib = new HashSet<String>();
@@ -99,6 +106,11 @@ public class JdbcEntrySet implements EntrySet {
 						attrib.add(value);
 					}
 				}
+				
+				/*while (it.hasNext()) {
+					String dbField = it.next();
+					
+				}*/
 				
 			} while (rs.next() && ((newRdnVal = rs.getString(interceptor.dbRdn)).equalsIgnoreCase(rdnVal)));
 			
@@ -122,17 +134,17 @@ public class JdbcEntrySet implements EntrySet {
 			
 			boolean toReturn = false;
 			
-			System.out.println("entry to return : " + tmpentry.getDN());
+			//System.out.println("entry to return : " + tmpentry.getDN());
 			if (filter.getRoot().checkEntry(tmpentry)) {
 				this.entry = tmpentry;
 				toReturn = true;
 			} 
 			
-			System.out.println("Filter : " + filter.getRoot().toString() + ";passed = " + toReturn);
+			//System.out.println("Filter : " + filter.getRoot().toString() + ";passed = " + toReturn);
 			
 			if (newRdnVal.equalsIgnoreCase(rdnVal)) {
 				this.hasMore = false;
-				con.close();
+				closeCon();
 			} 
 			
 			if (! toReturn) {
@@ -142,12 +154,9 @@ public class JdbcEntrySet implements EntrySet {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			try {
-				con.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		
+				closeCon();
+		
 			throw new LDAPException(e.toString(),LDAPException.OPERATIONS_ERROR,e.toString());
 		}
 	}
@@ -159,13 +168,28 @@ public class JdbcEntrySet implements EntrySet {
 	}
 
 	public void abandon() throws LDAPException {
-		try {
-			con.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		closeCon();
+		
 
+	}
+	
+	private void closeCon() {
+		try {
+			this.rs.close();
+		} catch (SQLException e) {
+			
+		}
+		try {
+			this.ps.close();
+		} catch (SQLException e) {
+			
+		}
+		try {
+			this.con.close();
+		} catch (SQLException e) {
+			
+		}
 	}
 
 }

@@ -122,13 +122,16 @@ public class SearchHandler extends LDAPOperation
         controls.setReturningAttributes( ids );
         controls.setDerefLinkFlag( true );*/
 
+        
+        Results res = new Results(this.globalChain);
+        
         try
         {
             
 
         	
             
-            Results res = new Results(this.globalChain);
+            
             StringBuffer buff = new StringBuffer();
             
             //req.getFilter().printToBuffer(buff);
@@ -174,6 +177,14 @@ public class SearchHandler extends LDAPOperation
                 resp.getLdapResult().setMatchedDn( req.getBase() );
                 it = Collections.singleton( resp ).iterator();*/
             	
+            	if (res != null) {
+                	try {
+    					res.finish();
+    				} catch (LDAPException e1) {
+    					SearchHandler.LOG.error("Error finishing results",e1);
+    				}
+                }
+            	
             	LdapResult result = req.getResultResponse().getLdapResult();
                 result.setResultCode( ResultCodeEnum.SUCCESS );
                 result.setErrorMessage( "" );
@@ -204,6 +215,13 @@ public class SearchHandler extends LDAPOperation
             }
             
             
+            if (res != null) {
+            	try {
+					res.finish();
+				} catch (LDAPException e1) {
+					SearchHandler.LOG.error("Error finishing results",e1);
+				}
+            }
             
             LdapResult result = req.getResultResponse().getLdapResult();
             result.setResultCode( rc );
@@ -229,6 +247,13 @@ public class SearchHandler extends LDAPOperation
             session.write(req.getResultResponse());
             
         } catch (Throwable t) {
+        	if (res != null) {
+            	try {
+					res.finish();
+				} catch (LDAPException e1) {
+					SearchHandler.LOG.error("Error finishing results",e1);
+				}
+            }
         	t.printStackTrace();
             String msg = "failed to search "  + t.toString();
             SearchResponseDone resp = new SearchResponseDoneImpl( req.getMessageId() );
