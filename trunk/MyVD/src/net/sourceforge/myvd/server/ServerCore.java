@@ -72,15 +72,21 @@ public class ServerCore {
 	
 	private String envVars(String localVal) {
 		int start = localVal.indexOf('%');
+		
 		int last = 0;
 		if (start == -1) {
 			return localVal;
 		}
 		
+		
+		
 		StringBuffer buf = new StringBuffer();
 		
 		while (start != -1) {
 			int end = localVal.indexOf('%',start + 1);
+			if (end == -1) {
+				return localVal;
+			}
 			buf.append(localVal.substring(last,start));
 			buf.append(System.getenv().get(localVal.substring(start + 1,end)));
 			last = end + 1;

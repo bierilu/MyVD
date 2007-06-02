@@ -23,14 +23,13 @@
       <item name="Insert Reference" href="inserts.html"/>
       <item name="Creating Custom Inserts" href="custominserts.html"/>
       <item name="Deploying MyVD" href="deployment.html" />
-      <item name="Integration Guides" href="">
+      <item name="Integration Guides" href="integration.html">
 	      <item name="Databases" href="databases.html" />
 	  </item>
-      <item name="Joining Identity Sources" href="joins.html" />
       <item name="Running The Unit Tests" href="unittests.html"/>
       <item name="Downloads" href="downloads.html" />
       <item name="SourceForget.net Project Page" href="http://www.sourceforge.net/projects/myvd/"/>
-      <item name="Mailing Lists" href="mail-lists.html"/>
+      <item name="Mailing Lists" href="mailinglists.html"/>
       <item name="Virtual Directory Resources" href="resources.html"/>
       <item name="License" href="license.html"/>
       <item name="FAQ" href="faq.html"/>

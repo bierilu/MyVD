@@ -260,7 +260,13 @@ scope-base#scope#grant/deny:permisions#scope#users
 |                     |objectClass|The objectClass for all octs created by this insert|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |sql|The SQL use to determine what objects this insert will generate.  This SQL must include all attributes included in the mapping configuration|
-*---------------------+-------------------------------------------------------+--------------------------------------+ 
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |maxCons|The maximum number of connections, default is 5|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |maxIdleCon|The maximum amount of time a connection can remain idle before closing|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |useSimple|true or false, utilizes the "simple" SQL, mutch better performance but only the value of multivalued attributes in the filter are returned|
+*---------------------+-------------------------------------------------------+--------------------------------------+
 
 * Joiner
 

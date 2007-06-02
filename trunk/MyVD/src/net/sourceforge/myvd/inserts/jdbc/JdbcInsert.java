@@ -78,7 +78,7 @@ public class JdbcInsert implements Insert {
 	String url;
 	String user;
 	String pwd;
-	
+	boolean useSimple;
 	
 	int maxCons;
 	int maxIdleCons;
@@ -100,6 +100,10 @@ public class JdbcInsert implements Insert {
 	
 	HashMap<String,String> ldap2db,db2ldap;
 	private String name;
+	private boolean hasWhere;
+	private String whereClause;
+	private boolean hasPostWhere;
+	private Object postWhere;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
@@ -160,8 +164,49 @@ public class JdbcInsert implements Insert {
 		this.rdn = props.getProperty("rdn");
 		this.dbRdn = ldap2db.get(rdn);
 		
+		this.useSimple = props.getProperty("useSimple","false").equalsIgnoreCase("true");
 		this.SQL = props.getProperty("sql");
-		this.searchSQL = "SELECT " + ldap2db.get(this.rdn.toLowerCase()) + " " + SQL.substring(SQL.indexOf(" FROM "));
+		int whereEnd;
+		
+		if (this.useSimple) {
+			this.searchSQL = this.SQL.substring(this.SQL.toLowerCase().indexOf(" from "));
+			
+			int whereBegin = this.searchSQL.toLowerCase().indexOf(" where ");
+			
+			whereEnd = this.searchSQL.toLowerCase().indexOf(" order ");
+			this.hasPostWhere = true;
+			
+			if (whereEnd == -1) {
+				whereEnd = this.searchSQL.toLowerCase().indexOf(" group ");
+			}
+			
+			if (whereEnd == -1) {
+				this.hasPostWhere = false;
+				whereEnd = this.searchSQL.length();
+			}
+			
+			
+			if (this.hasPostWhere) {
+				this.postWhere = this.searchSQL.substring(whereEnd);
+			}
+			
+			if (whereBegin != -1) {
+				this.hasWhere = true;
+				
+				this.whereClause = "(" + this.searchSQL.substring(whereBegin + " where ".length(),whereEnd) + ") ";
+				
+				
+				this.searchSQL = this.searchSQL.substring(0,whereBegin);
+			} else {
+				if (this.hasPostWhere) {
+					this.searchSQL = this.searchSQL.substring(0,whereEnd);
+				}
+				this.hasWhere = false;
+			}
+			
+		} else {	
+			this.searchSQL = "SELECT " + ldap2db.get(this.rdn.toLowerCase()) + " " + SQL.substring(SQL.indexOf(" FROM "));
+		}
 		
 		this.baseDN = new DN(base);
 		
@@ -339,18 +384,63 @@ public class JdbcInsert implements Insert {
 		}
 		
 		String mappedSearch;
+		String querySQL = "";
 		
-		if (filter.getRoot().getType() == FilterType.PRESENCE && filter.getRoot().getName().equalsIgnoreCase("objectClass")) {
-			mappedSearch = this.searchSQL;
+		if (this.useSimple) {
+			StringBuffer buf = new StringBuffer();
+			if (filter.getRoot().getType() == FilterType.PRESENCE && filter.getRoot().getName().equalsIgnoreCase("objectClass")) {
+				buf.append("SELECT ");
+				
+				createSELECT(attributes, buf);
+				
+				buf.append(this.searchSQL);
+				
+				if (this.hasWhere) {
+					buf.append(" WHERE ").append(this.whereClause);
+				} 
+				
+				if (this.hasPostWhere) {
+					buf.append(this.postWhere);
+				}
+				
+				querySQL = buf.toString();
+			} else {
+				StringBuffer filterString = new StringBuffer();
+				this.stringFilter(filter.getRoot(),filterString);
+				buf.append("SELECT ");
+				
+				createSELECT(attributes, buf);
+				
+				buf.append(this.searchSQL).append(' ');
+				
+				if (this.hasWhere) {
+					buf.append(" WHERE ").append(this.whereClause).append(" AND (").append(filterString.toString()).append(") ");
+				} else {
+					buf.append(" WHERE ").append(filterString.toString()).append(" ");
+				}
+				
+				if (this.hasPostWhere) {
+					buf.append(this.postWhere);
+				}
+				
+				querySQL = buf.toString();
+				
+				
+			}
 		} else {
-			StringBuffer filterString = new StringBuffer();
-			this.stringFilter(filter.getRoot(),filterString);
-			mappedSearch = this.searchSQL + " WHERE " + filterString.toString();
+			if (filter.getRoot().getType() == FilterType.PRESENCE && filter.getRoot().getName().equalsIgnoreCase("objectClass")) {
+				mappedSearch = this.searchSQL;
+			} else {
+				StringBuffer filterString = new StringBuffer();
+				this.stringFilter(filter.getRoot(),filterString);
+				mappedSearch = this.searchSQL + " WHERE " + filterString.toString();
+			}
+			
+			
+			querySQL = "SELECT * FROM (" + SQL + ") X WHERE " + this.dbRdn + " IN (" + mappedSearch + ") ORDER BY " + this.dbRdn;
 		}
-		
-		
-		String querySQL = "SELECT * FROM (" + SQL + ") X WHERE " + this.dbRdn + " IN (" + mappedSearch + ") ORDER BY " + this.dbRdn;
-		System.out.println(querySQL);
+		//System.out.println(querySQL);
+		//System.err.println(querySQL);
 		try {
 			PreparedStatement ps = con.prepareStatement(querySQL);
 			ResultSet rs = ps.executeQuery();
@@ -367,6 +457,39 @@ public class JdbcInsert implements Insert {
 		
 		
 
+	}
+
+	private void createSELECT(ArrayList<Attribute> attributes, StringBuffer buf) {
+		Iterator<Attribute> it = attributes.iterator();
+		
+		boolean foundRDN = false;
+		
+		if (attributes.size() == 0) {
+			buf.append(" * ");
+			return;
+		}
+		
+		while (it.hasNext()) {
+			String attrib = it.next().getAttribute().getName();
+			
+			if (attrib.equalsIgnoreCase(this.rdn)) {
+				foundRDN = true;
+			}
+			
+			if (attrib.equalsIgnoreCase("*")) {
+				buf.append("* ");
+			} else {
+				buf.append(ldap2db.get(attrib.toLowerCase())).append(' ');
+			}
+			
+			if (it.hasNext() || ! foundRDN) {
+				buf.append(',');
+			}
+		}
+		
+		if (! foundRDN) {
+			buf.append(this.ldap2db.get(this.rdn.toLowerCase())).append(' ');
+		}
 	}
 
 	private Filter addBaseToFilter(DistinguishedName base, Filter filter) {

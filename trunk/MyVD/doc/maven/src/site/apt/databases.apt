@@ -33,7 +33,7 @@ Using Databases
  First lets setup a simple database insert.  The database insert has the following configuration
  
 *---------------------+-------------------------------------------------------+--------------------------------------+
-|Class Name           |net.sourceforge.myvd.inserts.jdbc.JdbcInsert      |                                      |
+|Class Name           |net.sourceforge.myvd.inserts.jdbc.JdbcInterceptor      |                                      |
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |Scope                |Search                                               |                                      |
 *---------------------+-------------------------------------------------------+--------------------------------------+
@@ -52,7 +52,14 @@ Using Databases
 |                     |objectClass|The objectClass for all octs created by this insert|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |sql|The SQL use to determine what objects this insert will generate.  This SQL must include all attributes included in the mapping configuration|
-*---------------------+-------------------------------------------------------+--------------------------------------+ 
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |maxCons|The maximum number of connections, default is 5|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |maxIdleCon|The maximum amount of time a connection can remain idle before closing|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |useSimple|true or false, utilizes the "simple" SQL, mutch better performance but only the value of multivalued attributes in the filter are returned|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
  
  We are going to integrate a simple database table that will contain the following columns
  
@@ -424,3 +431,16 @@ server.DBEmployeesUidRDN.TableUpdate.config.dbInsertName=DB
  concerned on how to store passwords and authenticate users.  Just as with performing writes to the database, MyVD can pass a custom insert the 
  database connection and mapping information allowing the custom insert to perform the authentication in whatever manner is required by the database.
  
+* Using "Simple" SQL Mode
+ 
+ Databases and directories store data in very different ways.  Databases store data in tables that "relate" to each other where as a directories store
+ data as objects.  This means that databases don't store mutliple value for a field in a given row where a directory can.  In order to handle this the
+ jdbc insert utilizes a subquery to ensure that all attribute values are returned MyVD uses sub-selects to perform queries.  The basic of the SQL is:
+ 
++----------+
+ SELECT fields FROM (SQL) WHERE rdnField IN (SELECT id FROM ... WHERE ...)
++----------+
+ 
+ Depending on how your tables are indexed this can be very slow.  If you aren't able to index the proper fields or there are only single value
+ attributes comming from the database you can use the "useSimple" flag on the jdbc insert to utilize a simpler SQL statement.  This will improve 
+ performance but may sacrifice data consistency based on the type of filters being used.

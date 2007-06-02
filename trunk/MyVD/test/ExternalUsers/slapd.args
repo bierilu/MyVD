@@ -1,0 +1,1 @@
+/usr/sbin/slapd -d 1 -h ldap://:12983/ -f /home/mlb/workspace/MyVD/test/ExternalUsers/slapd-gen.conf 
