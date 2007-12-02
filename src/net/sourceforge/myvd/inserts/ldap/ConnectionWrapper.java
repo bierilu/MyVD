@@ -15,6 +15,8 @@
  */
 package net.sourceforge.myvd.inserts.ldap;
 
+import org.apache.log4j.Logger;
+
 import net.sourceforge.myvd.types.Bool;
 import net.sourceforge.myvd.types.Password;
 
@@ -30,7 +32,7 @@ public class ConnectionWrapper {
 	DN bindDN;
 	Password pass;
 	LDAPInterceptor interceptor;
-	
+	static Logger logger = Logger.getLogger(ConnectionWrapper.class);
 	
 	
 	public ConnectionWrapper(LDAPInterceptor interceptor) {
@@ -54,10 +56,22 @@ public class ConnectionWrapper {
 	
 	public void bind(DN bindDN,Password password) throws LDAPException {
 		
+
 		
-		con.bind(3,bindDN.toString(),password.getValue());
-		this.bindDN = bindDN;
-		this.pass = password;
+		
+		
+		try {
+			LDAPInterceptor.logger.info("CREDS : " + bindDN.toString() + " " + password);
+			
+			con.bind(3,bindDN.toString(),password.getValue());
+			this.bindDN = bindDN;
+			this.pass = password;
+		} catch (LDAPException e) {
+			this.bindDN = null;
+			this.pass = null;
+			throw e;
+		}
+		
 	}
 	
 	public LDAPConnection getConnection() {

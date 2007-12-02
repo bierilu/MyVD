@@ -54,7 +54,13 @@ public class Attribute {
 		return attrib.getAttribute().getName().toLowerCase().equals(this.attribute.getName().toLowerCase());
 	}
 	
-	
+	public String toString() {
+		if (this.attribute != null) {
+			return this.attribute.getName();
+		} else {
+			return "NONE";
+		}
+	}
 	
 	
 }

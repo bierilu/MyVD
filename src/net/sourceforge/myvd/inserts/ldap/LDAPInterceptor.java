@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
@@ -38,6 +40,7 @@ import net.sourceforge.myvd.types.DistinguishedName;
 import net.sourceforge.myvd.types.Entry;
 import net.sourceforge.myvd.types.ExtendedOperation;
 import net.sourceforge.myvd.types.Filter;
+import net.sourceforge.myvd.types.FilterNode;
 import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
@@ -59,6 +62,8 @@ import com.novell.ldap.util.RDN;
 
 public class LDAPInterceptor implements Insert {
 
+	public static final String NO_MAP_BIND_DN = "NO_MAP_BIND_DN_";
+	static Logger logger = Logger.getLogger(LDAPInterceptor.class);
 	String host;
 	int port;
 	String name;
@@ -75,9 +80,14 @@ public class LDAPInterceptor implements Insert {
 	
 	boolean isSoap;
 	
+	boolean passThroughBindOnly;
+	boolean ignoreRefs;
+	
 	NamingUtils utils;
 	
 	LDAPConnectionPool pool;
+	
+	String noMapBindFlag;
 	
 	public void configure(String name, Properties props,NameSpace nameSpace) throws LDAPException {
 		this.name = name;
@@ -106,13 +116,26 @@ public class LDAPInterceptor implements Insert {
 		
 		this.pool = new LDAPConnectionPool(this, Integer.parseInt(props.getProperty("minimumConnections","5")), Integer.parseInt(props.getProperty("maximumConnections","30")), Integer.parseInt(props.getProperty("maximumRetries","5")),this.type,this.spmlImpl,this.isSoap);
 		
+		this.passThroughBindOnly = props.getProperty("passBindOnly","false").equalsIgnoreCase("true");
+		this.ignoreRefs = props.getProperty("ignoreRefs","false").equalsIgnoreCase("true");
+		
 		this.utils = new NamingUtils();
+		
+		this.noMapBindFlag = LDAPInterceptor.NO_MAP_BIND_DN + this.name;
 	}
 	
 	private ConnectionWrapper getConnection(DN bindDN,Password pass,boolean force,DN base,HashMap<Object,Object> session) throws LDAPException {
+		return this.getConnection(bindDN, pass, force, base, session, false);
+	}
+	
+	private ConnectionWrapper getConnection(DN bindDN,Password pass,boolean force,DN base,HashMap<Object,Object> session,boolean forceBind) throws LDAPException {
 		ConnectionWrapper wrapper = null;
 		
-		if (((ArrayList<String>) session.get(SessionVariables.BOUND_INTERCEPTORS)).contains(this.name)) {
+		logger.info("Bound inserts : " + session.get(SessionVariables.BOUND_INTERCEPTORS));
+		
+		if (this.passThroughBindOnly && ! force) {
+			wrapper = pool.getConnection(new DN(this.proxyDN),new Password(this.proxyPass),force);
+		} else if (forceBind || (! this.passThroughBindOnly && ((ArrayList<String>) session.get(SessionVariables.BOUND_INTERCEPTORS)).contains(this.name))) {
 			wrapper = pool.getConnection(bindDN,pass,force);
 		} else {
 			wrapper = pool.getConnection(new DN(this.proxyDN),new Password(this.proxyPass),force);
@@ -144,7 +167,15 @@ public class LDAPInterceptor implements Insert {
 		
 		System.out.println("binddn: " + chain.getBindDN());
 		
-		ConnectionWrapper wrapper = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,new DN(entry.getEntry().getDN()),chain.getSession());
+		ConnectionWrapper wrapper;
+		
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,new DN(entry.getEntry().getDN()),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,new DN(entry.getEntry().getDN()),chain.getSession());
+		}
+		
+		
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -162,9 +193,22 @@ public class LDAPInterceptor implements Insert {
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,
 			Password pwd, LDAPConstraints constraints) throws LDAPException {
 		
-		DN mappedDN = this.getRemoteMappedDN(dn.getDN());
 		
-		ConnectionWrapper wrapper = this.getConnection(mappedDN,pwd,true,dn.getDN(),chain.getSession());
+		
+		
+		DN mappedDN;
+		
+		
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			mappedDN = dn.getDN();
+		} else {
+			mappedDN = this.getRemoteMappedDN(dn.getDN());
+		}
+		
+		
+		
+		
+		ConnectionWrapper wrapper = this.getConnection(mappedDN,pwd,true,dn.getDN(),chain.getSession(),true);
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -181,7 +225,16 @@ public class LDAPInterceptor implements Insert {
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn,
 			Attribute attrib, LDAPConstraints constraints) throws LDAPException {
 		
-		ConnectionWrapper wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		ConnectionWrapper wrapper;
+		
+		
+		
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		}
+		
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -194,7 +247,13 @@ public class LDAPInterceptor implements Insert {
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,LDAPConstraints constraints) throws LDAPException {
 		
-		ConnectionWrapper wrapper = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		ConnectionWrapper wrapper;// = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		}
 		
 		
 		try {
@@ -210,7 +269,13 @@ public class LDAPInterceptor implements Insert {
 			ExtendedOperation op, LDAPConstraints constraints)
 			throws LDAPException {
 
-		ConnectionWrapper wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,new DN(),chain.getSession());
+		ConnectionWrapper wrapper;// = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,new DN(),chain.getSession());
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,op.getDn().getDN(),chain.getSession());
+		} else {
+			
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,op.getDn().getDN(),chain.getSession());
+		}
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -228,7 +293,12 @@ public class LDAPInterceptor implements Insert {
 		LDAPModification[] ldapMods = new LDAPModification[mods.size()];
 		System.arraycopy(mods.toArray(),0,ldapMods,0,ldapMods.length);
 		
-		ConnectionWrapper wrapper = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		ConnectionWrapper wrapper;// = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		}
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -251,7 +321,14 @@ public class LDAPInterceptor implements Insert {
 			attribs[i] = it.next().getAttribute().getName();
 		}
 		
-		ConnectionWrapper wrapper = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,base.getDN(),chain.getSession());
+		
+		
+		ConnectionWrapper wrapper;// = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,base.getDN(),chain.getSession());
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,base.getDN(),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,base.getDN(),chain.getSession());
+		}
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -290,7 +367,12 @@ public class LDAPInterceptor implements Insert {
 		String oldDN = this.getRemoteMappedDN(dn.getDN()).toString();
 		
 		
-		ConnectionWrapper wrapper = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		ConnectionWrapper wrapper;  //= this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		}
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -306,7 +388,12 @@ public class LDAPInterceptor implements Insert {
 		String oldDN = this.getRemoteMappedDN(dn.getDN()).toString();
 		String newPDN = this.getRemoteMappedDN(newParentDN.getDN()).toString();
 		
-		ConnectionWrapper wrapper = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		ConnectionWrapper wrapper;// = this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		if (chain.getSession().containsKey(noMapBindFlag)) {
+			wrapper = this.getConnection(chain.getBindDN().getDN(),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		} else {
+			wrapper =  this.getConnection(this.getRemoteMappedDN(chain.getBindDN().getDN()),chain.getBindPassword(),false,dn.getDN(),chain.getSession());
+		}
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
@@ -324,6 +411,17 @@ public class LDAPInterceptor implements Insert {
 
 	public void postSearchComplete(PostSearchCompleteInterceptorChain chain, DistinguishedName base, Int scope, Filter filter, ArrayList<Attribute> attributes, Bool typesOnly, LDAPSearchConstraints constraints) throws LDAPException {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	public boolean isIgnoreRefs() {
+		return this.ignoreRefs;
+	}
+
+	public void shutdown() {
+		logger.info("Closing down all pools...");
+		this.pool.shutDownPool();
+		logger.info("Pool shutdown...");
 		
 	}
 

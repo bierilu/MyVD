@@ -69,6 +69,7 @@ public class TestGetACI extends TestCase {
 		if (aci == null || aci.getNum() != 5) {
 			fail("invalid aci : " + aci);
 		}
+		
 	}
 	
 	public void testBindUserEntriesFail() throws Exception {

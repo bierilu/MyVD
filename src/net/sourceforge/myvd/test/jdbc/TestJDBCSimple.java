@@ -153,6 +153,8 @@ public class TestJDBCSimple extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries " + res.next().toString() );
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -186,6 +188,76 @@ public class TestJDBCSimple extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
+	}
+	
+	public void testSimpleCaseFilter() throws LDAPException {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		Util util = new Util();
+		LDAPSearchResults res = con.search("dc=nam,dc=compinternal,dc=com",2,"(Sn=Alberts)",new String[0],false);
+		
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","aalberts"));
+		attribs.add(new LDAPAttribute("givenname","Al"));
+		attribs.add(new LDAPAttribute("sn","Alberts"));
+		
+		LDAPEntry entry = new LDAPEntry("uid=aalberts,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		if (! res.hasMore()) {
+			fail("entries not returned");
+			return;
+		}
+		
+		if (! util.compareEntry(entry,res.next())) {
+			fail("1st entry failed");
+		}
+		
+		
+		
+		
+		
+		if (res.hasMore()) {
+			fail("too many entries");
+		}
+		
+		con.disconnect();
+	}
+	
+	public void testSimpleCaseAttrib() throws LDAPException {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		Util util = new Util();
+		LDAPSearchResults res = con.search("dc=nam,dc=compinternal,dc=com",2,"(Sn=Alberts)",new String[] {"objectclass","UiD","givenNamE","Sn"},false);
+		
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","aalberts"));
+		attribs.add(new LDAPAttribute("givenname","Al"));
+		attribs.add(new LDAPAttribute("sn","Alberts"));
+		
+		LDAPEntry entry = new LDAPEntry("uid=aalberts,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		if (! res.hasMore()) {
+			fail("entries not returned");
+			return;
+		}
+		
+		if (! util.compareEntry(entry,res.next())) {
+			fail("1st entry failed");
+		}
+		
+		
+		
+		
+		
+		if (res.hasMore()) {
+			fail("too many entries");
+		}
+		
+		con.disconnect();
 	}
 	
 	public void testAllUsersWhereOrder() throws LDAPException {
@@ -250,6 +322,8 @@ public class TestJDBCSimple extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries " + res.next().toString() );
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -283,6 +357,8 @@ public class TestJDBCSimple extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testAllUsersWhereNoOrder() throws LDAPException {
@@ -349,6 +425,8 @@ public class TestJDBCSimple extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries " + res.next().toString() );
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -382,6 +460,8 @@ public class TestJDBCSimple extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	

@@ -29,9 +29,9 @@ import junit.framework.TestCase;
 
 public class TestRouter extends TestCase {
 	public void testAddNamespaces() {
-		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null);
-		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null);
-		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null);
+		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null,false);
+		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null,false);
+		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
 		Router router = new Router(new Insert[0]);
@@ -44,9 +44,9 @@ public class TestRouter extends TestCase {
 	}
 	
 	public void testAddNamespacesRev() {
-		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null);
-		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null);
-		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null);
+		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null,false);
+		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null,false);
+		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
 		Router router = new Router(new Insert[0]);
@@ -145,9 +145,9 @@ public class TestRouter extends TestCase {
 	}
 	
 	public void testSearchNamespaces() {
-		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null);
-		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null);
-		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null);
+		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null,false);
+		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null,false);
+		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
 		Router router = new Router(new Insert[0]);
@@ -163,9 +163,9 @@ public class TestRouter extends TestCase {
 	}
 	
 	public void testSearchNamespacesRev() {
-		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null);
-		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null);
-		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null);
+		NameSpace root = new NameSpace("root",new DistinguishedName("dc=domain,dc=com"),0,null,false);
+		NameSpace internal = new NameSpace("internal",new DistinguishedName("ou=internal,dc=domain,dc=com"),10,null,false);
+		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
 		Router router = new Router(new Insert[0]);

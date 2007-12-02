@@ -87,7 +87,7 @@ public class TestLDAP extends TestCase {
 		props.put("proxyDN", "cn=admin,dc=domain,dc=com");
 		props.put("proxyPass", "manager");
 		interceptor.configure("TestLDAP", props, new NameSpace("LDAP",
-				new DistinguishedName(new DN("o=mycompany,c=us")), 0, null));
+				new DistinguishedName(new DN("o=mycompany,c=us")), 0, null,false));
 	}
 
 	public void testSearch() throws LDAPException {
@@ -197,6 +197,8 @@ public class TestLDAP extends TestCase {
 		if (!Util.compareEntry(result, entry)) {
 			fail("Entry not correct : " + result.toString());
 		}
+		
+		con.disconnect();
 
 	}
 
@@ -240,6 +242,8 @@ public class TestLDAP extends TestCase {
 		if (!Util.compareEntry(result, entry)) {
 			fail("Entry not correct : " + result.toString());
 		}
+		
+		con.disconnect();
 	}
 
 	public void testBind() {
@@ -297,6 +301,8 @@ public class TestLDAP extends TestCase {
 			}
 
 		}
+		
+	
 	}
 
 	public void testDelete() throws LDAPException {
@@ -325,6 +331,8 @@ public class TestLDAP extends TestCase {
 		} catch (LDAPException e) {
 
 		}
+		
+		con.disconnect();
 
 	}
 
@@ -362,6 +370,8 @@ public class TestLDAP extends TestCase {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testRenameRDN() throws LDAPException {
@@ -398,6 +408,8 @@ public class TestLDAP extends TestCase {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 
 	public void testExtendedOp() throws IOException, LDAPException {
@@ -453,6 +465,8 @@ public class TestLDAP extends TestCase {
 			fail("Invalid error " + e.toString());
 
 		}
+		
+	
 	}
 
 	protected void tearDown() throws Exception {

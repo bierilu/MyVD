@@ -25,6 +25,8 @@ import java.util.TreeMap;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
+import org.apache.log4j.Logger;
+
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
@@ -60,6 +62,8 @@ import com.novell.ldap.util.RDN;
 
 
 public class Router {
+	static Logger logger = Logger.getLogger(Router.class);
+	
 	/** the backends keyed by normalized suffix strings */
     LinkedHashMap<String,NameSpace> backends = new LinkedHashMap<String,NameSpace>();
 	
@@ -113,7 +117,9 @@ public class Router {
 		
 		if (! chain.getRequest().containsKey(key)) {
 			
-    		Level level = this.getLevel(new DN(dn));
+    		
+			logger.info("DN : " + dn);
+			Level level = this.getLevel(new DN(dn));
         	
         	if (level == null) {
         		throw new LDAPException(LDAPException.resultCodeToString(LDAPException.NO_SUCH_OBJECT),LDAPException.NO_SUCH_OBJECT,"");
@@ -520,6 +526,35 @@ public class Router {
 	
 	public Insert[] getGlobalChain() {
 		return this.globalChain;
+	}
+	
+	public void shutDownRouter() {
+		
+		logger.info("Shutting down the Global Chain...");
+		
+		shutdownChain(this.globalChain);
+		
+		logger.info("Global Chain shut down complete");
+		
+		Iterator<NameSpace> it = this.backends.values().iterator();
+		while(it.hasNext()) {
+			NameSpace ns = it.next();
+			logger.info("Shutting down namespace " + ns.getLabel() + "...");
+			shutdownChain(ns.getChain());
+			logger.info(ns.getLabel() + " shut down complete");
+		}
+		
+	}
+
+
+	private void shutdownChain(Insert[] chain) {
+		
+		for (int i=0;i<chain.length;i++) {
+			logger.info("Shutting down insert " + chain[i].getName() + "...");
+			chain[i].shutdown();
+			logger.info(chain[i].getName() + " shut down complete");
+		}
+		
 	}
 }
 

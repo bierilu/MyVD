@@ -18,8 +18,10 @@ package net.sourceforge.myvd.inserts.ldap;
 import net.sourceforge.myvd.types.Entry;
 import net.sourceforge.myvd.types.EntrySet;
 
+import com.novell.ldap.LDAPControl;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.util.DN;
 
@@ -61,8 +63,22 @@ public class LDAPEntrySet implements EntrySet {
 	private boolean getNextLDAPEntry() throws LDAPException {
 		try {
 			if (results.hasMore()) {
-				LDAPEntry entry = results.next();
-				this.currEntry = new Entry(new LDAPEntry(interceptor.getLocalMappedDN(new DN(entry.getDN())).toString(),entry.getAttributeSet()));
+				
+				LDAPEntry entry = null;
+				LDAPControl[] respControls = null;
+				try {
+					entry = results.next();
+					respControls = results.getResponseControls();
+				} catch (LDAPReferralException e) {
+					if (this.interceptor.isIgnoreRefs()) {
+						//skip this entry
+						return getNextLDAPEntry();
+					} else {
+						//TODO create named referal?
+					}
+				}
+				
+				this.currEntry = new Entry(new LDAPEntry(interceptor.getLocalMappedDN(new DN(entry.getDN())).toString(),entry.getAttributeSet()),respControls);
 				this.entryFetched = false;
 				return true;
 			} else {

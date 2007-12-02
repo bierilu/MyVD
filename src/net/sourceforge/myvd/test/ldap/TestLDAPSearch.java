@@ -1,3 +1,18 @@
+/*
+ * Copyright 2006 Marc Boorshtein 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * 
+ * 		http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ */
 package net.sourceforge.myvd.test.ldap;
 
 import com.novell.ldap.LDAPAttribute;
@@ -122,7 +137,7 @@ public void testPresence() throws LDAPException {
 			fail("Not the correct number of entries : " + size);
 		}
 			
-		
+		con.disconnect();
 		
 	}
 
@@ -197,7 +212,7 @@ public void testEquals() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -271,7 +286,7 @@ public void testGreaterThen() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -345,7 +360,7 @@ public void testLessThen() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -419,7 +434,7 @@ public void testSubStrInitial() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -494,7 +509,7 @@ public void testSubStrFinal() throws LDAPException {
 	}
 		
 	
-	
+	con.disconnect();
 }
 
 public void testSubStrAny() throws LDAPException {
@@ -567,7 +582,7 @@ public void testSubStrAny() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -641,7 +656,7 @@ public void testAnd() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -715,7 +730,7 @@ public void testOr() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -789,7 +804,7 @@ public void testNot() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 
@@ -863,7 +878,7 @@ public void testAndNotOr() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
-	
+	con.disconnect();
 	
 }
 }

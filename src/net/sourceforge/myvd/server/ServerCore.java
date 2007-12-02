@@ -1,3 +1,19 @@
+/*
+ * Copyright 2006 Marc Boorshtein 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * 
+ * 		http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ */
+
 package net.sourceforge.myvd.server;
 
 import java.util.ArrayList;
@@ -21,6 +37,8 @@ public class ServerCore {
 	Properties props;
 	private Insert[] globalChain;
 	private Router router;
+
+	private NameSpace globalNS;
 	
 	public ServerCore(Properties props) {
 		this.props = props;
@@ -38,7 +56,7 @@ public class ServerCore {
 		return router;
 	}
 
-	private Insert configureInterceptor(String name,String prefix,NameSpace ns) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
+	private Insert configureInterceptor(String name,String prefix,NameSpace ns,Insert[] chain,int pos) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
 		logger.debug("Insert : " + name + "; " + prefix);
 		
 		String className = props.getProperty(prefix + "className");
@@ -63,7 +81,11 @@ public class ServerCore {
 			}
 		}
 		
+		chain[pos] = interceptor;
+		
 		interceptor.configure(name,localProps,ns);
+		
+		
 		
 		return interceptor;
 		
@@ -104,7 +126,7 @@ public class ServerCore {
 		
 		while (it.hasNext()) {
 			String name = it.next();
-			chain[i] = this.configureInterceptor(name,prefix +  name + ".",ns);
+			chain[i] = this.configureInterceptor(name,prefix +  name + ".",ns,chain,i);
 			i++;
 		}
 	}
@@ -121,9 +143,13 @@ public class ServerCore {
 		
 		Insert[] chain = new Insert[linkList.size()];
 		
-		this.configureChain("server.globalChain.",linkList,chain,null);
+		this.globalNS = new NameSpace("globalChain",new DistinguishedName("cn=root"),0,chain,false);
+		
+		this.configureChain("server.globalChain.",linkList,chain,this.globalNS);
 		
 		this.globalChain = chain;
+		
+		
 		
 	}
 	
@@ -153,7 +179,7 @@ public class ServerCore {
 			
 			Insert[] chain = new Insert[chainList.size()];
 			
-			NameSpace ns = new NameSpace(nsName,new DistinguishedName(nsBase),weight,chain);
+			NameSpace ns = new NameSpace(nsName,new DistinguishedName(nsBase),weight,chain,false);
 			
 			this.configureChain(prefix,chainList,chain,ns);
 			

@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
@@ -41,6 +44,7 @@ import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
+import net.sourceforge.myvd.inserts.jdbc.JdbcInsert;
 import net.sourceforge.myvd.types.Attribute;
 import net.sourceforge.myvd.types.Bool;
 import net.sourceforge.myvd.types.DistinguishedName;
@@ -54,10 +58,21 @@ import net.sourceforge.myvd.util.NamingUtils;
 
 public class JoinAddFlatNS implements Insert {
 
+	static Logger logger = Logger.getLogger(JoinAddFlatNS.class);
+	
 	String name;
 	String joinerName;
 	
+	String joinedObjectClass;
+	
+	HashSet<String> sharedAttributes;
+	
+	String[] joinerNamespaceDN;
+	String[] primaryNamespaceDN;
+	String[] joinedNamespaceDN;
+	
 	NameSpace ns;
+	private Joiner insert;
 	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
@@ -77,8 +92,8 @@ public class JoinAddFlatNS implements Insert {
 			}
 			
 			if (attrib.getName().equalsIgnoreCase("objectclass")) {
-				attrib.removeValue("appPerson");
-			} else if (attrib.getName().equals("uid")) {
+				attrib.removeValue(joinedObjectClass);
+			} else if (sharedAttributes.contains(attrib.getName().toLowerCase())) {
 				primaryAttribs.add(attrib);
 				joinedAttribs.add(attrib);
 			}
@@ -86,14 +101,14 @@ public class JoinAddFlatNS implements Insert {
 			
 		}
 		
-		LDAPAttribute oc = new LDAPAttribute("objectClass","appPerson");
+		LDAPAttribute oc = new LDAPAttribute("objectClass",joinedObjectClass);
 		joinedAttribs.add(oc);
 		
 		NamingUtils nameutil = new NamingUtils();
 		
-		DN primaryDN = nameutil.getRemoteMappedDN(new DN(entry.getEntry().getDN()), new String[] {"o=mycompany","c=us"}, new String[] {"o=enterprise"});
+		DN primaryDN = nameutil.getRemoteMappedDN(new DN(entry.getEntry().getDN()), joinerNamespaceDN, primaryNamespaceDN);
 		
-		DN joinedDN = nameutil.getRemoteMappedDN(new DN(entry.getEntry().getDN()), new String[] {"ou=people","o=mycompany","c=us"}, new String[] {"o=appdb"});
+		DN joinedDN = nameutil.getRemoteMappedDN(new DN(entry.getEntry().getDN()), joinerNamespaceDN, joinedNamespaceDN);
 		
 		LDAPEntry primary = new LDAPEntry(primaryDN.toString(),primaryAttribs); 
 		LDAPEntry joined  = new LDAPEntry(joinedDN.toString(),joinedAttribs);
@@ -125,6 +140,37 @@ public class JoinAddFlatNS implements Insert {
 		this.name = name;
 		this.ns = nameSpace;
 		this.joinerName = props.getProperty("joinerName");
+		
+		Insert[] inserts = nameSpace.getChain();
+		for (int i=0;i<inserts.length;i++) {
+			if (inserts[i].getName().equals(this.joinerName)) {
+				this.insert = (Joiner) inserts[i];
+				break;
+			}
+		}
+		
+		if (this.insert == null) {
+			throw new LDAPException("Insert " + this.joinerName + " not found",LDAPException.OPERATIONS_ERROR,"");
+		}
+		
+		this.joinerNamespaceDN = this.insert.explodedLocalNameSpace;
+		
+		this.primaryNamespaceDN = this.insert.explodedPrimaryNamespace;
+		
+		this.joinedNamespaceDN = this.insert.explodedJoinedNamespace;
+		
+		
+		this.joinedObjectClass = props.getProperty("joinedObjectClass","NONE");
+		
+		String attribs = props.getProperty("sharedAttributes","");
+		
+		StringTokenizer toker = new StringTokenizer(attribs,",",false);
+		
+		this.sharedAttributes = new HashSet<String>();
+		
+		while (toker.hasMoreTokens()) {
+			this.sharedAttributes.add(toker.nextToken().toLowerCase());
+		}
 
 	}
 
@@ -189,6 +235,21 @@ public class JoinAddFlatNS implements Insert {
 			throws LDAPException {
 		// TODO Auto-generated method stub
 
+	}
+	
+	private String combineArray(String[] ar) {
+		String ret = "";
+		
+		for (int i=0;i<ar.length;i++) {
+			ret += ret + ",";
+		}
+		
+		return ret.substring(0,ret.lastIndexOf(','));
+	}
+
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

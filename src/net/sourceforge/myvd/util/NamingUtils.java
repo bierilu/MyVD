@@ -19,6 +19,9 @@ import com.novell.ldap.util.DN;
 import com.novell.ldap.util.RDN;
 
 public class NamingUtils {
+	
+	
+	
 	public DN getRemoteMappedDN(DN dn,String[] explodedLocalBase,String[] explodedRemoteBase) {
 		int i,m;
 		DN newDN = new DN();

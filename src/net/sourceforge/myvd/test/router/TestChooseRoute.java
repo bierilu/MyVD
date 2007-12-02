@@ -115,7 +115,7 @@ public class TestChooseRoute extends TestCase {
 		chain = new Insert[2];
 		chain[0] = new TestChainR();
 		chain[1] = baseInterceptor;
-		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain);
+		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		baseInterceptor.configure("TestLDAP",props,ns);
 		
 		this.router = new Router(new Insert[0]);
@@ -134,7 +134,7 @@ public class TestChooseRoute extends TestCase {
 		chain[0] = new TestChainR();
 		chain[2] = baseInterceptor;
 		chain[1] = new PasswordChangeOperation();
-		ns = new NameSpace("LDAPInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 10, chain);
+		ns = new NameSpace("LDAPInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 10, chain,false);
 		baseInterceptor.configure("LDAPInternal",props,ns);
 		router.addBackend("LDAPInternal",ns.getBase().getDN(),ns);
 		
@@ -157,7 +157,7 @@ public class TestChooseRoute extends TestCase {
 		chain[0] = new TestChainR();
 		chain[2] = baseInterceptor;
 		chain[1] = new PasswordChangeOperation();
-		ns = new NameSpace("LDAPBogusInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 20, chain);
+		ns = new NameSpace("LDAPBogusInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 20, chain,false);
 		baseInterceptor.configure("LDAPInternal",props,ns);
 		router.addBackend("LDAPBogusInternal",ns.getBase().getDN(),ns);
 		
@@ -182,7 +182,7 @@ public class TestChooseRoute extends TestCase {
 		chain[2] = baseInterceptor;
 		chain[1] = new PasswordChangeOperation();
 		
-		ns = new NameSpace("LDAPExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 15, chain);
+		ns = new NameSpace("LDAPExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 15, chain,false);
 		
 		nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
@@ -208,7 +208,7 @@ public class TestChooseRoute extends TestCase {
 		chain[2] = baseInterceptor;
 		chain[1] = new PasswordChangeOperation();
 		
-		ns = new NameSpace("LDAPBogusExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 25, chain);
+		ns = new NameSpace("LDAPBogusExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 25, chain,false);
 		
 		nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");

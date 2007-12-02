@@ -128,6 +128,8 @@ public class TestStartServer extends TestCase {
 			System.out.println(res.next().getDN());
 		}
 		
+		con.disconnect();
+		
 	}
 	
 	
@@ -209,7 +211,7 @@ public void testSearchSubtreeResults() throws LDAPException {
 		}
 			
 		
-		
+		con.disconnect();
 	}
 	
 	
@@ -283,7 +285,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 			fail("Not the correct number of entries : " + size);
 		}
 			
-		
+		con.disconnect();
 		
 	}
 	
@@ -301,6 +303,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
 		con.add(entry);
+		
+		con.disconnect();
 		
 		con = new LDAPConnection();
 		con.connect("localhost",11983);
@@ -340,7 +344,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		}
 		
 		
-		
+		con.disconnect();
 		
 	}
 
@@ -358,7 +362,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
 		con.add(entry);
-		
+		con.disconnect();
 		con = new LDAPConnection();
 		con.connect("localhost",12983);
 		con.bind(3,"cn=admin,ou=external,dc=domain,dc=com","manager".getBytes());
@@ -397,7 +401,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		}
 		
 		
-		
+		con.disconnect();
 		
 	}
 	
@@ -410,7 +414,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
 		con.modify("cn=Test Cust,ou=external,o=mycompany",new LDAPModification[] {new LDAPModification(2,new LDAPAttribute("userPassword","mysecret"))});
-		
+		con.disconnect();
 		
 		con = new LDAPConnection();
 		con.connect("localhost",12983);
@@ -432,6 +436,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 		if (! Util.compareEntry(result,entry)  ) {
 			fail("Entry not correct : " + result.toString());
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -442,7 +448,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		con.modify("cn=Test User,ou=internal,o=mycompany",new LDAPModification[] {new LDAPModification(2,new LDAPAttribute("userPassword","mysecret"))});
-		
+		con.disconnect();
 		con = new LDAPConnection();
 		con.connect("localhost",11983);
 		con.bind(3,"cn=admin,ou=internal,dc=domain,dc=com","manager".getBytes());
@@ -463,6 +469,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 		if (! Util.compareEntry(result,entry)  ) {
 			fail("Entry not correct : " + result.toString());
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testBind() throws LDAPException {
@@ -504,6 +512,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 			}
 				
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testDelete() throws LDAPException {
@@ -512,7 +522,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		con.connect("localhost",50983);
 		con.delete("ou=internal,o=mycompany");
 		
-		
+		con.disconnect();
 		
 		con = new LDAPConnection();
 		con.connect("localhost",11983);
@@ -526,14 +536,14 @@ public void testSearchOneLevelResults() throws LDAPException {
 			
 		}
 		
-		
+		con.disconnect();
 	}
 	
 	public void testRenameRDN() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		con.rename("ou=internal,o=mycompany","cn=New Test User",true);
-
+		con.disconnect();
 		con = new LDAPConnection();
 		con.connect("localhost", 11983);
 		con.bind(3, "cn=admin,ou=internal,dc=domain,dc=com", "manager".getBytes());
@@ -557,6 +567,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 
 	
@@ -564,7 +576,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		con.rename("ou=internal,o=mycompany","cn=New Test User","ou=internal,o=mycompany,c=us",true);
-
+		con.disconnect();
 		con = new LDAPConnection();
 		con.connect("localhost", 11983);
 		con.bind(3, "cn=admin,ou=internal,dc=domain,dc=com", "manager".getBytes());
@@ -588,6 +600,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testRenameDNSeperateServers() throws LDAPException {
@@ -596,7 +610,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		con.rename("ou=internal,o=mycompany","cn=New Test User","ou=external,o=mycompany,c=us",true);
-
+		con.disconnect();
 		con = new LDAPConnection();
 		con.connect("localhost", 11983);
 		con.bind(3, "cn=admin,ou=internal,dc=domain,dc=com", "manager".getBytes());
@@ -624,6 +638,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testExtendedOp() throws IOException, LDAPException {
@@ -652,7 +668,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		con.extendedOperation(op);
-
+		con.disconnect();
 		
 
 		try {
@@ -665,6 +681,8 @@ public void testSearchOneLevelResults() throws LDAPException {
 			fail("Invalid error " + e.toString());
 
 		}
+		
+		con.disconnect();
 	}
 	
 

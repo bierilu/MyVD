@@ -379,6 +379,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries " + res.next().toString() );
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -431,6 +433,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testANDSearch() throws LDAPException {
@@ -465,6 +469,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testANDObjectClassSearch() throws LDAPException {
@@ -499,6 +505,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testAllGroups() throws LDAPException {
@@ -562,6 +570,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testGroupMembership() throws LDAPException {
@@ -595,6 +605,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -628,6 +640,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testBaseSearchObject() throws LDAPException {
@@ -662,6 +676,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSubtreeFromUser() throws LDAPException {
@@ -696,6 +712,8 @@ public class TestJDBC extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	

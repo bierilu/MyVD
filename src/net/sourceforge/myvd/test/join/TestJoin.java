@@ -1,3 +1,18 @@
+/*
+ * Copyright 2006 Marc Boorshtein 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * 
+ * 		http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ */
 package net.sourceforge.myvd.test.join;
 
 import java.io.BufferedReader;
@@ -103,12 +118,14 @@ public class TestJoin extends TestCase {
 			LDAPEntry fromldif = ((LDAPSearchResult) msg).getEntry();
 			LDAPEntry fromserver = res.next();
 			if (! util.compareEntry(fromserver, fromldif)) {
-				fail("Entries don't match : " + fromserver + "/" + fromldif);
+				fail("Entries don't match : \nFrom Server\n" + Util.toLDIF(fromserver) + "\n\nFrom LDIF\n" + Util.toLDIF(fromldif));
 			}
 			
 		}
 		
 		con.delete("uid=user4,ou=people,o=mycompany,c=us");
+		
+		con.disconnect();
 	}
 	
 	public void testSearchWholeTree() throws Exception {
@@ -133,6 +150,8 @@ public class TestJoin extends TestCase {
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSearchPrimary() throws Exception {
@@ -157,6 +176,8 @@ public class TestJoin extends TestCase {
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSearchJoined() throws Exception {
@@ -177,10 +198,12 @@ public class TestJoin extends TestCase {
 			LDAPEntry fromldif = ((LDAPSearchResult) msg).getEntry();
 			LDAPEntry fromserver = res.next();
 			if (! util.compareEntry(fromserver, fromldif)) {
-				fail("Entries don't match : " + fromserver + "/" + fromldif);
+				fail("Entries don't match \nfrom server\n" + Util.toLDIF(fromserver) + "\n\nfrom ldif\n" + Util.toLDIF(fromldif));
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testBaseSearch() throws Exception {
@@ -205,6 +228,8 @@ public class TestJoin extends TestCase {
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 
 	public void testSearchPickAttribs() throws Exception {
@@ -229,6 +254,8 @@ public class TestJoin extends TestCase {
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testModPrimary() throws Exception {
@@ -258,6 +285,8 @@ public class TestJoin extends TestCase {
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testModJoined() throws Exception {
@@ -291,6 +320,8 @@ public class TestJoin extends TestCase {
 		mod = new LDAPModification(LDAPModification.REPLACE,new LDAPAttribute("appattrib1","sysx"));
 		
 		con.modify("uid=user3,ou=people,o=mycompany,c=us", mod);
+		
+		con.disconnect();
 	}
 	
 	public void testDelete() throws Exception {
@@ -318,6 +349,8 @@ public class TestJoin extends TestCase {
 			}
 			
 		}
+		
+		con.disconnect();
 	}
 	
 	
