@@ -1,0 +1,4 @@
+#!/bin/sh
+
+OPENDS_JAVA_HOME=/usr/java/jdk1.6.0_03/jre
+export OPENDS_JAVA_HOME
