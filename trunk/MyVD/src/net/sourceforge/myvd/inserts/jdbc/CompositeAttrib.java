@@ -412,6 +412,11 @@ public class CompositeAttrib implements Insert {
 		return newNode;
 	}
 
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 class AttribComp {

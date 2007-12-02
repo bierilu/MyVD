@@ -175,4 +175,16 @@ public class LDAPConnectionPool {
 			this.notifyAll();
 		}
 	}
+
+	public void shutDownPool() {
+		Iterator<ConnectionWrapper> it = this.pool.iterator();
+		while (it.hasNext()) {
+			try {
+				it.next().getConnection().disconnect();
+			} catch (Throwable t) {
+				LDAPInterceptor.logger.error("Error disconnecting", t);
+			}
+		}
+		
+	}
 }

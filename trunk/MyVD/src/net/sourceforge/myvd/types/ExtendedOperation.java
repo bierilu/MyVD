@@ -29,7 +29,11 @@ public class ExtendedOperation {
 	}
 
 	public DistinguishedName getDn() {
-		return dn;
+		if (this.dn == null) {
+			return new DistinguishedName("");
+		} else {
+			return dn;
+		}
 	}
 
 	public void setDn(DistinguishedName dn) {

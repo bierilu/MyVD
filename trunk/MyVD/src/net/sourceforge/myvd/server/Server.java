@@ -235,6 +235,9 @@ public class Server {
 				break;
 			}
 		}
+		
+		this.router.shutDownRouter();
+		
 		logger.info("Server Stopped");
 	}
 	

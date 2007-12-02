@@ -105,6 +105,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSimpleSearchUIDSubstr3() throws LDAPException {
@@ -142,6 +144,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSimpleSearchUIDSubstr2() throws LDAPException {
@@ -179,6 +183,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	/*public void testSimpleSearchUIDSubstr1() throws LDAPException {
@@ -254,6 +260,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSimpleSearchCNSubstr2() throws LDAPException {
@@ -291,6 +299,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testAllUsers() throws LDAPException {
@@ -384,6 +394,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries " + res.next().toString() );
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -422,6 +434,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSimpleSearchCN() throws LDAPException {
@@ -459,6 +473,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testANDSearch() throws LDAPException {
@@ -495,6 +511,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	
@@ -533,6 +551,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testSubtreeFromUser() throws LDAPException {
@@ -569,6 +589,8 @@ public class TestJDBCUid extends TestCase {
 		if (res.hasMore()) {
 			fail("too many entries");
 		}
+		
+		con.disconnect();
 	}
 	
 	

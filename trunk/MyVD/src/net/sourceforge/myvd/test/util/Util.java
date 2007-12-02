@@ -15,6 +15,7 @@
  */
 package net.sourceforge.myvd.test.util;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import com.novell.ldap.LDAPAttribute;
@@ -23,7 +24,7 @@ import com.novell.ldap.LDAPEntry;
 
 public class Util {
 	public static boolean compareEntry(LDAPEntry entry1,LDAPEntry entry2) {
-		if (! entry1.getDN().equals(entry2.getDN())) {
+		if (! entry1.getDN().equalsIgnoreCase(entry2.getDN())) {
 			return false;
 		}
 		
@@ -37,6 +38,7 @@ public class Util {
 			LDAPAttribute attrib2 = attribs2.getAttribute(attrib1.getName());
 			
 			if (attrib2 == null) {
+				System.err.println("not found: " + attrib1.getName());
 				return false;
 			}
 			
@@ -46,7 +48,7 @@ public class Util {
 			String[] vals2 = attrib2.getStringValueArray();
 			
 			if (vals2.length != vals1.length) {
-				System.out.println(attrib1.getName());
+				System.err.println(attrib1.getName());
 				return false;
 			}
 			
@@ -59,7 +61,7 @@ public class Util {
 				}
 				
 				if (! found) {
-					System.out.println(attrib1.getName() + "/" + vals1[i]);
+					System.err.println(attrib1.getName() + "/" + vals1[i]);
 					return false;
 				}
 			}
@@ -70,5 +72,26 @@ public class Util {
 		}
 		
 		return true;
+	}
+	
+	public static String toLDIF(LDAPEntry entry) {
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append("dn: ").append(entry.getDN()).append('\n');
+		
+		LDAPAttributeSet attrs = entry.getAttributeSet();
+		Iterator<LDAPAttribute> it = attrs.iterator();
+		
+		while (it.hasNext()) {
+			LDAPAttribute attr = it.next();
+			
+			Enumeration enumer = attr.getStringValues();
+			while (enumer.hasMoreElements()) {
+				buf.append(attr.getName()).append(": ").append(enumer.nextElement()).append('\n');
+			}
+		}
+		
+		return buf.toString();
+		
 	}
 }

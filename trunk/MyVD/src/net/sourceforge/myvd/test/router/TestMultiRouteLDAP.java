@@ -103,7 +103,7 @@ public class TestMultiRouteLDAP extends TestCase {
 		chain = new Insert[2];
 		chain[0] = new TestChainR();
 		chain[1] = baseInterceptor;
-		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain);
+		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		baseInterceptor.configure("TestLDAP",props,ns);
 		
 		this.router = new Router(new Insert[0]);
@@ -121,7 +121,7 @@ public class TestMultiRouteLDAP extends TestCase {
 		chain = new Insert[2];
 		chain[0] = new TestChainR();
 		chain[1] = baseInterceptor;
-		ns = new NameSpace("LDAPInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 10, chain);
+		ns = new NameSpace("LDAPInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 10, chain,false);
 		baseInterceptor.configure("LDAPInternal",props,ns);
 		router.addBackend("LDAPInternal",ns.getBase().getDN(),ns);
 		
@@ -136,7 +136,7 @@ public class TestMultiRouteLDAP extends TestCase {
 		chain = new Insert[2];
 		chain[0] = new TestChainR();
 		chain[1] = baseInterceptor;
-		ns = new NameSpace("LDAPExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 15, chain);
+		ns = new NameSpace("LDAPExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 15, chain,false);
 		baseInterceptor.configure("LDAPExternal",props,ns);
 		router.addBackend("LDAPExternal",ns.getBase().getDN(),ns);
 		

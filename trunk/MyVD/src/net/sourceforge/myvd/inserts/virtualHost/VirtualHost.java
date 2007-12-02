@@ -158,6 +158,11 @@ public class VirtualHost implements Insert {
 		return this.name;
 	}
 
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 class VHost {

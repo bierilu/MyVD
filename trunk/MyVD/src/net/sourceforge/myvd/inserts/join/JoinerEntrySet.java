@@ -39,16 +39,17 @@ import net.sourceforge.myvd.types.Results;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPSearchConstraints;
+import com.novell.ldap.util.DN;
 
 public class JoinerEntrySet implements EntrySet {
 
 	Results results;
 	
 	
-	public JoinerEntrySet(Router router,SearchInterceptorChain chain,DistinguishedName base,Int scope,Filter filter,ArrayList<Attribute> attributes,Bool typesOnly,LDAPSearchConstraints constraints) throws LDAPException {
+	public JoinerEntrySet(Router router,SearchInterceptorChain chain,DistinguishedName base,Int scope,Filter filter,ArrayList<Attribute> attributes,Bool typesOnly,LDAPSearchConstraints constraints,DistinguishedName bindDN) throws LDAPException {
 		results = new Results(new Insert[0],0);
 		
-		SearchInterceptorChain searchChain = new SearchInterceptorChain(chain.getBindDN(),chain.getBindPassword(),router.getGlobalChain().length,router.getGlobalChain(),chain.getSession(),chain.getRequest(),router);
+		SearchInterceptorChain searchChain = new SearchInterceptorChain(bindDN,chain.getBindPassword(),router.getGlobalChain().length,router.getGlobalChain(),chain.getSession(),chain.getRequest(),router);
 		searchChain.nextSearch(base,scope,filter,attributes,typesOnly,results,constraints);
 		results.start();
 	}

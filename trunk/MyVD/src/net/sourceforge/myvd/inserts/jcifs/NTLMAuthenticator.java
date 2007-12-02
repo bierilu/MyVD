@@ -231,4 +231,9 @@ public void bind(BindInterceptorChain chain, DistinguishedName dn,
 	public String getName() {
 		return this.name;
 	}
+
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
 }

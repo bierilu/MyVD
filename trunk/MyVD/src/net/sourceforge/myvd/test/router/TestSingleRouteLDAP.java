@@ -106,8 +106,7 @@ public class TestSingleRouteLDAP extends TestCase {
 		chain[0] = new TestChainR();
 		chain[1] = this.pwdInterceptor;
 		chain[2] = interceptor;
-		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN(
-				"o=mycompany,c=us")), 0, chain);
+		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		interceptor.configure("TestLDAP", props, ns);
 		this.pwdInterceptor.configure("pwdInterceptor",nprops,ns);
 		this.router = new Router(new Insert[0]);

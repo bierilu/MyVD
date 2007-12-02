@@ -79,6 +79,7 @@ public class TestACLPlugin extends TestCase {
 		}
 		
 		fail("add succeeded");
+		con.disconnect();
 	}
 	
 	public void testAddBoundFail() throws Exception {
@@ -104,6 +105,7 @@ public class TestACLPlugin extends TestCase {
 		}
 		
 		fail("add succeeded");
+		con.disconnect();
 	}
 	
 	public void testAddBoundSucceed() throws Exception {
@@ -119,7 +121,7 @@ public class TestACLPlugin extends TestCase {
 		LDAPEntry entry = new LDAPEntry("uid=tadd,ou=users,dc=domain,dc=com",attribs);
 		
 		con.add(entry);
-		
+		con.disconnect();
 	}
 	
 	public void testSearchUsersBound() throws Exception {
@@ -145,7 +147,7 @@ public class TestACLPlugin extends TestCase {
 		if (! Util.compareEntry(fromServer,control)) {
 			fail("invalid entry : " + fromServer.toString());
 		}
-		
+		con.disconnect();
 	}
 	
 	public void testSearchGroupsBound() throws Exception {
@@ -168,7 +170,7 @@ public class TestACLPlugin extends TestCase {
 		}
 		
 		fail ("did not throw error");
-		
+		con.disconnect();
 	}
 	
 	public void testSearchGroupsNoException() throws Exception {
@@ -185,7 +187,7 @@ public class TestACLPlugin extends TestCase {
 		
 		
 		
-		
+			con.disconnect();
 	}
 	
 	

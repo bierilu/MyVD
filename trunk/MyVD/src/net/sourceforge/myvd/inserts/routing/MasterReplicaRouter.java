@@ -188,4 +188,10 @@ public class MasterReplicaRouter implements Insert {
 	public String getName() {
 		return this.name;
 	}
+
+
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
 }

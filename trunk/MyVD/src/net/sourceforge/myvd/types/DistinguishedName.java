@@ -33,7 +33,11 @@ public class DistinguishedName {
 	}
 	
 	public DN getDN() {
-		return this.dn;
+		if (this.dn == null) {
+			return new DN("");
+		} else {
+			return this.dn;
+		}
 	}
 
 	public void setDN(DN dn2) {

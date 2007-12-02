@@ -102,7 +102,7 @@ public class TestLocalChainLDAP extends TestCase {
 		chain[1] = pwdInterceptor;
 		chain[2] = interceptor;
 
-		NameSpace ns = new NameSpace("LDAP",new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain);
+		NameSpace ns = new NameSpace("LDAP",new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		interceptor.configure("TestLDAP", props, ns
 				);
 		
@@ -217,6 +217,8 @@ public class TestLocalChainLDAP extends TestCase {
 		if (!Util.compareEntry(result, entry)) {
 			fail("Entry not correct : " + result.toString());
 		}
+		
+		con.disconnect();
 
 	}
 
@@ -258,6 +260,8 @@ public class TestLocalChainLDAP extends TestCase {
 		if (!Util.compareEntry(result, entry)) {
 			fail("Entry not correct : " + result.toString());
 		}
+		
+		con.disconnect();
 	}
 
 	public void testBind() {
@@ -313,6 +317,8 @@ public class TestLocalChainLDAP extends TestCase {
 			}
 
 		}
+		
+		
 	}
 
 	public void testDelete() throws LDAPException {
@@ -340,6 +346,8 @@ public class TestLocalChainLDAP extends TestCase {
 		} catch (LDAPException e) {
 
 		}
+		
+		con.disconnect();
 
 	}
 
@@ -377,6 +385,8 @@ public class TestLocalChainLDAP extends TestCase {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 	
 	public void testRenameRDN() throws LDAPException {
@@ -413,6 +423,8 @@ public class TestLocalChainLDAP extends TestCase {
 		} catch (LDAPException e) {
 			fail("entry not renamed");
 		}
+		
+		con.disconnect();
 	}
 
 	public void testExtendedOp() throws IOException, LDAPException {
@@ -463,6 +475,8 @@ public class TestLocalChainLDAP extends TestCase {
 			fail("Invalid error " + e.toString());
 
 		}
+		
+		
 	}
 
 	protected void tearDown() throws Exception {

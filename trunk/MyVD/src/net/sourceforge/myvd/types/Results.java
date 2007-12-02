@@ -52,6 +52,8 @@ public class Results {
 	int notFounds;
 
 	private int start;
+	private boolean skipDupes;
+	
 	
 	public Results(Insert[] globalChain) {
 		this.results = new ArrayList<Result>();
@@ -61,11 +63,13 @@ public class Results {
 		notFounds = 0;
 		this.globalChain = globalChain;
 		this.start = 0;
+		this.skipDupes = true;
 	}
 	
 	public Results(Insert[] globalChain,int start) {
 		this(globalChain);
 		this.start = start;
+		this.skipDupes = true;
 	}
 	
 	public void addResult(SearchInterceptorChain chain,EntrySet entrySet, DistinguishedName base, Int scope, Filter filter, ArrayList<Attribute> attributes, Bool typesOnly, LDAPSearchConstraints constraints,Insert[] local) {
@@ -171,7 +175,7 @@ public class Results {
 		this.entryGotten = true;
 		Entry entry = this.currentEntry;
 		
-		if (! this.processed.contains(new DN(entry.getEntry().getDN()))) {
+		if ((! this.skipDupes) || ! this.processed.contains(new DN(entry.getEntry().getDN()))) {
 			this.processed.add(new DN(entry.getEntry().getDN()));
 			
 			return entry;
@@ -206,6 +210,14 @@ public class Results {
 		
 		
 		
+	}
+
+	public boolean isSkipDupes() {
+		return skipDupes;
+	}
+
+	public void setSkipDupes(boolean skipDupes) {
+		this.skipDupes = skipDupes;
 	}
 	
 }

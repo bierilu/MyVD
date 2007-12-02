@@ -216,4 +216,9 @@ public class TestJdbcInterceptor implements Insert {
 		return this.name;
 	}
 
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

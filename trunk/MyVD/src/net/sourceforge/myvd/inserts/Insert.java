@@ -134,5 +134,7 @@ public interface Insert {
 	
 	public void postSearchComplete(PostSearchCompleteInterceptorChain chain,DistinguishedName base,Int scope,Filter filter,ArrayList<Attribute> attributes,Bool typesOnly,LDAPSearchConstraints constraints) throws LDAPException;
 	
+	public void shutdown();
+	
 	
 }

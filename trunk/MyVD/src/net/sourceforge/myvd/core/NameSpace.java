@@ -27,11 +27,14 @@ public class NameSpace {
 	Insert[] chain;
 	Router router;
 	
-	public NameSpace(String label,DistinguishedName base,int weight,Insert[] chain) {
+	boolean isGlobal;
+	
+	public NameSpace(String label,DistinguishedName base,int weight,Insert[] chain,boolean isGlobal) {
 		this.base = base;
 		this.weight = weight;
 		this.label = label;
 		this.chain = chain;
+		this.isGlobal = isGlobal;
 	}
 	
 	public DistinguishedName getBase() {
@@ -60,5 +63,19 @@ public class NameSpace {
 
 	public void setRouter(Router router) {
 		this.router = router;
+	}
+	
+	public int getPositionInChain(Insert insert) {
+		for (int i=0;i<this.chain.length;i++) {
+			if (this.chain[i] == insert) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+
+	public boolean isGlobal() {
+		return isGlobal;
 	}
 }

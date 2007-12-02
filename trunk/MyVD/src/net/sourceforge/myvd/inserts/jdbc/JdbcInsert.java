@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.cpdsadapter.DriverAdapterCPDS;
 import org.apache.commons.dbcp.datasources.SharedPoolDataSource;
+import org.apache.log4j.Logger;
 
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
@@ -71,6 +72,8 @@ import com.novell.ldap.util.RDN;
 
 public class JdbcInsert implements Insert {
 
+	static Logger logger = Logger.getLogger(JdbcInsert.class);
+	
 	public static final String MYVD_DB_CON = "MYVD_DB_CON_";
 	public static final String MYVD_DB_LDAP2DB = "MYVD_DB_LDAP2DB_";
 	public static final String MYVD_DB_DB2LDAP = "MYVD_DB_DB2LDAP_";
@@ -167,6 +170,8 @@ public class JdbcInsert implements Insert {
 		this.useSimple = props.getProperty("useSimple","false").equalsIgnoreCase("true");
 		this.SQL = props.getProperty("sql");
 		int whereEnd;
+		
+		logger.info("Use Simple : " + this.useSimple);
 		
 		if (this.useSimple) {
 			this.searchSQL = this.SQL.substring(this.SQL.toLowerCase().indexOf(" from "));
@@ -427,6 +432,8 @@ public class JdbcInsert implements Insert {
 				
 				
 			}
+			
+			logger.info("SQL : " + querySQL);
 		} else {
 			if (filter.getRoot().getType() == FilterType.PRESENCE && filter.getRoot().getName().equalsIgnoreCase("objectClass")) {
 				mappedSearch = this.searchSQL;
@@ -730,7 +737,7 @@ public class JdbcInsert implements Insert {
                     		if (root.getName().equalsIgnoreCase("objectclass")) {
                     			filter.append(" 1=1 ");
                     		} else {
-	                        attribName = this.ldap2db.get(root.getName());
+	                        attribName = this.ldap2db.get(root.getName().toLowerCase());
 	                    		filter.append(attribName);
 	                        filter.append("='");
 	                        
@@ -742,14 +749,14 @@ public class JdbcInsert implements Insert {
                         break;
                     }
                     case GREATER_THEN:{
-                    		attribName = this.ldap2db.get(root.getName());
+                    		attribName = this.ldap2db.get(root.getName().toLowerCase());
                     		filter.append(attribName);
                         filter.append(">='");
                         filter.append(root.getValue()).append('\'');
                         break;
                     }
                     case LESS_THEN:{
-                    		attribName = this.ldap2db.get(root.getName());
+                    		attribName = this.ldap2db.get(root.getName().toLowerCase());
                     		filter.append(attribName);
                         filter.append("<='");
                         filter.append(root.getValue()).append('\'');
@@ -761,7 +768,7 @@ public class JdbcInsert implements Insert {
                     		if (root.getName().equalsIgnoreCase("objectclass")) {
                     			filter.append(" 1=1 ");
                     		} else {
-	                    		filter.append(this.ldap2db.get(root.getName()));
+	                    		filter.append(this.ldap2db.get(root.getName().toLowerCase()));
 	                        filter.append(" IS NOT NULL ");
                     		}
                         break;
@@ -791,7 +798,7 @@ public class JdbcInsert implements Insert {
                         
                         break;*/
                     case SUBSTR:{
-                    		attribName = this.ldap2db.get(root.getName());
+                    		attribName = this.ldap2db.get(root.getName().toLowerCase());
                     		filter.append(attribName);
                         filter.append(" LIKE '");
                         boolean noStarLast = false;
@@ -827,6 +834,11 @@ public class JdbcInsert implements Insert {
 
 	public HashMap<String, String> getLDAP2DBMap() {
 		return this.ldap2db;
+	}
+
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -18,16 +18,24 @@ package net.sourceforge.myvd.types;
 import java.util.HashMap;
 
 import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPControl;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.util.DN;
 
 public class Entry {
 	LDAPEntry entry;
 	boolean returnEntry;
+	LDAPControl[] controls;
 	
 	public Entry(LDAPEntry entry) {
 		this.entry = entry;
 		returnEntry = true;
+		this.controls = null;
+	}
+	
+	public Entry(LDAPEntry entry,LDAPControl[] controls) {
+		this(entry);
+		this.controls = controls;
 	}
 	
 	public LDAPEntry getEntry() {
@@ -85,5 +93,9 @@ public class Entry {
 
 	public void setReturnEntry(boolean returnEntry) {
 		this.returnEntry = returnEntry;
+	}
+	
+	public LDAPControl[] getControls() {
+		return this.controls;
 	}
 }

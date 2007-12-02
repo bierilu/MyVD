@@ -227,4 +227,9 @@ public class KerberosInterceptor implements Insert {
 		return this.name;
 	}
 
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

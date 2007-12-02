@@ -71,7 +71,11 @@ public class InterceptorChain {
 	
 	//Common methods
 	public DistinguishedName getBindDN() {
-		return bindDN;
+		if (this.bindDN == null) {
+			return new DistinguishedName("");
+		} else {
+			return bindDN;
+		}
 	}
 	
 	public Password getBindPassword() {
@@ -231,6 +235,10 @@ public class InterceptorChain {
 	
 	public int getPos() {
 		return this.pos;
+	}
+	
+	public void setBindDN(DistinguishedName dn) {
+		this.bindDN = dn;
 	}
 	
 	public Connection createJdbcLdapConnection() throws SQLException {
