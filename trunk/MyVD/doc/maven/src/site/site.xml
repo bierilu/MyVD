@@ -20,6 +20,7 @@
       <item name="MyVD Road Map" href="http://myvd.sourceforge.net/wiki/index.php/RoadMap"/>
       <item name="Introduction to MyVD" href="intro.html"/>
       <item name="Configuring MyVD" href="configureprops.html"/>
+      <item name="MyVD Logging" href="logging.html"/>
       <item name="Insert Reference" href="inserts.html">
       	<item name="Services and Access Management Inserts" href="inserts_services.html" />
       	<item name="Mapping Inserts" href="inserts_mapping.html" />
@@ -37,6 +38,10 @@
 	      <item name="Joinining Identities" href="joiners.html" />
 	  </item>
       <item name="Running The Unit Tests" href="unittests.html"/>
+      <item name="JDBC-LDAP" href="jdbcldap.html" >
+      	<item name="JDBC->LDAP Bridge" href="bridge.html" />
+      	<item name="SQL Directory Browser" href="browser.html" />
+      </item>
       <item name="Downloads" href="downloads.html" />
       <item name="SourceForget.net Project Page" href="http://www.sourceforge.net/projects/myvd/"/>
       <item name="Mailing Lists" href="mailinglists.html"/>
