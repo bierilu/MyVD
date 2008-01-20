@@ -169,7 +169,9 @@ public class Router {
 	private ArrayList<NameSpace> getLocalLevels(InterceptorChain chain, DistinguishedName dn) throws LDAPException {
 		ArrayList<NameSpace> localBackends;
     	
+		logger.debug("Is set namespace?");
     	if (chain.getRequest().containsKey(RequestVariables.ROUTE_NAMESPACE)) {
+    		logger.debug("namespace manually set");
     		Object obj = chain.getRequest().get(RequestVariables.ROUTE_NAMESPACE);
     		if (obj instanceof ArrayList) {
     			ArrayList<String> list = (ArrayList<String>) obj;
@@ -185,9 +187,12 @@ public class Router {
     			throw new LDAPException("Invalid routing type",LDAPException.OPERATIONS_ERROR,"");
     		}
     	} else {
+    		logger.debug("namespace set by router");
     		Level level = this.getLevel(dn.getDN());
+    		logger.debug("namespace levels determined");
     	
 	    	if (level == null) {
+	    		logger.debug("no levels found");
 	    		throw new LDAPException(LDAPException.resultCodeToString(LDAPException.NO_SUCH_OBJECT),LDAPException.NO_SUCH_OBJECT,"");
 	    	}
 	    	
@@ -296,12 +301,18 @@ public class Router {
     
     public void search(SearchInterceptorChain chain,DistinguishedName base,Int scope,Filter filter,ArrayList<Attribute> attributes,Bool typesOnly,Results results,LDAPSearchConstraints constraints) throws LDAPException {
 		
-		
+		logger.debug("Entering router search");
 		
 		int notFounds = 0;
 		HashSet<String> toExclude = (HashSet<String>) chain.getRequest().get(RequestVariables.ROUTE_NAMESPACE_EXCLUDE);
+		
+		
+		logger.debug("Determining local levels");
 		ArrayList<NameSpace> localBackends = this.getLocalLevels(chain,base);
+		logger.debug("Determined local levels");
 		Iterator<NameSpace> it = localBackends.iterator();
+		
+		logger.debug("Iterate over levels");
 		while (it.hasNext()) {
 		
 			NameSpace holder = it.next(); 
@@ -318,6 +329,7 @@ public class Router {
 			
 			DistinguishedName searchBase = new DistinguishedName(reqDN.toString());
 			
+			logger.debug("Determine scope");
 			Int localScope = new Int(scope.getValue());
 			if (scope.getValue() != 0) {
 				if (scope.getValue() == 1) {
@@ -331,13 +343,17 @@ public class Router {
 					searchBase = base;
 				}
 			}
-			
+			logger.debug("Base determined");
 			
 			
 			try {
+				logger.debug("create local chain");
 				SearchInterceptorChain localChain = new SearchInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,holder.getChain(),chain.getSession(),chain.getRequest());
+				logger.debug("Begin Local Chain");
 				localChain.nextSearch(searchBase,localScope,filter,attributes,typesOnly,results,constraints);
+				logger.debug("chain complete");
 			} catch (LDAPException e) {
+				logger.error("Error running search",e);
 				if (e.getResultCode() == 32) {
 					notFounds++;
 				} else {

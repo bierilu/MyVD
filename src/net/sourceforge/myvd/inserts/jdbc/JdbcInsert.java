@@ -171,7 +171,7 @@ public class JdbcInsert implements Insert {
 		this.SQL = props.getProperty("sql");
 		int whereEnd;
 		
-		logger.info("Use Simple : " + this.useSimple);
+		logger.debug("Use Simple : " + this.useSimple);
 		
 		if (this.useSimple) {
 			this.searchSQL = this.SQL.substring(this.SQL.toLowerCase().indexOf(" from "));
@@ -433,7 +433,7 @@ public class JdbcInsert implements Insert {
 				
 			}
 			
-			logger.info("SQL : " + querySQL);
+			
 		} else {
 			if (filter.getRoot().getType() == FilterType.PRESENCE && filter.getRoot().getName().equalsIgnoreCase("objectClass")) {
 				mappedSearch = this.searchSQL;
@@ -449,6 +449,11 @@ public class JdbcInsert implements Insert {
 		//System.out.println(querySQL);
 		//System.err.println(querySQL);
 		try {
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("Search SQL : \"" + querySQL + "\"");
+			}
+			
 			PreparedStatement ps = con.prepareStatement(querySQL);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {

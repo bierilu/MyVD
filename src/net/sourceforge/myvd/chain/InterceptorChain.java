@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import net.sourceforge.myvd.chain.jdbcLdapImpl.ChainedImpl;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
@@ -30,7 +32,7 @@ import net.sourceforge.myvd.types.Password;
 import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
 
 public class InterceptorChain {
-	
+	static Logger logger = Logger.getLogger(InterceptorChain.class);
 	Insert[] chain;
 	int pos;
 	
@@ -46,8 +48,13 @@ public class InterceptorChain {
 	
 	protected Insert getNext() {
 		if (pos < chain.length) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Chain Position : " + pos);
+				logger.debug("Insert : " + chain[pos].toString());
+			}
 			return chain[pos++];
 		} else {
+			logger.debug("Chain Completed");
 			return null;
 		}
 	}
