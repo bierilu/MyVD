@@ -190,6 +190,7 @@ public class ServerCore {
 	}
 	
 	public void startService() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
+		
 		logger.debug("Loading global chain...");
 		this.buildGlobalChain();
 		logger.debug("Global chain loaded");

@@ -34,7 +34,7 @@ if [ $1 = "start" ]; then
 	
 
 	
-	$MYVD_HOME/bin/runserver.sh "$LOCAL_CLASSPATH" "$MYVD_HOME" "$MYVD_CMD" 2&>1 > /dev/null &
+	$MYVD_HOME/bin/runserver.sh "$LOCAL_CLASSPATH" "$MYVD_HOME" "$MYVD_CMD" 2>&1 > /dev/null &
 	
 	
 elif [ $1 = "stop" ]; then

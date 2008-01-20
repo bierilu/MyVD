@@ -70,6 +70,7 @@ public class Server {
 	
 	protected static IoAcceptor tcpAcceptor;
 	protected static ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance( "MyVD" );
+	public final static String VERSION = "0.8.2";
 	
 	String configFile;
 	Properties props;
@@ -272,8 +273,8 @@ public class Server {
 		} else {
 			getDefaultLog();
 		}
-		
-		logger.info("Starting server...");
+		logger.info("MyVirtualDirectory Version : " + Server.VERSION);
+		logger.info("Starting MyVirtualDirectory server...");
 		try {
 			Server server = new Server(args[0]);
 			server.startServer();
