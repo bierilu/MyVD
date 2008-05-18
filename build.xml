@@ -15,6 +15,7 @@
 	<target name="init">
 		<property name="src" value="src"/>
 		<property name="lib" value="dist/lib"/>
+		<property name="qslib" value="dist/qslib"/>
 		<property name="testlib" value="test/lib"/>
 		<property name="classes" value="classes"/>
 		<property name="docs" value="docs" />
@@ -36,6 +37,9 @@
         	          <include name="**/*.jar" />
         		</fileset>
         		<fileset dir="${testlib}">
+        	          <include name="**/*.jar" />
+        		</fileset>
+        		<fileset dir="${qslib}">
         	          <include name="**/*.jar" />
         		</fileset>
             </classpath>
@@ -69,11 +73,13 @@
 	        <delete dir="${reports.tests}" />
 	        <mkdir dir="${reports.tests}"/>
 	        <mkdir dir="${reports.tests}/html"/>
-	        <junit printsummary="yes" haltonfailure="no" fork="yes"  >
+	        <junit showoutput="no" printsummary="yes" haltonfailure="no" fork="yes"  >
 	        	<test name="net.sourceforge.myvd.test.acl.TestACLPlugin" todir="${reports.tests}"/> 
 	        	<test name="net.sourceforge.myvd.test.acl.TestGetACI" todir="${reports.tests}"/>
 	        	<test name="net.sourceforge.myvd.test.acl.TestParseACI" todir="${reports.tests}"/>
 	        	<test name="net.sourceforge.myvd.test.acl.TestValidateSubjects" todir="${reports.tests}"/>
+	        	
+	        	<test name="net.sourceforge.myvd.test.adposix.ADPosix" todir="${reports.tests}"/>
 	        	
 	        	<test name="net.sourceforge.myvd.test.chain.TestFilter" todir="${reports.tests}"/>
 	        	<test name="net.sourceforge.myvd.test.chain.TestLocalChainLDAP" todir="${reports.tests}"/>
@@ -84,7 +90,7 @@
 	        	<test name="net.sourceforge.myvd.test.jdbc.TestJDBCSimple" todir="${reports.tests}"/>
 	        	<test name="net.sourceforge.myvd.test.jdbc.TestJDBCUid" todir="${reports.tests}"/>
 	        	
-	        	<test name="net.sourceforge.myvd.test.join.ADDomainGroup" todir="${reports.tests}"/>
+	        	
 	        	<test name="net.sourceforge.myvd.test.join.TestJoin" todir="${reports.tests}"/>
 	        	<test name="net.sourceforge.myvd.test.join.TestJoinAD" todir="${reports.tests}"/>
 	        	
@@ -117,6 +123,9 @@
 	        	          <include name="**/*.jar" />
 	        		</fileset>
 	        		<fileset dir="${testlib}">
+	        	          <include name="**/*.jar" />
+	        		</fileset>
+	        		<fileset dir="${qslib}">
 	        	          <include name="**/*.jar" />
 	        		</fileset>
 	            	<fileset dir="${bin}">
@@ -154,6 +163,9 @@
 		        	          <include name="**/*.jar" />
 		        		</fileset>
 		        		<fileset dir="${testlib}">
+		        	          <include name="**/*.jar" />
+		        		</fileset>
+		        		<fileset dir="${qslib}">
 		        	          <include name="**/*.jar" />
 		        		</fileset>
 		            	<fileset dir="${bin}">
