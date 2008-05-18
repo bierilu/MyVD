@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -18,5 +18,6 @@ package net.sourceforge.myvd.inserts.ldap;
 public enum LDAPConnectionType {
 	LDAP,
 	DSMLV2,
-	SPML;
+	SPML,
+	LDAPS;
 }

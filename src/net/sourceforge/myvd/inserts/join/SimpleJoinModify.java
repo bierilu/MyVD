@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -39,6 +39,7 @@ import net.sourceforge.myvd.chain.PostSearchCompleteInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchEntryInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.join.Joiner;
@@ -98,10 +99,10 @@ public class SimpleJoinModify implements Insert {
 		
 		DeleteInterceptorChain nchain = null;
 		
-		nchain = new DeleteInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		nchain = new DeleteInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new InsertChain(new Insert[0]),chain.getSession(),chain.getRequest(),ns.getRouter());
 		nchain.nextDelete(primaryDN, constraints);
 		
-		nchain = new DeleteInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		nchain = new DeleteInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new InsertChain(new Insert[0]),chain.getSession(),chain.getRequest(),ns.getRouter());
 		nchain.nextDelete(joinedDns.get(0), constraints);
 	}
 
@@ -138,12 +139,12 @@ public class SimpleJoinModify implements Insert {
 		ModifyInterceptorChain modchain = null;
 		
 		if (primaryMods.size() != 0) {
-			modchain = new ModifyInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+			modchain = new ModifyInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new InsertChain(new Insert[0]),chain.getSession(),chain.getRequest(),ns.getRouter());
 			modchain.nextModify(primaryDN, primaryMods, constraints);
 		}
 		
 		if (joinedMods.size() != 0) {
-			modchain = new ModifyInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+			modchain = new ModifyInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new InsertChain(new Insert[0]),chain.getSession(),chain.getRequest(),ns.getRouter());
 			modchain.nextModify(joinedDns.get(0), joinedMods, constraints);
 		}
 

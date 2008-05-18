@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -28,6 +28,7 @@ import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.extensions.PasswordChangeOperation;
@@ -73,7 +74,7 @@ public class TestLocalChainLDAP extends TestCase {
 
 	LDAPInterceptor interceptor;
 
-	Insert[] chain;
+	InsertChain chain;
 
 	private PasswordChangeOperation pwdInterceptor;
 
@@ -97,10 +98,11 @@ public class TestLocalChainLDAP extends TestCase {
 		Properties nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
 		
-		chain = new Insert[3];
-		chain[0] = new TestChain();
-		chain[1] = pwdInterceptor;
-		chain[2] = interceptor;
+		Insert[] tchain = new Insert[3];
+		tchain[0] = new TestChain();
+		tchain[1] = pwdInterceptor;
+		tchain[2] = interceptor;
+		chain = new InsertChain(tchain);
 
 		NameSpace ns = new NameSpace("LDAP",new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		interceptor.configure("TestLDAP", props, ns
@@ -109,7 +111,7 @@ public class TestLocalChainLDAP extends TestCase {
 		this.pwdInterceptor.configure("pwdInterceptor",nprops,ns);
 	}
 
-	public void testSearch() throws LDAPException {
+	public void testSearch() throws Exception {
 		HashMap<String, LDAPEntry> control = new HashMap<String, LDAPEntry>();
 
 		LDAPAttributeSet attribs = new LDAPAttributeSet();
@@ -133,7 +135,7 @@ public class TestLocalChainLDAP extends TestCase {
 				attribs);
 		control.put("cn=Test User,ou=internal,o=mycompany,c=us", entry);
 
-		Results res = new Results(new Insert[0]);
+		Results res = new Results(new InsertChain(new Insert[0]));
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
@@ -182,7 +184,7 @@ public class TestLocalChainLDAP extends TestCase {
 
 	}
 
-	public void testAdd() throws LDAPException {
+	public void testAdd() throws Exception {
 
 		LDAPAttributeSet attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
@@ -222,7 +224,7 @@ public class TestLocalChainLDAP extends TestCase {
 
 	}
 
-	public void testModify() throws LDAPException {
+	public void testModify() throws Exception {
 		LDAPEntry entry;
 
 		HashMap session = new HashMap();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -71,7 +71,7 @@ public class AccessControlItem {
 	
 	public AccessControlItem(int index,String aci) throws Exception {
 		this.num = index;
-		System.out.println(aci);
+		//System.out.println(aci);
 		StringTokenizer toker = new StringTokenizer(aci,"#");
 		
 		//first the DN

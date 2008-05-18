@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -23,10 +23,12 @@ import java.io.InputStreamReader;
 public class StreamReader extends Thread {
 	InputStream in;
 	boolean debug;
+	boolean done;
 	
 	public StreamReader(InputStream in,boolean debug ) {
 		this.in = in;
 		this.debug = debug;
+		done = false;
 	}
 	
 	public void run() {
@@ -44,6 +46,12 @@ public class StreamReader extends Thread {
 			//e.printStackTrace();
 		}
 		
+		done = true;
+		
+	}
+	
+	public boolean isDone() {
+		return this.done;
 	}
 }
 

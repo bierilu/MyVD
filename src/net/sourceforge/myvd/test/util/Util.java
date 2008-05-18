@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -23,7 +23,7 @@ import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPEntry;
 
 public class Util {
-	public static boolean compareEntry(LDAPEntry entry1,LDAPEntry entry2) {
+	public static boolean compareEntry(LDAPEntry entry1,LDAPEntry entry2)  {
 		if (! entry1.getDN().equalsIgnoreCase(entry2.getDN())) {
 			return false;
 		}
@@ -37,9 +37,10 @@ public class Util {
 			LDAPAttribute attrib1 = (LDAPAttribute) it.next();
 			LDAPAttribute attrib2 = attribs2.getAttribute(attrib1.getName());
 			
-			if (attrib2 == null) {
-				System.err.println("not found: " + attrib1.getName());
+			if (attrib2 == null ) {
+				System.err.println("not found: " + attrib1.getName() + "\n" + "In Compare: Entries don't match : \nFrom Server\n" + toLDIF(entry1) + "\n\nFrom LDIF\n" + toLDIF(entry2));
 				return false;
+				
 			}
 			
 			size--;
@@ -48,7 +49,7 @@ public class Util {
 			String[] vals2 = attrib2.getStringValueArray();
 			
 			if (vals2.length != vals1.length) {
-				System.err.println(attrib1.getName());
+				System.err.println(attrib1.getName() + "\n" + "In Compare: Entries don't match : \nFrom Server\n" + toLDIF(entry1) + "\n\nFrom LDIF\n" + toLDIF(entry2));
 				return false;
 			}
 			
@@ -61,7 +62,7 @@ public class Util {
 				}
 				
 				if (! found) {
-					System.err.println(attrib1.getName() + "/" + vals1[i]);
+					System.err.println(attrib1.getName() + "/" + vals1[i] + "\n" + "In Compare: Entries don't match : \nFrom Server\n" + toLDIF(entry1) + "\n\nFrom LDIF\n" + toLDIF(entry2));
 					return false;
 				}
 			}

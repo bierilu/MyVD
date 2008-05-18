@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -30,6 +30,7 @@ import net.sourceforge.myvd.chain.InterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchCompleteInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchEntryInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 
 import com.novell.ldap.LDAPEntry;
@@ -38,7 +39,7 @@ import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.util.DN;
 
 public class Results {
-	Insert[] globalChain;
+	InsertChain globalChain;
 	
 	ArrayList<Result> results;
 	ArrayList<Result> finished;
@@ -50,12 +51,14 @@ public class Results {
 	boolean entryGotten;
 	Entry currentEntry;
 	int notFounds;
+	
+	boolean completed;
 
 	private int start;
 	private boolean skipDupes;
 	
 	
-	public Results(Insert[] globalChain) {
+	public Results(InsertChain globalChain) {
 		this.results = new ArrayList<Result>();
 		this.finished = new ArrayList<Result>();
 		this.processed = new TreeSet<DN>(new DNComparer());
@@ -64,15 +67,16 @@ public class Results {
 		this.globalChain = globalChain;
 		this.start = 0;
 		this.skipDupes = true;
+		this.completed = false;
 	}
 	
-	public Results(Insert[] globalChain,int start) {
+	public Results(InsertChain globalChain,int start) {
 		this(globalChain);
 		this.start = start;
 		this.skipDupes = true;
 	}
 	
-	public void addResult(SearchInterceptorChain chain,EntrySet entrySet, DistinguishedName base, Int scope, Filter filter, ArrayList<Attribute> attributes, Bool typesOnly, LDAPSearchConstraints constraints,Insert[] local) {
+	public void addResult(SearchInterceptorChain chain,EntrySet entrySet, DistinguishedName base, Int scope, Filter filter, ArrayList<Attribute> attributes, Bool typesOnly, LDAPSearchConstraints constraints,InsertChain local) {
 		Result res = new Result();
 		res.entrySet = entrySet;
 		res.attribs = attributes;
@@ -151,7 +155,10 @@ public class Results {
 			this.finished.add(ldapResults);
 			return this.hasMore();
 		} else {
-			this.complete();
+			if (! this.completed) {
+				this.complete();
+				this.completed = true;
+			}
 			return false;
 		}
 	}
@@ -204,7 +211,7 @@ public class Results {
 		
 		while (it.hasNext()) {
 			Result ldapResults = it.next();
-			PostSearchCompleteInterceptorChain chain = new PostSearchCompleteInterceptorChain(ldapResults.chain.getBindDN(),ldapResults.chain.getBindPassword(),0,ldapResults.globalSource,ldapResults.localSource,ldapResults.chain.getSession(),ldapResults.chain.getRequest());
+			PostSearchCompleteInterceptorChain chain = new PostSearchCompleteInterceptorChain(ldapResults.chain.getBindDN(),ldapResults.chain.getBindPassword(),this.start,ldapResults.localSource,this.globalChain,ldapResults.chain.getSession(),ldapResults.chain.getRequest());
 			chain.nextPostSearchComplete(ldapResults.base,ldapResults.scope,ldapResults.filter,ldapResults.attribs,ldapResults.typesOnly,ldapResults.constraints);
 		}
 		

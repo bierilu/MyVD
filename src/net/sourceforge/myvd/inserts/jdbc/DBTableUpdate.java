@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -128,10 +128,10 @@ public class DBTableUpdate implements Insert {
 		this.name = name;
 		this.tableName = props.getProperty("tableName");
 		this.dbInsertName = props.getProperty("dbInsertName");
-		Insert[] inserts = nameSpace.getChain();
-		for (int i=0;i<inserts.length;i++) {
-			if (inserts[i].getName().equals(this.dbInsertName)) {
-				this.insert = (JdbcInsert) inserts[i];
+		
+		for (int i=0;i<nameSpace.getChain().getLength();i++) {
+			if (nameSpace.getChain().getInsert(i).getName().equals(this.dbInsertName)) {
+				this.insert = (JdbcInsert) nameSpace.getChain().getInsert(i);
 				break;
 			}
 		}

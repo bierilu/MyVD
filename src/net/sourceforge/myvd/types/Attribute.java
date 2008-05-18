@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -20,8 +20,16 @@ import com.novell.ldap.LDAPAttribute;
 public class Attribute {
 	LDAPAttribute attribute;
 
-	public Attribute(String val) {
-		this.attribute = new LDAPAttribute(val);
+	public Attribute(String name) {
+		this.attribute = new LDAPAttribute(name);
+	}
+	
+	public Attribute(String name, String val) {
+		this.attribute = new LDAPAttribute(name,val);
+	}
+	
+	public Attribute(LDAPAttribute attrib) {
+		this.attribute = attrib;
 	}
 
 	public LDAPAttribute getAttribute() {

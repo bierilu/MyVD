@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +34,7 @@ import java.util.StringTokenizer;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.protocol.ldap.LdapProtocolProvider;
@@ -52,6 +54,8 @@ import org.apache.mina.common.IoSession;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import org.apache.mina.filter.SSLFilter;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketSessionConfig;
@@ -70,17 +74,17 @@ public class Server {
 	
 	protected static IoAcceptor tcpAcceptor;
 	protected static ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance( "MyVD" );
-	public final static String VERSION = "0.8.2";
+	public final static String VERSION = "0.8.3b1";
 	
 	String configFile;
 	Properties props;
-	private Insert[] globalChain;
+	private InsertChain globalChain;
 	private Router router;
 
 	private ServerCore serverCore;
 
 	
-	public Insert[] getGlobalChain() {
+	public InsertChain getGlobalChain() {
 		return globalChain;
 	}
 
@@ -160,9 +164,15 @@ public class Server {
 	private static void getDefaultLog() {
 		Properties props = new Properties();
 		props.put("log4j.rootLogger", "info,console");
+		
+		//props.put("log4j.appender.console","org.apache.log4j.RollingFileAppender");
+		//props.put("log4j.appender.console.File","/home/mlb/myvd.log");
 		props.put("log4j.appender.console","org.apache.log4j.ConsoleAppender");
 		props.put("log4j.appender.console.layout","org.apache.log4j.PatternLayout");
 		props.put("log4j.appender.console.layout.ConversionPattern","[%d][%t] %-5p %c{1} - %m%n");
+		
+		
+		
 		PropertyConfigurator.configure(props);
 		logger = Logger.getLogger(Server.class.getName());
 	}
@@ -185,6 +195,7 @@ public class Server {
             	acceptorCfg.setFilterChainBuilder( chainBuilder );
             }
             acceptorCfg.setThreadModel( threadModel );
+            //acceptorCfg.getFilterChain().addLast("codec", new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" ))));
             
             ((SocketSessionConfig)(acceptorCfg.getSessionConfig())).setTcpNoDelay( true );
             
@@ -193,7 +204,8 @@ public class Server {
             logger.debug("AcceptorConfig : " + acceptorCfg);
             logger.debug("tcpAcceptor : " + tcpAcceptor);
             
-            tcpAcceptor = new SocketAcceptor(Runtime.getRuntime().availableProcessors() + 1,Executors.newCachedThreadPool());
+            //tcpAcceptor = new SocketAcceptor(((int) Runtime.getRuntime().availableProcessors()) + 1,null);
+            tcpAcceptor = new SocketAcceptor();
             
             //try 3 times?
             for (int i=0;i<3;i++) {
@@ -264,6 +276,8 @@ public class Server {
 			if (! props.containsKey("log4j.appender.logfile.MaxBackupIndex")) props.put("log4j.appender.logfile.MaxBackupIndex","10");
 			if (! props.containsKey("log4j.appender.logfile.layout")) props.put("log4j.appender.logfile.layout","org.apache.log4j.PatternLayout");
 			if (! props.containsKey("log4j.appender.logfile.layout.ConversionPattern")) props.put("log4j.appender.logfile.layout.ConversionPattern","[%d][%t] %-5p %c{1} - %m%n");
+			
+			
 			
 			
 			

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -56,6 +57,7 @@ import net.sourceforge.myvd.chain.PostSearchCompleteInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchEntryInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
@@ -133,6 +135,8 @@ public class Joiner implements Insert {
 	FilterNode joinFilter;
 	
 	String name;
+
+	private String stackKey;
 	
 	static {
 		try {
@@ -188,6 +192,8 @@ public class Joiner implements Insert {
 		primaryAttribsKey = name + "." + nameSpace.getBase().getDN().toString() + ".PRIMARY_ATTRIBS_KEY";
 		joinedAttribsKey = name + "." + nameSpace.getBase().getDN().toString() + ".JOIN_ATTRIBS_KEY";
 		
+		this.stackKey = name + "." + nameSpace.getBase().getDN().toString() + ".JOIN_STACK_KEY";
+		
 		util = new NamingUtils();
 		this.ns = nameSpace;
 	}
@@ -207,7 +213,7 @@ public class Joiner implements Insert {
 		HashMap<DN,DistinguishedName> boundNameSpaces = new HashMap<DN,DistinguishedName>();
 		chain.getSession().put(Joiner.BOUND_DNS + this.name, boundNameSpaces);
 		
-		BindInterceptorChain bindChain = new BindInterceptorChain(chain.getBindDN(),chain.getBindPassword(),ns.getRouter().getGlobalChain().length,ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
+		BindInterceptorChain bindChain = new BindInterceptorChain(chain.getBindDN(),chain.getBindPassword(),ns.getRouter().getGlobalChain().getLength(),ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
 		int trys = 1;
 		try {
 			DistinguishedName newBindDN = new DistinguishedName(util.getRemoteMappedDN(dn.getDN(),this.explodedLocalNameSpace,this.explodedPrimaryNamespace));
@@ -222,8 +228,8 @@ public class Joiner implements Insert {
 			}
 		}
 		
-		SearchInterceptorChain searchChain = new SearchInterceptorChain(chain.getBindDN(),chain.getBindPassword(),ns.getRouter().getGlobalChain().length,ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
-		Results res = new Results(new Insert[0]);
+		SearchInterceptorChain searchChain = new SearchInterceptorChain(chain.getBindDN(),chain.getBindPassword(),ns.getRouter().getGlobalChain().getLength(),ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
+		Results res = new Results(new InsertChain(new Insert[0]));
 		ArrayList<Attribute> attribs = new ArrayList<Attribute>();
 		attribs.add(new Attribute("joinedDNs"));
 		attribs.add(new Attribute("joinedBases"));
@@ -247,7 +253,7 @@ public class Joiner implements Insert {
 			String[] dns = joinDNs.getStringValueArray();
 			String[] bases = joinBases.getStringValueArray();
 			for (int i=0,m=dns.length;i<m;i++) {
-				bindChain = new BindInterceptorChain(chain.getBindDN(),chain.getBindPassword(),ns.getRouter().getGlobalChain().length,ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
+				bindChain = new BindInterceptorChain(chain.getBindDN(),chain.getBindPassword(),ns.getRouter().getGlobalChain().getLength(),ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
 				try {
 					DistinguishedName binddn = new DistinguishedName(dns[i]);
 					bindChain.nextBind(binddn,pwd,constraints);
@@ -271,7 +277,29 @@ public class Joiner implements Insert {
 
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn,
 			Attribute attrib, LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		
+		SearchInterceptorChain nchain = chain.createSearchChain(chain.getPositionInChain(this));
+		Results res = new Results(null,chain.getPositionInChain(this));
+		ArrayList<net.sourceforge.myvd.types.Attribute> attribs = new ArrayList<net.sourceforge.myvd.types.Attribute>();
+		attribs.add(new Attribute("1.1"));
+		
+		FilterNode node = new FilterNode(FilterType.EQUALS,attrib.getAttribute().getName(),attrib.getAttribute().getStringValue());
+		Filter filter = new Filter(node);
+		
+		
+		nchain.nextSearch(dn, new Int(0), filter, attribs, new Bool(false), res, new LDAPSearchConstraints());
+		boolean compareSucceeds = false;
+		
+		res.start();
+		if (res.hasMore()) {
+			res.next();
+			while (res.hasMore()) res.next();
+			compareSucceeds = true;
+		}
+		
+		if (! compareSucceeds) {
+			throw new LDAPException(LDAPException.resultCodeToString(LDAPException.COMPARE_FALSE),LDAPException.COMPARE_FALSE,"Compare failed");
+		}
 
 	}
 
@@ -304,10 +332,26 @@ public class Joiner implements Insert {
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
 		
+		JoinData jd = new JoinData();
+		Stack<JoinData> stack = (Stack<JoinData>) chain.getRequest().get(this.stackKey);
+		if (stack == null) {
+			stack = new Stack<JoinData>();
+			chain.getRequest().put(this.stackKey, stack);
+		}
+		stack.push(jd);
+		jd.joinedAttribsSet = this.joinedAttrbutes;
+		
+		jd.joinFilter = filter;
+		jd.joinAttribs = attributes;
+		jd.joinBase = base;
+		jd.joinScope = scope;
+		
+		/*
 		chain.getRequest().put(filterKey,filter);
 		chain.getRequest().put(attributesKey,attributes);
 		chain.getRequest().put(baseKey,base);
 		chain.getRequest().put(scopeKey,scope);
+		*/
 		
 		ArrayList<Attribute> primaryAttribsToUse = new ArrayList<Attribute>();
 		primaryAttribsToUse.addAll(attributes);
@@ -376,13 +420,17 @@ public class Joiner implements Insert {
 		
 		
 		
+		jd.joinPrimaryFilter = primaryFilter;
+		jd.joinJoinedFilter = joinedFilter;
+		jd.joinPrimaryAttribs = primaryAttribsToUse;
+		jd.joinJoinAttribs = joinedAttribsToUse;
 		
-		
+		/*
 		chain.getRequest().put(primaryFilterKey,primaryFilter);
 		chain.getRequest().put(joinedFilterKey,joinedFilter);
 		chain.getRequest().put(primaryAttribsKey,primaryAttribsToUse);
 		chain.getRequest().put(joinedAttribsKey,joinedAttribsToUse);
-		
+		*/
 		
 		int primaryWeight = primaryFilter.getRoot().getWeight();
 		int joinedWeight = joinedFilter.getRoot().getWeight();
@@ -402,7 +450,8 @@ public class Joiner implements Insert {
 			newSearchBase = util.getRemoteMappedDN(base.getDN(),this.explodedLocalNameSpace,this.explodedPrimaryNamespace);
 			filterToUse = primaryFilter;
 			attribsToUse = primaryAttribsToUse;
-			chain.getRequest().put(key,PRIMARY);
+			//chain.getRequest().put(key,PRIMARY);
+			jd.joinType = PRIMARY;
 			DistinguishedName dn = boundNameSpaces.get(this.primaryNamespace);
 			if (dn == null) {
 				bindDN = new DistinguishedName("");
@@ -414,7 +463,8 @@ public class Joiner implements Insert {
 			newSearchBase = new DN(this.joinedNamespace.toString());
 			filterToUse = joinedFilter;
 			attribsToUse = joinedAttribsToUse;
-			chain.getRequest().put(key,JOINED);
+			//chain.getRequest().put(key,JOINED);
+			jd.joinType = JOINED;
 			DistinguishedName dn = boundNameSpaces.get(this.joinedNamespace);
 			if (dn == null) {
 				bindDN = new DistinguishedName("");
@@ -467,7 +517,10 @@ public class Joiner implements Insert {
 				if (newChildren.size() == 0) {
 					return null;
 				} else if (newChildren.size() == 1) {
-					return newChildren.get(0);
+					FilterNode nallwaystrue = new FilterNode(FilterType.PRESENCE,"objectclass","*");
+					newChildren.add(nallwaystrue);
+					newNode = new FilterNode(root.getType(),newChildren);
+					return newNode;
 				} else {
 					newNode = new FilterNode(root.getType(),newChildren);
 					return newNode;
@@ -522,7 +575,10 @@ public class Joiner implements Insert {
 				if (newChildren.size() == 0) {
 					return null;
 				} else if (newChildren.size() == 1) {
-					return newChildren.get(0);
+					FilterNode nallwaystrue = new FilterNode(FilterType.PRESENCE,"objectclass","*");
+					newChildren.add(nallwaystrue);
+					newNode = new FilterNode(root.getType(),newChildren);
+					return newNode;
 				} else {
 					newNode = new FilterNode(root.getType(),newChildren);
 					return newNode;
@@ -544,7 +600,7 @@ public class Joiner implements Insert {
 	public void rename(RenameInterceptorChain chain, DistinguishedName dn,
 			DistinguishedName newRdn, Bool deleteOldRdn,
 			LDAPConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		chain.nextRename(dn, newRdn, deleteOldRdn, constraints);
 
 	}
 
@@ -552,7 +608,7 @@ public class Joiner implements Insert {
 			DistinguishedName newRdn, DistinguishedName newParentDN,
 			Bool deleteOldRdn, LDAPConstraints constraints)
 			throws LDAPException {
-		// TODO Auto-generated method stub
+		chain.nextRename(dn, newRdn, newParentDN, deleteOldRdn, constraints);
 
 	}
 
@@ -560,6 +616,12 @@ public class Joiner implements Insert {
 			Entry entry, DistinguishedName base, Int scope, Filter filter,
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
+		
+		
+		
+		Stack<JoinData> stack = (Stack<JoinData>) chain.getRequest().get(this.stackKey);
+		
+		JoinData jd = stack.peek();
 		
 		FilterNode newJoinFilter = null;
 		Int joinCount = new Int(0);
@@ -571,8 +633,9 @@ public class Joiner implements Insert {
 			//not possible
 		}
 		
-		boolean isPrimary = chain.getRequest().get(key).equals(PRIMARY);
-		Filter originalFilter = (Filter) chain.getRequest().get(filterKey);
+		boolean isPrimary = jd.joinType.equals(PRIMARY);
+		//Filter originalFilter = (Filter) chain.getRequest().get(filterKey);
+		Filter originalFilter = jd.joinFilter;
 		if (newJoinFilter == null || (joinCount.getValue() != 0 && joinCount.getValue() == joinAttribCount.getValue()) ) {
 			if (! isPrimary) {
 				//TODO add way to skip entries
@@ -598,17 +661,22 @@ public class Joiner implements Insert {
 		joiningFilterConds.add(newJoinFilter);
 		
 		if (isPrimary) {
-			joiningFilterConds.add(((Filter) chain.getRequest().get(joinedFilterKey)).getRoot());
+			
+			//joiningFilterConds.add(((Filter) chain.getRequest().get(joinedFilterKey)).getRoot());
+			joiningFilterConds.add(jd.joinJoinedFilter.getRoot());
 		} else {
-			joiningFilterConds.add(((Filter) chain.getRequest().get(primaryFilterKey)).getRoot());
+			//joiningFilterConds.add(((Filter) chain.getRequest().get(primaryFilterKey)).getRoot());
+			joiningFilterConds.add(jd.joinPrimaryFilter.getRoot());
 		}
 		
 		FilterNode finalFilterNode = new FilterNode(FilterType.AND,joiningFilterConds);
 		
 		Filter finalFilter = new Filter(finalFilterNode);
 			
-		DistinguishedName origBase = (DistinguishedName) chain.getRequest().get(baseKey);
-		Int origScope = (Int) chain.getRequest().get(scopeKey);
+		//DistinguishedName origBase = (DistinguishedName) chain.getRequest().get(baseKey);
+		DistinguishedName origBase = jd.joinBase;
+		//Int origScope = (Int) chain.getRequest().get(scopeKey);
+		Int origScope = jd.joinScope;
 		
 		if (origScope.getValue() == 0) {
 			origScope.setValue(2);
@@ -644,11 +712,15 @@ public class Joiner implements Insert {
 		
 		DistinguishedName dn = null;
 		DistinguishedName bindDN = null;
+		Int scopeToUse = new Int(0);
 		if (isPrimary) {
 			dn = boundNameSpaces.get(this.joinedNamespace);
+			scopeToUse.setValue(2);
 		} else {
 			dn = boundNameSpaces.get(this.primaryNamespace);
+			scopeToUse.setValue(origScope.getValue());
 		}
+		
 		if (dn == null) {
 			bindDN = new DistinguishedName("");
 		} else {
@@ -657,17 +729,19 @@ public class Joiner implements Insert {
 		
 		
 		
-		SearchInterceptorChain searchChain = new SearchInterceptorChain(bindDN,chain.getBindPassword(),ns.getRouter().getGlobalChain().length,ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
-		Results res = new Results(new Insert[0],0);
+		SearchInterceptorChain searchChain = new SearchInterceptorChain(bindDN,chain.getBindPassword(),ns.getRouter().getGlobalChain().getLength(),ns.getRouter().getGlobalChain(),chain.getSession(),chain.getRequest(),ns.getRouter());
+		Results res = new Results(new InsertChain(new Insert[0]),0);
 		
 		ArrayList<Attribute> attribsToUse;
 		
 		if (isPrimary) {
-			attribsToUse = (ArrayList<Attribute>) chain.getRequest().get(joinedAttribsKey);
+			//attribsToUse = (ArrayList<Attribute>) chain.getRequest().get(joinedAttribsKey);
+			attribsToUse = jd.joinJoinAttribs;
 		} else {
-			attribsToUse = (ArrayList<Attribute>) chain.getRequest().get(primaryAttribsKey);
+			//attribsToUse = (ArrayList<Attribute>) chain.getRequest().get(primaryAttribsKey);
+			attribsToUse = jd.joinPrimaryAttribs;
 		}
-		searchChain.nextSearch(useBase,origScope,finalFilter,attribsToUse,typesOnly,res,constraints);
+		searchChain.nextSearch(useBase,scopeToUse,finalFilter,attribsToUse,typesOnly,res,constraints);
 		
 		res.start();
 		boolean first = true;
@@ -741,7 +815,11 @@ public class Joiner implements Insert {
 			DistinguishedName base, Int scope, Filter filter,
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
-		// TODO Auto-generated method stub
+		
+		Stack<JoinData> joinStack = (Stack<JoinData>) chain.getRequest().get(this.stackKey);
+		if (joinStack != null && joinStack.size() > 0 ) {
+			joinStack.pop();
+		}
 
 	}
 	
@@ -889,8 +967,12 @@ public class Joiner implements Insert {
 	}
 
 	public void shutdown() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
+	public String getStackKey() {
+		return this.stackKey;
+	}
 }
+

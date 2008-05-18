@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -36,6 +36,7 @@ import net.sourceforge.myvd.chain.InterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.types.Attribute;
@@ -72,14 +73,14 @@ public class Router {
     
     
     boolean writeAll;
-    Insert[] globalChain;
+    InsertChain globalChain;
     
     NameSpace rootNS;
     
     boolean searchAll;
     
     
-    public Router(Insert[] globalChain) {
+    public Router(InsertChain globalChain) {
     	this.subtree = new TreeMap<DN,Level>(new DNComparer());
     	this.globalChain = globalChain;
     }
@@ -118,7 +119,7 @@ public class Router {
 		if (! chain.getRequest().containsKey(key)) {
 			
     		
-			logger.info("DN : " + dn);
+			//logger.info("DN : " + dn);
 			Level level = this.getLevel(new DN(dn));
         	
         	if (level == null) {
@@ -217,6 +218,8 @@ public class Router {
     				num++;
     			} else if (e.getResultCode() == LDAPException.COMPARE_TRUE) {
     				continue;
+    			} else {
+    				throw e;
     			}
     		}
     		
@@ -540,7 +543,7 @@ public class Router {
 		
 	}
 	
-	public Insert[] getGlobalChain() {
+	public InsertChain getGlobalChain() {
 		return this.globalChain;
 	}
 	
@@ -563,13 +566,9 @@ public class Router {
 	}
 
 
-	private void shutdownChain(Insert[] chain) {
+	private void shutdownChain(InsertChain chain) {
 		
-		for (int i=0;i<chain.length;i++) {
-			logger.info("Shutting down insert " + chain[i].getName() + "...");
-			chain[i].shutdown();
-			logger.info(chain[i].getName() + " shut down complete");
-		}
+		chain.shutdownChain();
 		
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.accessControl.AccessControlItem;
 import net.sourceforge.myvd.inserts.accessControl.AccessMgr;
@@ -55,7 +56,7 @@ public class TestGetACI extends TestCase {
 	
 	public void testBindUserEntries() throws Exception {
 		
-		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser,ou=users,dc=domain,dc=com"),new Password(""),0,new Insert[0],new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new Insert[0]));
+		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser,ou=users,dc=domain,dc=com"),new Password(""),0,new InsertChain(new Insert[0]),new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new InsertChain(new Insert[0])));
 		AccessControlItem aci = this.accessManager.getApplicableACI(new DN("uid=testuser,ou=users,dc=domain,dc=com"),null,'v',chain); 
 		if (aci == null || aci.getNum() != 1) {
 			fail("invalid aci : " + aci);
@@ -64,7 +65,7 @@ public class TestGetACI extends TestCase {
 	
 	public void testBindUserAttribs() throws Exception {
 		
-		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser,ou=users,dc=domain,dc=com"),new Password(""),0,new Insert[0],new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new Insert[0]));
+		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser,ou=users,dc=domain,dc=com"),new Password(""),0,new InsertChain(new Insert[0]),new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new InsertChain(new Insert[0])));
 		AccessControlItem aci = this.accessManager.getApplicableACI(new DN("uid=testuser,ou=users,dc=domain,dc=com"),"attrib",'r',chain); 
 		if (aci == null || aci.getNum() != 5) {
 			fail("invalid aci : " + aci);
@@ -74,7 +75,7 @@ public class TestGetACI extends TestCase {
 	
 	public void testBindUserEntriesFail() throws Exception {
 		
-		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser2,ou=users,dc=domain,dc=com"),new Password(""),0,new Insert[0],new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new Insert[0]));
+		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser2,ou=users,dc=domain,dc=com"),new Password(""),0,new InsertChain(new Insert[0]),new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new InsertChain(new Insert[0])));
 		AccessControlItem aci = this.accessManager.getApplicableACI(new DN("uid=testuser,ou=users,dc=domain,dc=com"),null,'v',chain); 
 		if (aci == null || aci.getNum() != 2) {
 			fail("invalid aci : " + aci);
@@ -83,7 +84,7 @@ public class TestGetACI extends TestCase {
 	
 	public void testBindUserEntriesSpecificEntry() throws Exception {
 		
-		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser2,ou=users,dc=domain,dc=com"),new Password(""),0,new Insert[0],new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new Insert[0]));
+		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName("uid=testuser2,ou=users,dc=domain,dc=com"),new Password(""),0,new InsertChain(new Insert[0]),new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new InsertChain(new Insert[0])));
 		AccessControlItem aci = this.accessManager.getApplicableACI(new DN("ou=users,dc=domain,dc=com"),null,'v',chain); 
 		if (aci == null || aci.getNum() != 3) {
 			fail("invalid aci : " + aci);
@@ -92,7 +93,7 @@ public class TestGetACI extends TestCase {
 	
 	public void testNoBindEntry() throws Exception {
 		
-		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(""),new Password(""),0,new Insert[0],new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new Insert[0]));
+		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(""),new Password(""),0,new InsertChain(new Insert[0]),new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new InsertChain(new Insert[0])));
 		AccessControlItem aci = this.accessManager.getApplicableACI(new DN("uid=testuser,ou=users,dc=domain,dc=com"),null,'v',chain); 
 		if (aci == null || aci.getNum() != 0) {
 			fail("invalid aci : " + aci);
@@ -101,7 +102,7 @@ public class TestGetACI extends TestCase {
 	
 	public void testNoBindAttribs() throws Exception {
 		
-		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(""),new Password(""),0,new Insert[0],new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new Insert[0]));
+		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(""),new Password(""),0,new InsertChain(new Insert[0]),new HashMap<Object,Object>(),new HashMap<Object,Object>(),new Router(new InsertChain(new Insert[0])));
 		AccessControlItem aci = this.accessManager.getApplicableACI(new DN("uid=testuser,ou=users,dc=domain,dc=com"),"name",'r',chain); 
 		if (aci == null || aci.getNum() != 4) {
 			fail("invalid aci : " + aci);

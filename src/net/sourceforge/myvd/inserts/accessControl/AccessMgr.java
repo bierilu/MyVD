@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -50,7 +50,7 @@ public class AccessMgr {
 	private void add(AccessControlItem aci) {
 		DN dn = aci.getDn();
 		if (aci.getNum() == 3) {
-			System.out.println();
+			//System.out.println();
 		}
 		//work in reverse from the end of the dn to the front
 		Vector<RDN> rdns = dn.getRDNs();
@@ -127,8 +127,16 @@ public class AccessMgr {
 	}
 	
 	public AccessControlItem getApplicableACI(DN dn,String attributeName,char perm,InterceptorChain chain) {
+		if (dn.toString().length() == 0) {
+			dn = new DN("CN=ROOTDSE");
+		}
+		
 		ArrayList<AccessControlItem> acl = this.getACLs(dn);
 		AccessControlItem aciToReturn = null;
+		
+		if (acl == null) {
+			return null;
+		}
 		
 		Iterator<AccessControlItem> it = acl.iterator();
 		while (it.hasNext()) {

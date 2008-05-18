@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -160,7 +160,12 @@ public class DumpTransaction implements Insert {
 		try {
 			chain.nextCompare(dn, attrib, constraints);
 		} catch (Throwable t) {
-			log("Error Running Compare",t);
+			
+			
+			if (! (t instanceof LDAPException) && ((LDAPException) t).getResultCode() != LDAPException.COMPARE_FALSE) {
+				log("Error Running Compare",t);
+			}
+			
 			if (t instanceof LDAPException) {
 				throw ((LDAPException) t);
 			} else {
@@ -338,6 +343,7 @@ public class DumpTransaction implements Insert {
 				ldif.append(attrib.getBaseName()).append(" : ").append(attrib.getStringValueArray()[i]).append('\n');
 			}
 		}
+		ldif.append("myVdReturnEntry: " + entry.isReturnEntry());
 		
 		log("Begin Post Search Entry - Filter=" + filter.getValue() + ";Base=" + base.toString() + ";Scope=" + scope.getValue() + ";Attributes=" + attributes  + "\n" + ldif.toString());
 		
@@ -361,6 +367,7 @@ public class DumpTransaction implements Insert {
 					ldif.append(attrib.getBaseName()).append(" : ").append(attrib.getStringValueArray()[i]).append('\n');
 				}
 			}
+			ldif.append("myVdReturnEntry: " + entry.isReturnEntry());
 			
 			log("Post Seach Entry Complete\n" + ldif.toString());
 		}

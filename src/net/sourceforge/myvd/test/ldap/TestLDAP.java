@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -28,6 +28,7 @@ import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.ldap.LDAPInterceptor;
@@ -112,13 +113,13 @@ public class TestLDAP extends TestCase {
 				attribs);
 		control.put("cn=Test User,ou=internal,o=mycompany,c=us", entry);
 
-		Results res = new Results(new Insert[0]);
+		Results res = new Results(new InsertChain(new Insert[0]));
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
 		SearchInterceptorChain chain = new SearchInterceptorChain(
 				new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")),
-				new Password("manager".getBytes()), 0, new Insert[0],
+				new Password("manager".getBytes()), 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		interceptor.search(chain, new DistinguishedName(new DN(
@@ -176,7 +177,7 @@ public class TestLDAP extends TestCase {
 				new ArrayList<String>());
 		AddInterceptorChain chain = new AddInterceptorChain(
 				new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")),
-				new Password("manager".getBytes()), 0, new Insert[0],
+				new Password("manager".getBytes()), 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		interceptor.add(chain, newEntry, new LDAPConstraints());
@@ -209,7 +210,7 @@ public class TestLDAP extends TestCase {
 				new ArrayList<String>());
 		ModifyInterceptorChain chain = new ModifyInterceptorChain(
 				new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")),
-				new Password("manager".getBytes()), 0, new Insert[0],
+				new Password("manager".getBytes()), 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		LDAPModification mod = new LDAPModification(LDAPModification.ADD,
@@ -253,7 +254,7 @@ public class TestLDAP extends TestCase {
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
-		bindChain = new BindInterceptorChain(null, null, 0, new Insert[0],
+		bindChain = new BindInterceptorChain(null, null, 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		try {
@@ -272,7 +273,7 @@ public class TestLDAP extends TestCase {
 		session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
-		bindChain = new BindInterceptorChain(null, null, 0, new Insert[0],
+		bindChain = new BindInterceptorChain(null, null, 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		try {
@@ -287,7 +288,7 @@ public class TestLDAP extends TestCase {
 		session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
-		bindChain = new BindInterceptorChain(null, null, 0, new Insert[0],
+		bindChain = new BindInterceptorChain(null, null, 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		try {
@@ -311,7 +312,7 @@ public class TestLDAP extends TestCase {
 				new ArrayList<String>());
 		DeleteInterceptorChain chain = new DeleteInterceptorChain(
 				new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")),
-				new Password("manager".getBytes()), 0, new Insert[0],
+				new Password("manager".getBytes()), 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		interceptor.delete(chain, new DistinguishedName(
@@ -342,7 +343,7 @@ public class TestLDAP extends TestCase {
 				new ArrayList<String>());
 		RenameInterceptorChain chain = new RenameInterceptorChain(
 				new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")),
-				new Password("manager".getBytes()), 0, new Insert[0],
+				new Password("manager".getBytes()), 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		interceptor.rename(chain,new DistinguishedName("cn=Test User,ou=internal,o=mycompany,c=us"),new DistinguishedName("cn=New Test User"),new DistinguishedName("ou=internal,o=mycomapny,c=us"),new Bool(true),new LDAPConstraints());
@@ -380,7 +381,7 @@ public class TestLDAP extends TestCase {
 				new ArrayList<String>());
 		RenameInterceptorChain chain = new RenameInterceptorChain(
 				new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")),
-				new Password("manager".getBytes()), 0, new Insert[0],
+				new Password("manager".getBytes()), 0, new InsertChain(new Insert[0]),
 				session, new HashMap<Object, Object>());
 
 		interceptor.rename(chain,new DistinguishedName("cn=Test User,ou=internal,o=mycompany,c=us"),new DistinguishedName("cn=New Test User"),new Bool(true),new LDAPConstraints());
@@ -440,7 +441,7 @@ public class TestLDAP extends TestCase {
 				new ArrayList<String>());
 		ExetendedOperationInterceptorChain extChain = new ExetendedOperationInterceptorChain(
 				new DistinguishedName(""), new Password(""), 0,
-				new Insert[0], session, new HashMap<Object, Object>());
+				new InsertChain(new Insert[0]), session, new HashMap<Object, Object>());
 
 		this.interceptor.extendedOperation(extChain, localOp,
 				new LDAPConstraints());
@@ -452,7 +453,7 @@ public class TestLDAP extends TestCase {
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
 		bindChain = new BindInterceptorChain(new DistinguishedName(""),
-				new Password(""), 0, new Insert[0], session,
+				new Password(""), 0, new InsertChain(new Insert[0]), session,
 				new HashMap<Object, Object>());
 
 		try {

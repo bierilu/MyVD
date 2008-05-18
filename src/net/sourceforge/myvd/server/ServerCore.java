@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
@@ -35,7 +36,7 @@ public class ServerCore {
 	static Logger logger = Logger.getLogger(ServerCore.class);
 	
 	Properties props;
-	private Insert[] globalChain;
+	private InsertChain globalChain;
 	private Router router;
 
 	private NameSpace globalNS;
@@ -44,7 +45,7 @@ public class ServerCore {
 		this.props = props;
 	}
 
-	public Insert[] getGlobalChain() {
+	public InsertChain getGlobalChain() {
 		return globalChain;
 	}
 
@@ -56,79 +57,22 @@ public class ServerCore {
 		return router;
 	}
 
-	private Insert configureInterceptor(String name,String prefix,NameSpace ns,Insert[] chain,int pos) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
-		logger.debug("Insert : " + name + "; " + prefix);
-		
-		String className = props.getProperty(prefix + "className");
-		
-		logger.debug("Insert Class Name : " + className);
-		
-		String cfgPrefix = prefix + "config.";
-		Insert interceptor;
-		
-		interceptor = (Insert) Class.forName(className).newInstance();
-		String propName;
-		Properties localProps = new Properties();
-		Iterator it = props.keySet().iterator();
-		while (it.hasNext()) {
-			propName = (String) it.next();
-			if (propName.startsWith(cfgPrefix)) {
-				String localPropName = propName.substring(cfgPrefix.length());
-				String localVal = props.getProperty(propName);
-				localVal = envVars(localVal);
-				logger.debug("Config : " + localPropName + "=" + localVal);
-				localProps.setProperty(localPropName,localVal);
-			}
-		}
-		
-		chain[pos] = interceptor;
-		
-		interceptor.configure(name,localProps,ns);
-		
-		
-		
-		return interceptor;
-		
-		
-	}
 	
-	private String envVars(String localVal) {
-		int start = localVal.indexOf('%');
-		
-		int last = 0;
-		if (start == -1) {
-			return localVal;
-		}
-		
-		
-		
-		StringBuffer buf = new StringBuffer();
-		
-		while (start != -1) {
-			int end = localVal.indexOf('%',start + 1);
-			if (end == -1) {
-				return localVal;
-			}
-			buf.append(localVal.substring(last,start));
-			buf.append(System.getenv().get(localVal.substring(start + 1,end)));
-			last = end + 1;
-			start = localVal.indexOf('%',last);
-		}
-		
-		buf.append(localVal.substring(last));
-		
-		return buf.toString();
-	}
+	
+	
 
-	private void configureChain(String prefix,ArrayList<String> links,Insert[] chain,NameSpace ns) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
+	private void configureChain(String prefix,ArrayList<String> links,InsertChain chain,NameSpace ns) throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
 		Iterator<String> it = links.iterator();
 		int i=0;
 		
 		while (it.hasNext()) {
 			String name = it.next();
-			chain[i] = this.configureInterceptor(name,prefix +  name + ".",ns,chain,i);
+			chain.setInsert(i, chain.getInsertConfig(name,prefix +  name + ".",chain,i));
+			
 			i++;
 		}
+		
+		chain.configureChain();
 	}
 	
 	private void buildGlobalChain() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
@@ -141,9 +85,11 @@ public class ServerCore {
 			linkList.add(toker.nextToken());
 		}
 		
-		Insert[] chain = new Insert[linkList.size()];
-		
+		Insert[] tchain = new Insert[linkList.size()];
+		InsertChain chain = new InsertChain(tchain);
 		this.globalNS = new NameSpace("globalChain",new DistinguishedName("cn=root"),0,chain,false);
+		chain.setNameSpace(this.globalNS);
+		chain.setProps(this.props);
 		
 		this.configureChain("server.globalChain.",linkList,chain,this.globalNS);
 		
@@ -177,9 +123,12 @@ public class ServerCore {
 				chainList.add(chainToker.nextToken());
 			}
 			
-			Insert[] chain = new Insert[chainList.size()];
+			Insert[] tchain = new Insert[chainList.size()];
+			InsertChain chain = new InsertChain(tchain);
+			chain.setProps(props);
 			
 			NameSpace ns = new NameSpace(nsName,new DistinguishedName(nsBase),weight,chain,false);
+			chain.setNameSpace(ns);
 			
 			this.configureChain(prefix,chainList,chain,ns);
 			

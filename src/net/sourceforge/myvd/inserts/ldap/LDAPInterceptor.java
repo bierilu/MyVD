@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -98,6 +98,8 @@ public class LDAPInterceptor implements Insert {
 		this.explodedLocalBase = nameSpace.getBase().getDN().explodeDN(false);
 		
 		this.proxyDN = (String) props.getProperty("proxyDN","");
+		
+		
 		this.proxyPass = props.getProperty("proxyPass","").getBytes();
 		
 		String type = props.getProperty("type","LDAP");
@@ -110,6 +112,9 @@ public class LDAPInterceptor implements Insert {
 		} else if (type.equalsIgnoreCase("SPML")) {
 			this.type = LDAPConnectionType.SPML;
 			this.spmlImpl = props.getProperty("spmlImpl","com.novell.ldap.spml.NoAuthImpl");
+			
+		} else if (type.equalsIgnoreCase("ldaps")) {
+			this.type = LDAPConnectionType.LDAPS;
 		} else {
 			throw new LDAPLocalException("Unrecognized ldap interceptor type : " + type, LDAPException.OPERATIONS_ERROR);
 		}
@@ -131,7 +136,9 @@ public class LDAPInterceptor implements Insert {
 	private ConnectionWrapper getConnection(DN bindDN,Password pass,boolean force,DN base,HashMap<Object,Object> session,boolean forceBind) throws LDAPException {
 		ConnectionWrapper wrapper = null;
 		
-		logger.info("Bound inserts : " + session.get(SessionVariables.BOUND_INTERCEPTORS));
+		if (logger.isDebugEnabled()) {
+			logger.debug("Bound inserts : " + session.get(SessionVariables.BOUND_INTERCEPTORS));
+		}
 		
 		if (this.passThroughBindOnly && ! force) {
 			wrapper = pool.getConnection(new DN(this.proxyDN),new Password(this.proxyPass),force);

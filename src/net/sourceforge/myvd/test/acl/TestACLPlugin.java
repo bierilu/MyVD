@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.accessControl.AccessControlItem;
 import net.sourceforge.myvd.router.Router;
@@ -42,7 +43,7 @@ import junit.framework.TestCase;
 public class TestACLPlugin extends TestCase {
 	private StartOpenLDAP openldapServer;
 	private Server server;
-	private Insert[] globalChain;
+	private InsertChain globalChain;
 	private Router router;
 	
 	protected void setUp() throws Exception {

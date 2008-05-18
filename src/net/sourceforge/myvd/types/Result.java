@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import net.sourceforge.myvd.chain.InterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
@@ -36,7 +37,7 @@ public class Result {
 	public ArrayList<Attribute> attribs;
 	public LDAPSearchConstraints constraints;
 	
-	public Insert[] localSource;
-	public Insert[] globalSource;
+	public InsertChain localSource;
+	public InsertChain globalSource;
 	public SearchInterceptorChain chain;
 }

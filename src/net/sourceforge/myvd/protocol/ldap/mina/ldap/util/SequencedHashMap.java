@@ -53,7 +53,7 @@ import java.util.Set;
  * or use explicit synchronization controls.
  * 
  * @since Commons Collections 2.0
- * @version $Revision: 494173 $ $Date: 2007-01-08 19:42:35 +0000 (Mon, 08 Jan 2007) $
+ * @version $Revision: 494173 $ $Date: 2008-01-08 19:42:35 +0000 (Mon, 08 Jan 2008) $
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  */
 public class SequencedHashMap implements Map, Cloneable, Externalizable

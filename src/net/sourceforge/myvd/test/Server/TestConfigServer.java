@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -28,6 +28,7 @@ import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.extensions.PasswordChangeOperation;
@@ -75,7 +76,7 @@ public class TestConfigServer extends TestCase {
 
 	
 	
-	Insert[] globalChain;
+	InsertChain globalChain;
 	Router router;
 	private StartOpenLDAP baseServer;
 	private StartOpenLDAP internalServer;
@@ -103,7 +104,7 @@ public class TestConfigServer extends TestCase {
 		
  	}
 	
-	public void testSearchSubtreeResults() throws LDAPException {
+	public void testSearchSubtreeResults() throws Exception {
 		
 		
 		
@@ -135,7 +136,7 @@ public class TestConfigServer extends TestCase {
 		Results res = new Results(this.globalChain);
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new Insert[0],session,new HashMap());
+		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new InsertChain(new Insert[0]),session,new HashMap());
 		bindChain.nextBind(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),new LDAPConstraints());
 		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),0,this.globalChain,session,new HashMap<Object,Object>(),router);
 		ArrayList<Attribute> attribsToRequest = new ArrayList<Attribute>();
@@ -193,7 +194,7 @@ public class TestConfigServer extends TestCase {
 
 	
 	
-public void testSearchOneLevelResults() throws LDAPException {
+public void testSearchOneLevelResults() throws Exception {
 		
 		
 		
@@ -219,7 +220,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		Results res = new Results(this.globalChain);
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new Insert[0],session,new HashMap());
+		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new InsertChain(new Insert[0]),session,new HashMap());
 		bindChain.nextBind(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),new LDAPConstraints());
 		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),0,this.globalChain,session,new HashMap<Object,Object>(),router);
 		ArrayList<Attribute> attribsToRequest = new ArrayList<Attribute>();
@@ -275,7 +276,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 	}
 	
 	
-	public void testAddInternal() throws LDAPException {
+	public void testAddInternal() throws Exception {
 		
 		LDAPAttributeSet attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));

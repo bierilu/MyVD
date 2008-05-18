@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Stack;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -66,10 +67,8 @@ import net.sourceforge.myvd.util.EntryUtil;
 
 public class EmbeddedGroups implements Insert {
 	private static Logger logger = Logger.getLogger(EmbeddedGroups.class);
-	private static final String REQUEST_UM_ = "EmbededGroups_Requested_UniqueMember_";
-	
-	private static final String REQUEST_MEMBERS_ = "EmbededGroups_Requested_MEMBERS_";
-	private static final String REQUEST_FILTER_ = "EmbededGroups_New_Filter_";
+
+	private String StackKey;
 	private String name;
 	private NameSpace ns;
 	
@@ -132,6 +131,9 @@ public class EmbeddedGroups implements Insert {
 		
 		this.isGlobal = nameSpace.isGlobal();
 		
+		this.StackKey = "EmbeddedGroups_" + ns.getBase().getDN().toString() + "_" + name;
+		
+		
 		
 	
 	}
@@ -184,6 +186,10 @@ public class EmbeddedGroups implements Insert {
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base, scope, filter, attributes, typesOnly, constraints);
+		Stack<EmbRequest> req = (Stack<EmbRequest>) chain.getRequest().get(this.StackKey);
+		if (req.size() > 0) {
+			req.pop();
+		}
 
 	}
 
@@ -193,22 +199,27 @@ public class EmbeddedGroups implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchEntry(entry, base, scope, filter, attributes, typesOnly, constraints);
 		
+		Stack<EmbRequest> req = (Stack<EmbRequest>) chain.getRequest().get(this.StackKey);
+		EmbRequest embreq = req.peek();
 		
 		if (checkObjectClass(entry)) {
 			
-			boolean requestedMembers = (Boolean) chain.getRequest().get(EmbeddedGroups.REQUEST_UM_ + this.name);
+			boolean requestedMembers = embreq.requestedMembers;
 			
 			LDAPAttribute members = entry.getEntry().getAttribute(staticAttribute);
-		
+			if (members == null) {
+				members = new LDAPAttribute(staticAttribute);
+				entry.getEntry().getAttributeSet().add(members);
+			}
 			
-			ArrayList<EmbTestMembers> testmembers = (ArrayList<EmbTestMembers>) chain.getRequest().get(EmbeddedGroups.REQUEST_MEMBERS_ + this.name);
+			ArrayList<EmbTestMembers> testmembers = embreq.testmembers;
 			Iterator<EmbTestMembers> it = testmembers.iterator();
 			while (it.hasNext()) {
 				EmbTestMembers tm = it.next();
 				checkMember(tm,entry.getEntry().getDN(),chain);
 			}
 			
-			Filter useFilter = (Filter) chain.getRequest().get(EmbeddedGroups.REQUEST_FILTER_ + this.name);
+			Filter useFilter = embreq.newfilter;
 			
 			entry.setReturnEntry(useFilter.getRoot().checkEntry(entry.getEntry()));
 			
@@ -216,6 +227,9 @@ public class EmbeddedGroups implements Insert {
 				createStaticMembers(chain, new DN(entry.getEntry().getDN()), constraints, members,true);
 			}
 			
+			if (members.size() == 0) {
+				entry.getEntry().getAttributeSet().remove(staticAttribute);
+			}
 			
 			
 		}
@@ -295,14 +309,18 @@ public class EmbeddedGroups implements Insert {
 				LDAPEntry entry = results.next().getEntry();
 				LDAPAttribute members = entry.getAttribute(this.staticAttribute);
 				
-				Enumeration enumer = members.getStringValues();
-				while (enumer.hasMoreElements()) {
+				if (members != null) {
 					
-					String member = (String) enumer.nextElement();
-					if (groups.contains(new DN(member).toString().toLowerCase())) {
-						if (this.checkMemberInGroup(tm, member, chain)) {
-							results.finish();
-							return true;
+				
+					Enumeration enumer = members.getStringValues();
+					while (enumer.hasMoreElements()) {
+						
+						String member = (String) enumer.nextElement();
+						if (groups.contains(new DN(member).toString().toLowerCase())) {
+							if (this.checkMemberInGroup(tm, member, chain)) {
+								results.finish();
+								return true;
+							}
 						}
 					}
 				}
@@ -419,15 +437,22 @@ public class EmbeddedGroups implements Insert {
 			Int scope, Filter filter, ArrayList<Attribute> attributes,
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
+		Stack<EmbRequest> req = (Stack<EmbRequest>) chain.getRequest().get(this.StackKey);
+		if (req == null) {
+			req = new Stack<EmbRequest>();
+			chain.getRequest().put(this.StackKey, req);
+		}
 		
+		EmbRequest embreq = new EmbRequest();
+		req.push(embreq);
 		
 		startSyncProcess();
 		
-		boolean requestedMembers = false;
+		embreq.requestedMembers = false;
 		boolean requestedOC = false;
 		
 		if (attributes.size() == 0) {
-			requestedMembers = true;
+			embreq.requestedMembers = true;
 			requestedOC = true;
 		}
 		
@@ -438,13 +463,13 @@ public class EmbeddedGroups implements Insert {
 			Attribute attrib = it.next();
 			String name = attrib.getAttribute().getBaseName();
 			if (name.equalsIgnoreCase("*")) {
-				requestedMembers = true;
+				embreq.requestedMembers = true;
 				requestedOC = true;
 				
 				nattribs.add(new Attribute("*"));
 				
 			} else if (name.equalsIgnoreCase(staticAttribute)) {
-				requestedMembers = true;
+				embreq.requestedMembers = true;
 			} else if (name.equalsIgnoreCase("objectclass")) {
 				requestedOC = true;
 				nattribs.add(new Attribute(name));
@@ -454,33 +479,34 @@ public class EmbeddedGroups implements Insert {
 		}
 		
 		
-		if (! requestedMembers) {
-			nattribs.add(new Attribute(staticAttribute));
+		if (attributes.size() != 0) {
+			if (embreq.requestedMembers) {
+				nattribs.add(new Attribute(staticAttribute));
+			}
+			
+			if (! requestedOC) {
+				nattribs.add(new Attribute("objectclass"));
+			}
 		}
 		
-		if (! requestedOC) {
-			nattribs.add(new Attribute("objectclass"));
-		}
-		
-		chain.getRequest().put(EmbeddedGroups.REQUEST_UM_ + this.name, requestedMembers);
 		
 		
 		
-		Filter newfilter = null; 
-		ArrayList<EmbTestMembers> testmembers = new ArrayList<EmbTestMembers>();
-		chain.getRequest().put(EmbeddedGroups.REQUEST_MEMBERS_ + this.name, testmembers);
+		embreq.newfilter = null; 
+		embreq.testmembers = new ArrayList<EmbTestMembers>();
+		
 		try {
-			newfilter =	new Filter(this.trimSearchFilter(filter.getRoot(), testmembers,nattribs));
+			embreq.newfilter =	new Filter(this.trimSearchFilter(filter.getRoot(), embreq.testmembers,nattribs));
 		} catch (CloneNotSupportedException e) {
 			
 		}
 		
-		chain.getRequest().put(EmbeddedGroups.REQUEST_FILTER_ + this.name, newfilter);
+		
 		
 		Filter useNewFilter = null;
 		
 		
-		useNewFilter =	new Filter(newfilter.getRoot().toString());
+		useNewFilter =	new Filter(embreq.newfilter.getRoot().toString());
 		
 		chain.nextSearch(base, scope, useNewFilter, nattribs, typesOnly, results, constraints);
 
@@ -582,7 +608,7 @@ public class EmbeddedGroups implements Insert {
 		ArrayList<Attribute> attribs = new ArrayList<Attribute>();
 		attribs.add(new Attribute("1.1"));
 		
-		results = this.conUtil.search(new DistinguishedName(this.groupBase), new Int(2), new Filter("(objectClass=groupOfUniqueNames)"), attribs, new Bool(false), new LDAPSearchConstraints());
+		results = this.conUtil.search(new DistinguishedName(this.groupBase), new Int(2), new Filter("(objectClass=" + this.staticOC + ")"), attribs, new Bool(false), new LDAPSearchConstraints());
 		
 		results.start();
 		
@@ -728,4 +754,10 @@ class RebuildGroups implements Runnable {
 		
 	}
 	
+}
+
+class EmbRequest {
+	boolean requestedMembers;
+	ArrayList<EmbTestMembers> testmembers;
+	Filter newfilter;
 }
