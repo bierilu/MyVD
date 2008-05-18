@@ -1,0 +1,788 @@
+[2008-03-29 13:17:11,067][main] INFO  Server - MyVirtualDirectory Version : 0.8.3b1
+[2008-03-29 13:17:11,068][main] INFO  Server - Starting MyVirtualDirectory server...
+[2008-03-29 13:17:12,343][main] INFO  JdbcInsert - Driver : com.mysql.jdbc.Driver
+[2008-03-29 13:17:12,343][main] INFO  JdbcInsert - URL : jdbc:mysql://localhost/myvdPosix
+[2008-03-29 13:17:12,343][main] INFO  JdbcInsert - User : root
+[2008-03-29 13:17:12,343][main] INFO  JdbcInsert - Password : **********
+[2008-03-29 13:17:12,343][main] INFO  JdbcInsert - Max Cons : 10
+[2008-03-29 13:17:12,343][main] INFO  JdbcInsert - maxIdleCons : 5
+[2008-03-29 13:17:12,427][main] INFO  JdbcInsert - RDN : objectguid
+[2008-03-29 13:17:12,428][main] INFO  JdbcInsert - Mapping : uidnumber=id,objectguid=objectguid,homeDirectory=homeDir,loginShell=loginShell
+[2008-03-29 13:17:12,428][main] INFO  JdbcInsert - objectClass : posixAccount
+[2008-03-29 13:17:12,428][main] INFO  JdbcInsert - Use Simple : true
+[2008-03-29 13:17:12,428][main] INFO  JdbcInsert - SQL : SELECT id,objectguid,homeDir,loginShell FROM posixUsers
+[2008-03-29 13:17:12,429][main] INFO  JdbcInsert - Add Base To Filter : false
+[2008-03-29 13:17:12,429][main] INFO  DBAddOnModify - insert sql : INSERT INTO posixUsers (loginshell,homedir,objectguid) VALUES (?,?,?)
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - Driver : com.mysql.jdbc.Driver
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - URL : jdbc:mysql://localhost/myvdPosix
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - User : root
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - Password : **********
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - Max Cons : 10
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - maxIdleCons : 5
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - RDN : objectguid
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - Mapping : gidnumber=id,objectguid=objectguid
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - objectClass : posixGroup
+[2008-03-29 13:17:12,430][main] INFO  JdbcInsert - Use Simple : true
+[2008-03-29 13:17:12,431][main] INFO  JdbcInsert - SQL : SELECT id,objectguid FROM posixGroups
+[2008-03-29 13:17:12,431][main] INFO  JdbcInsert - Add Base To Filter : false
+[2008-03-29 13:17:12,431][main] INFO  DBAddOnModify - insert sql : INSERT INTO posixGroups (objectguid) VALUES (?)
+[2008-03-29 13:17:12,456][main] INFO  Joiner - Def Filter : (objectClass=*)
+[2008-03-29 13:17:12,457][main] INFO  GeneratePosixGID - template : /home/@samAccountName@
+[2008-03-29 13:17:12,458][main] INFO  GeneratePosixGID - attrib : samAccountName
+[2008-03-29 13:17:12,464][main] INFO  JoinAddFlatNS - add to joined only prop? : true
+[2008-03-29 13:17:12,543][main] INFO  Server - Server started
+[2008-03-29 13:18:22,882][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Bind : 
+[2008-03-29 13:18:22,883][MyVD-2] INFO  AccessLog - BIND op=0 con=1 dn=''
+[2008-03-29 13:18:22,883][MyVD-2] INFO  AccessLog - RESULT op=0 con=1 result=0 time=0
+[2008-03-29 13:18:22,883][MyVD-2] INFO  DumpTransaction - [GLOBAL] Bind Complete
+[2008-03-29 13:18:22,968][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:22,969][MyVD-2] INFO  AccessLog - SRCH op=1 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,100][MyVD-2] INFO  AccessLog - RESULT op=1 con=1 result=0 time=132
+[2008-03-29 13:18:23,100][MyVD-2] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,100][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=root));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,101][MyVD-2] INFO  AccessLog - SRCH-RESULT op=1 con=1 entries=0 time=133
+[2008-03-29 13:18:23,101][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,101][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=root));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,102][MyVD-2] INFO  AccessLog - SRCH-RESULT op=1 con=1 entries=0 time=134
+[2008-03-29 13:18:23,102][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,111][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,111][MyVD-2] INFO  AccessLog - SRCH op=2 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,125][MyVD-2] INFO  AccessLog - RESULT op=2 con=1 result=0 time=14
+[2008-03-29 13:18:23,125][MyVD-2] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,126][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=root));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,126][MyVD-2] INFO  AccessLog - SRCH-RESULT op=2 con=1 entries=0 time=15
+[2008-03-29 13:18:23,126][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,126][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=root));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,126][MyVD-2] INFO  AccessLog - SRCH-RESULT op=2 con=1 entries=0 time=15
+[2008-03-29 13:18:23,126][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,129][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,130][MyVD-3] INFO  AccessLog - SRCH op=3 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,130][MyVD-3] INFO  AccessLog - RESULT op=3 con=1 result=0 time=1
+[2008-03-29 13:18:23,130][MyVD-3] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,130][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,130][MyVD-3] INFO  AccessLog - SRCH-RESULT op=3 con=1 entries=0 time=1
+[2008-03-29 13:18:23,130][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,130][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,149][MyVD-3] INFO  AccessLog - SRCH-RESULT op=3 con=1 entries=0 time=20
+[2008-03-29 13:18:23,149][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,152][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,152][MyVD-3] INFO  AccessLog - SRCH op=4 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,152][MyVD-3] INFO  AccessLog - RESULT op=4 con=1 result=0 time=0
+[2008-03-29 13:18:23,152][MyVD-3] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,152][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,152][MyVD-3] INFO  AccessLog - SRCH-RESULT op=4 con=1 entries=0 time=0
+[2008-03-29 13:18:23,153][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,153][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,153][MyVD-3] INFO  AccessLog - SRCH-RESULT op=4 con=1 entries=0 time=1
+[2008-03-29 13:18:23,153][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,181][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,181][MyVD-4] INFO  AccessLog - SRCH op=5 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,181][MyVD-4] INFO  AccessLog - RESULT op=5 con=1 result=0 time=0
+[2008-03-29 13:18:23,181][MyVD-4] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,181][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,181][MyVD-4] INFO  AccessLog - SRCH-RESULT op=5 con=1 entries=0 time=0
+[2008-03-29 13:18:23,181][MyVD-4] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,182][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,182][MyVD-4] INFO  AccessLog - SRCH-RESULT op=5 con=1 entries=0 time=1
+[2008-03-29 13:18:23,182][MyVD-4] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,184][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,184][MyVD-4] INFO  AccessLog - SRCH op=6 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,185][MyVD-4] INFO  AccessLog - RESULT op=6 con=1 result=0 time=1
+[2008-03-29 13:18:23,185][MyVD-4] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,186][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,187][MyVD-4] INFO  AccessLog - SRCH-RESULT op=6 con=1 entries=0 time=3
+[2008-03-29 13:18:23,187][MyVD-4] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,187][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,187][MyVD-4] INFO  AccessLog - SRCH-RESULT op=6 con=1 entries=0 time=3
+[2008-03-29 13:18:23,187][MyVD-4] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,191][MyVD-5] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,191][MyVD-5] INFO  AccessLog - SRCH op=7 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,191][MyVD-5] INFO  AccessLog - RESULT op=7 con=1 result=0 time=0
+[2008-03-29 13:18:23,191][MyVD-5] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,191][MyVD-5] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,191][MyVD-5] INFO  AccessLog - SRCH-RESULT op=7 con=1 entries=0 time=0
+[2008-03-29 13:18:23,191][MyVD-5] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,192][MyVD-5] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,192][MyVD-5] INFO  AccessLog - SRCH-RESULT op=7 con=1 entries=0 time=1
+[2008-03-29 13:18:23,192][MyVD-5] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,195][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,195][MyVD-6] INFO  AccessLog - SRCH op=8 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,215][MyVD-6] INFO  AccessLog - RESULT op=8 con=1 result=0 time=20
+[2008-03-29 13:18:23,215][MyVD-6] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,215][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,215][MyVD-6] INFO  AccessLog - SRCH-RESULT op=8 con=1 entries=0 time=20
+[2008-03-29 13:18:23,215][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,215][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,215][MyVD-6] INFO  AccessLog - SRCH-RESULT op=8 con=1 entries=0 time=20
+[2008-03-29 13:18:23,216][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,227][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,227][MyVD-7] INFO  AccessLog - SRCH op=9 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,227][MyVD-7] INFO  AccessLog - RESULT op=9 con=1 result=0 time=0
+[2008-03-29 13:18:23,227][MyVD-7] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,227][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,227][MyVD-7] INFO  AccessLog - SRCH-RESULT op=9 con=1 entries=0 time=0
+[2008-03-29 13:18:23,227][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,228][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,228][MyVD-7] INFO  AccessLog - SRCH-RESULT op=9 con=1 entries=0 time=1
+[2008-03-29 13:18:23,228][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,231][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,231][MyVD-7] INFO  AccessLog - SRCH op=10 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,231][MyVD-7] INFO  AccessLog - RESULT op=10 con=1 result=0 time=0
+[2008-03-29 13:18:23,231][MyVD-7] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,232][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,232][MyVD-7] INFO  AccessLog - SRCH-RESULT op=10 con=1 entries=0 time=1
+[2008-03-29 13:18:23,232][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,232][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,232][MyVD-7] INFO  AccessLog - SRCH-RESULT op=10 con=1 entries=0 time=1
+[2008-03-29 13:18:23,232][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,236][MyVD-8] INFO  AccessLog - SRCH op=11 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,236][MyVD-8] INFO  AccessLog - RESULT op=11 con=1 result=0 time=0
+[2008-03-29 13:18:23,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,236][MyVD-8] INFO  AccessLog - SRCH-RESULT op=11 con=1 entries=0 time=0
+[2008-03-29 13:18:23,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,236][MyVD-8] INFO  AccessLog - SRCH-RESULT op=11 con=1 entries=0 time=0
+[2008-03-29 13:18:23,237][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,240][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,240][MyVD-8] INFO  AccessLog - SRCH op=12 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,240][MyVD-8] INFO  AccessLog - RESULT op=12 con=1 result=0 time=0
+[2008-03-29 13:18:23,240][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,240][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,240][MyVD-8] INFO  AccessLog - SRCH-RESULT op=12 con=1 entries=0 time=0
+[2008-03-29 13:18:23,240][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,241][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,241][MyVD-8] INFO  AccessLog - SRCH-RESULT op=12 con=1 entries=0 time=1
+[2008-03-29 13:18:23,241][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,251][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,251][MyVD-9] INFO  AccessLog - SRCH op=13 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,252][MyVD-9] INFO  AccessLog - RESULT op=13 con=1 result=0 time=0
+[2008-03-29 13:18:23,252][MyVD-9] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,252][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,252][MyVD-9] INFO  AccessLog - SRCH-RESULT op=13 con=1 entries=0 time=1
+[2008-03-29 13:18:23,252][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,252][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,252][MyVD-9] INFO  AccessLog - SRCH-RESULT op=13 con=1 entries=0 time=1
+[2008-03-29 13:18:23,252][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,258][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,258][MyVD-9] INFO  AccessLog - SRCH op=14 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,259][MyVD-9] INFO  AccessLog - RESULT op=14 con=1 result=0 time=1
+[2008-03-29 13:18:23,259][MyVD-9] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,259][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,259][MyVD-9] INFO  AccessLog - SRCH-RESULT op=14 con=1 entries=0 time=1
+[2008-03-29 13:18:23,259][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,259][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,259][MyVD-9] INFO  AccessLog - SRCH-RESULT op=14 con=1 entries=0 time=1
+[2008-03-29 13:18:23,259][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,273][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,273][MyVD-10] INFO  AccessLog - SRCH op=15 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,273][MyVD-10] INFO  AccessLog - RESULT op=15 con=1 result=0 time=0
+[2008-03-29 13:18:23,273][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,273][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,273][MyVD-10] INFO  AccessLog - SRCH-RESULT op=15 con=1 entries=0 time=0
+[2008-03-29 13:18:23,273][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,273][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,274][MyVD-10] INFO  AccessLog - SRCH-RESULT op=15 con=1 entries=0 time=1
+[2008-03-29 13:18:23,274][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,276][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,278][MyVD-10] INFO  AccessLog - SRCH op=16 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,279][MyVD-10] INFO  AccessLog - RESULT op=16 con=1 result=0 time=3
+[2008-03-29 13:18:23,279][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,279][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,279][MyVD-10] INFO  AccessLog - SRCH-RESULT op=16 con=1 entries=0 time=3
+[2008-03-29 13:18:23,279][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,279][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,279][MyVD-10] INFO  AccessLog - SRCH-RESULT op=16 con=1 entries=0 time=3
+[2008-03-29 13:18:23,279][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,289][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,290][MyVD-11] INFO  AccessLog - SRCH op=17 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,290][MyVD-11] INFO  AccessLog - RESULT op=17 con=1 result=0 time=1
+[2008-03-29 13:18:23,290][MyVD-11] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,290][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,290][MyVD-11] INFO  AccessLog - SRCH-RESULT op=17 con=1 entries=0 time=1
+[2008-03-29 13:18:23,290][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,290][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,290][MyVD-11] INFO  AccessLog - SRCH-RESULT op=17 con=1 entries=0 time=1
+[2008-03-29 13:18:23,291][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,297][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,297][MyVD-11] INFO  AccessLog - SRCH op=18 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,297][MyVD-11] INFO  AccessLog - RESULT op=18 con=1 result=0 time=0
+[2008-03-29 13:18:23,297][MyVD-11] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,297][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,298][MyVD-11] INFO  AccessLog - SRCH-RESULT op=18 con=1 entries=0 time=1
+[2008-03-29 13:18:23,298][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,298][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,298][MyVD-11] INFO  AccessLog - SRCH-RESULT op=18 con=1 entries=0 time=1
+[2008-03-29 13:18:23,298][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,322][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,323][MyVD-12] INFO  AccessLog - SRCH op=19 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,323][MyVD-12] INFO  AccessLog - RESULT op=19 con=1 result=0 time=1
+[2008-03-29 13:18:23,323][MyVD-12] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,323][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,323][MyVD-12] INFO  AccessLog - SRCH-RESULT op=19 con=1 entries=0 time=1
+[2008-03-29 13:18:23,323][MyVD-12] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,323][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,323][MyVD-12] INFO  AccessLog - SRCH-RESULT op=19 con=1 entries=0 time=1
+[2008-03-29 13:18:23,323][MyVD-12] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,325][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,325][MyVD-12] INFO  AccessLog - SRCH op=20 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,326][MyVD-12] INFO  AccessLog - RESULT op=20 con=1 result=0 time=1
+[2008-03-29 13:18:23,326][MyVD-12] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,326][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,326][MyVD-12] INFO  AccessLog - SRCH-RESULT op=20 con=1 entries=0 time=1
+[2008-03-29 13:18:23,326][MyVD-12] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,326][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,326][MyVD-12] INFO  AccessLog - SRCH-RESULT op=20 con=1 entries=0 time=1
+[2008-03-29 13:18:23,326][MyVD-12] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,330][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,331][MyVD-13] INFO  AccessLog - SRCH op=21 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,331][MyVD-13] INFO  AccessLog - RESULT op=21 con=1 result=0 time=1
+[2008-03-29 13:18:23,331][MyVD-13] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,331][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,331][MyVD-13] INFO  AccessLog - SRCH-RESULT op=21 con=1 entries=0 time=1
+[2008-03-29 13:18:23,331][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,331][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,331][MyVD-13] INFO  AccessLog - SRCH-RESULT op=21 con=1 entries=0 time=1
+[2008-03-29 13:18:23,331][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,333][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,333][MyVD-13] INFO  AccessLog - SRCH op=22 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,333][MyVD-13] INFO  AccessLog - RESULT op=22 con=1 result=0 time=0
+[2008-03-29 13:18:23,333][MyVD-13] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,333][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,333][MyVD-13] INFO  AccessLog - SRCH-RESULT op=22 con=1 entries=0 time=0
+[2008-03-29 13:18:23,334][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,334][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,334][MyVD-13] INFO  AccessLog - SRCH-RESULT op=22 con=1 entries=0 time=1
+[2008-03-29 13:18:23,334][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,337][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,338][MyVD-14] INFO  AccessLog - SRCH op=23 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,338][MyVD-14] INFO  AccessLog - RESULT op=23 con=1 result=0 time=1
+[2008-03-29 13:18:23,338][MyVD-14] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,338][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,346][MyVD-14] INFO  AccessLog - SRCH-RESULT op=23 con=1 entries=0 time=1
+[2008-03-29 13:18:23,346][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,346][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,346][MyVD-14] INFO  AccessLog - SRCH-RESULT op=23 con=1 entries=0 time=9
+[2008-03-29 13:18:23,346][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,349][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,350][MyVD-14] INFO  AccessLog - SRCH op=24 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,350][MyVD-14] INFO  AccessLog - RESULT op=24 con=1 result=0 time=0
+[2008-03-29 13:18:23,350][MyVD-14] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,350][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,350][MyVD-14] INFO  AccessLog - SRCH-RESULT op=24 con=1 entries=0 time=0
+[2008-03-29 13:18:23,350][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,350][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,350][MyVD-14] INFO  AccessLog - SRCH-RESULT op=24 con=1 entries=0 time=0
+[2008-03-29 13:18:23,350][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,354][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,354][MyVD-15] INFO  AccessLog - SRCH op=25 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,354][MyVD-15] INFO  AccessLog - RESULT op=25 con=1 result=0 time=0
+[2008-03-29 13:18:23,354][MyVD-15] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,355][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,355][MyVD-15] INFO  AccessLog - SRCH-RESULT op=25 con=1 entries=0 time=1
+[2008-03-29 13:18:23,355][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,355][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,355][MyVD-15] INFO  AccessLog - SRCH-RESULT op=25 con=1 entries=0 time=1
+[2008-03-29 13:18:23,355][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,357][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,357][MyVD-15] INFO  AccessLog - SRCH op=26 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,357][MyVD-15] INFO  AccessLog - RESULT op=26 con=1 result=0 time=0
+[2008-03-29 13:18:23,357][MyVD-15] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,357][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,357][MyVD-15] INFO  AccessLog - SRCH-RESULT op=26 con=1 entries=0 time=0
+[2008-03-29 13:18:23,357][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,357][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,358][MyVD-15] INFO  AccessLog - SRCH-RESULT op=26 con=1 entries=0 time=1
+[2008-03-29 13:18:23,358][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,360][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,361][MyVD-16] INFO  AccessLog - SRCH op=27 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,361][MyVD-16] INFO  AccessLog - RESULT op=27 con=1 result=0 time=0
+[2008-03-29 13:18:23,361][MyVD-16] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,361][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,361][MyVD-16] INFO  AccessLog - SRCH-RESULT op=27 con=1 entries=0 time=0
+[2008-03-29 13:18:23,361][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,361][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,361][MyVD-16] INFO  AccessLog - SRCH-RESULT op=27 con=1 entries=0 time=0
+[2008-03-29 13:18:23,361][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,364][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,364][MyVD-1] INFO  AccessLog - SRCH op=28 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,364][MyVD-1] INFO  AccessLog - RESULT op=28 con=1 result=0 time=0
+[2008-03-29 13:18:23,364][MyVD-1] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,364][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,364][MyVD-1] INFO  AccessLog - SRCH-RESULT op=28 con=1 entries=0 time=0
+[2008-03-29 13:18:23,364][MyVD-1] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,365][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,365][MyVD-1] INFO  AccessLog - SRCH-RESULT op=28 con=1 entries=0 time=1
+[2008-03-29 13:18:23,365][MyVD-1] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,382][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=haldaemon));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,382][MyVD-3] INFO  AccessLog - SRCH op=29 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=haldaemon))' scope='2' attribs=''
+[2008-03-29 13:18:23,390][MyVD-3] INFO  AccessLog - RESULT op=29 con=1 result=0 time=8
+[2008-03-29 13:18:23,390][MyVD-3] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,390][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=haldaemon));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,390][MyVD-3] INFO  AccessLog - SRCH-RESULT op=29 con=1 entries=0 time=8
+[2008-03-29 13:18:23,390][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,390][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=haldaemon));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,391][MyVD-3] INFO  AccessLog - SRCH-RESULT op=29 con=1 entries=0 time=9
+[2008-03-29 13:18:23,391][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,392][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=haldaemon));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,393][MyVD-3] INFO  AccessLog - SRCH op=30 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=haldaemon))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,403][MyVD-3] INFO  AccessLog - RESULT op=30 con=1 result=0 time=11
+[2008-03-29 13:18:23,403][MyVD-3] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,403][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=haldaemon));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,410][MyVD-3] INFO  AccessLog - SRCH-RESULT op=30 con=1 entries=0 time=18
+[2008-03-29 13:18:23,410][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,410][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=haldaemon));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,410][MyVD-3] INFO  AccessLog - SRCH-RESULT op=30 con=1 entries=0 time=18
+[2008-03-29 13:18:23,410][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,413][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,413][MyVD-4] INFO  AccessLog - SRCH op=31 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,413][MyVD-4] INFO  AccessLog - RESULT op=31 con=1 result=0 time=0
+[2008-03-29 13:18:23,413][MyVD-4] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,413][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,413][MyVD-4] INFO  AccessLog - SRCH-RESULT op=31 con=1 entries=0 time=0
+[2008-03-29 13:18:23,413][MyVD-4] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,413][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,413][MyVD-4] INFO  AccessLog - SRCH-RESULT op=31 con=1 entries=0 time=0
+[2008-03-29 13:18:23,413][MyVD-4] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,415][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,415][MyVD-6] INFO  AccessLog - SRCH op=32 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,415][MyVD-6] INFO  AccessLog - RESULT op=32 con=1 result=0 time=0
+[2008-03-29 13:18:23,415][MyVD-6] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,415][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,416][MyVD-6] INFO  AccessLog - SRCH-RESULT op=32 con=1 entries=0 time=1
+[2008-03-29 13:18:23,416][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,416][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,416][MyVD-6] INFO  AccessLog - SRCH-RESULT op=32 con=1 entries=0 time=1
+[2008-03-29 13:18:23,416][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,418][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,418][MyVD-7] INFO  AccessLog - SRCH op=33 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,418][MyVD-7] INFO  AccessLog - RESULT op=33 con=1 result=0 time=0
+[2008-03-29 13:18:23,418][MyVD-7] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,418][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,418][MyVD-7] INFO  AccessLog - SRCH-RESULT op=33 con=1 entries=0 time=0
+[2008-03-29 13:18:23,418][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,418][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,418][MyVD-7] INFO  AccessLog - SRCH-RESULT op=33 con=1 entries=0 time=0
+[2008-03-29 13:18:23,418][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,420][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,420][MyVD-8] INFO  AccessLog - SRCH op=34 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,421][MyVD-8] INFO  AccessLog - RESULT op=34 con=1 result=0 time=0
+[2008-03-29 13:18:23,421][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,421][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,421][MyVD-8] INFO  AccessLog - SRCH-RESULT op=34 con=1 entries=0 time=1
+[2008-03-29 13:18:23,421][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,421][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,421][MyVD-8] INFO  AccessLog - SRCH-RESULT op=34 con=1 entries=0 time=1
+[2008-03-29 13:18:23,421][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,424][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=avahi));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,424][MyVD-9] INFO  AccessLog - SRCH op=35 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=avahi))' scope='2' attribs=''
+[2008-03-29 13:18:23,447][MyVD-9] INFO  AccessLog - RESULT op=35 con=1 result=0 time=23
+[2008-03-29 13:18:23,447][MyVD-9] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,448][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=avahi));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,448][MyVD-9] INFO  AccessLog - SRCH-RESULT op=35 con=1 entries=0 time=24
+[2008-03-29 13:18:23,448][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,448][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=avahi));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,448][MyVD-9] INFO  AccessLog - SRCH-RESULT op=35 con=1 entries=0 time=24
+[2008-03-29 13:18:23,448][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,450][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=avahi));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,450][MyVD-9] INFO  AccessLog - SRCH op=36 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=avahi))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,463][MyVD-9] INFO  AccessLog - RESULT op=36 con=1 result=0 time=13
+[2008-03-29 13:18:23,463][MyVD-9] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,463][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=avahi));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,463][MyVD-9] INFO  AccessLog - SRCH-RESULT op=36 con=1 entries=0 time=13
+[2008-03-29 13:18:23,463][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,463][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=avahi));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,463][MyVD-9] INFO  AccessLog - SRCH-RESULT op=36 con=1 entries=0 time=13
+[2008-03-29 13:18:23,464][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,472][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,472][MyVD-10] INFO  AccessLog - SRCH op=37 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:23,472][MyVD-10] INFO  AccessLog - RESULT op=37 con=1 result=0 time=0
+[2008-03-29 13:18:23,472][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,472][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,472][MyVD-10] INFO  AccessLog - SRCH-RESULT op=37 con=1 entries=0 time=0
+[2008-03-29 13:18:23,472][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,472][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,475][MyVD-10] INFO  AccessLog - SRCH-RESULT op=37 con=1 entries=0 time=3
+[2008-03-29 13:18:23,475][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,478][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,478][MyVD-11] INFO  AccessLog - SRCH op=38 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,478][MyVD-11] INFO  AccessLog - RESULT op=38 con=1 result=0 time=0
+[2008-03-29 13:18:23,478][MyVD-11] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,478][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,478][MyVD-11] INFO  AccessLog - SRCH-RESULT op=38 con=1 entries=0 time=0
+[2008-03-29 13:18:23,478][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,479][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,479][MyVD-11] INFO  AccessLog - SRCH-RESULT op=38 con=1 entries=0 time=1
+[2008-03-29 13:18:23,479][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,565][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,565][MyVD-13] INFO  AccessLog - SRCH op=39 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=dbus))' scope='2' attribs=''
+[2008-03-29 13:18:23,586][MyVD-13] INFO  AccessLog - RESULT op=39 con=1 result=0 time=20
+[2008-03-29 13:18:23,586][MyVD-13] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,586][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=dbus));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,586][MyVD-13] INFO  AccessLog - SRCH-RESULT op=39 con=1 entries=0 time=21
+[2008-03-29 13:18:23,586][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,586][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=dbus));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,586][MyVD-13] INFO  AccessLog - SRCH-RESULT op=39 con=1 entries=0 time=21
+[2008-03-29 13:18:23,586][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,597][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,598][MyVD-14] INFO  AccessLog - SRCH op=40 con=1 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=dbus))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,607][MyVD-14] INFO  AccessLog - RESULT op=40 con=1 result=0 time=9
+[2008-03-29 13:18:23,607][MyVD-14] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,607][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=dbus));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,607][MyVD-14] INFO  AccessLog - SRCH-RESULT op=40 con=1 entries=0 time=9
+[2008-03-29 13:18:23,608][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,608][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=dbus));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:23,608][MyVD-14] INFO  AccessLog - SRCH-RESULT op=40 con=1 entries=0 time=10
+[2008-03-29 13:18:23,608][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,643][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Bind : 
+[2008-03-29 13:18:23,643][MyVD-16] INFO  AccessLog - BIND op=0 con=2 dn=''
+[2008-03-29 13:18:23,643][MyVD-16] INFO  AccessLog - RESULT op=0 con=2 result=0 time=0
+[2008-03-29 13:18:23,643][MyVD-16] INFO  DumpTransaction - [GLOBAL] Bind Complete
+[2008-03-29 13:18:23,646][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:23,646][MyVD-16] INFO  AccessLog - SRCH op=1 con=2 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=dbus))' scope='2' attribs=''
+[2008-03-29 13:18:23,646][MyVD-16] INFO  AccessLog - RESULT op=1 con=2 result=0 time=0
+[2008-03-29 13:18:23,646][MyVD-16] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,646][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,647][MyVD-16] INFO  AccessLog - SRCH-RESULT op=1 con=2 entries=0 time=1
+[2008-03-29 13:18:23,647][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,647][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:23,647][MyVD-16] INFO  AccessLog - SRCH-RESULT op=1 con=2 entries=0 time=1
+[2008-03-29 13:18:23,647][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,651][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:23,656][MyVD-1] INFO  AccessLog - SRCH op=2 con=2 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=dbus))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:23,656][MyVD-1] INFO  AccessLog - RESULT op=2 con=2 result=0 time=5
+[2008-03-29 13:18:23,656][MyVD-1] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:23,657][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,657][MyVD-1] INFO  AccessLog - SRCH-RESULT op=2 con=2 entries=0 time=6
+[2008-03-29 13:18:23,657][MyVD-1] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:23,657][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=dbus));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:23,657][MyVD-1] INFO  AccessLog - SRCH-RESULT op=2 con=2 entries=0 time=6
+[2008-03-29 13:18:23,657][MyVD-1] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,189][MyVD-4] INFO  DumpTransaction - [GLOBAL] Begin Bind : 
+[2008-03-29 13:18:24,190][MyVD-4] INFO  AccessLog - BIND op=0 con=3 dn=''
+[2008-03-29 13:18:24,190][MyVD-4] INFO  AccessLog - RESULT op=0 con=3 result=0 time=0
+[2008-03-29 13:18:24,190][MyVD-4] INFO  DumpTransaction - [GLOBAL] Bind Complete
+[2008-03-29 13:18:24,192][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectclass=nisMap)(nisMapName=auto.master));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=1.1 
+[2008-03-29 13:18:24,192][MyVD-6] INFO  AccessLog - SRCH op=1 con=3 base='cn=users,o=mycompany,c=us' filter='(&(objectclass=nisMap)(nisMapName=auto.master))' scope='2' attribs='1.1 '
+[2008-03-29 13:18:24,201][MyVD-6] INFO  AccessLog - RESULT op=1 con=3 result=0 time=9
+[2008-03-29 13:18:24,201][MyVD-6] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,201][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectclass=nisMap)(nisMapName=auto.master));Base=cn=users,ou=ad;Scope=2;Attributes=[1.1, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,201][MyVD-6] INFO  AccessLog - SRCH-RESULT op=1 con=3 entries=0 time=9
+[2008-03-29 13:18:24,201][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,202][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectclass=nisMap)(nisMapName=auto.master));Base=cn=users,ou=ad;Scope=2;Attributes=[1.1, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,202][MyVD-6] INFO  AccessLog - SRCH-RESULT op=1 con=3 entries=0 time=10
+[2008-03-29 13:18:24,202][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,203][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectclass=automountMap)(ou=auto.master));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=1.1 
+[2008-03-29 13:18:24,207][MyVD-8] INFO  AccessLog - SRCH op=2 con=3 base='cn=users,o=mycompany,c=us' filter='(&(objectclass=automountMap)(ou=auto.master))' scope='2' attribs='1.1 '
+[2008-03-29 13:18:24,223][MyVD-8] INFO  AccessLog - RESULT op=2 con=3 result=0 time=16
+[2008-03-29 13:18:24,223][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,223][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectclass=automountMap)(ou=auto.master));Base=cn=users,ou=ad;Scope=2;Attributes=[1.1, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,223][MyVD-8] INFO  AccessLog - SRCH-RESULT op=2 con=3 entries=0 time=16
+[2008-03-29 13:18:24,223][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,223][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectclass=automountMap)(ou=auto.master));Base=cn=users,ou=ad;Scope=2;Attributes=[1.1, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,223][MyVD-8] INFO  AccessLog - SRCH-RESULT op=2 con=3 entries=0 time=16
+[2008-03-29 13:18:24,224][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,226][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectclass=automountMap)(automountMapName=auto.master));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=1.1 
+[2008-03-29 13:18:24,226][MyVD-8] INFO  AccessLog - SRCH op=3 con=3 base='cn=users,o=mycompany,c=us' filter='(&(objectclass=automountMap)(automountMapName=auto.master))' scope='2' attribs='1.1 '
+[2008-03-29 13:18:24,236][MyVD-8] INFO  AccessLog - RESULT op=3 con=3 result=0 time=10
+[2008-03-29 13:18:24,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,236][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectclass=automountMap)(automountMapName=auto.master));Base=cn=users,ou=ad;Scope=2;Attributes=[1.1, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,237][MyVD-8] INFO  AccessLog - SRCH-RESULT op=3 con=3 entries=0 time=11
+[2008-03-29 13:18:24,237][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,260][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectclass=automountMap)(automountMapName=auto.master));Base=cn=users,ou=ad;Scope=2;Attributes=[1.1, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,260][MyVD-8] INFO  AccessLog - SRCH-RESULT op=3 con=3 entries=0 time=34
+[2008-03-29 13:18:24,260][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,482][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Bind : 
+[2008-03-29 13:18:24,482][MyVD-9] INFO  AccessLog - BIND op=0 con=4 dn=''
+[2008-03-29 13:18:24,482][MyVD-9] INFO  AccessLog - RESULT op=0 con=4 result=0 time=0
+[2008-03-29 13:18:24,482][MyVD-9] INFO  DumpTransaction - [GLOBAL] Bind Complete
+[2008-03-29 13:18:24,484][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:24,485][MyVD-10] INFO  AccessLog - SRCH op=1 con=4 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=nscd))' scope='2' attribs=''
+[2008-03-29 13:18:24,494][MyVD-10] INFO  AccessLog - RESULT op=1 con=4 result=0 time=10
+[2008-03-29 13:18:24,494][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,495][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=nscd));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,495][MyVD-10] INFO  AccessLog - SRCH-RESULT op=1 con=4 entries=0 time=11
+[2008-03-29 13:18:24,495][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,495][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=user)(samAccountName=nscd));Base=cn=users,ou=ad;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,495][MyVD-10] INFO  AccessLog - SRCH-RESULT op=1 con=4 entries=0 time=11
+[2008-03-29 13:18:24,495][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,497][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:24,497][MyVD-10] INFO  AccessLog - SRCH op=2 con=4 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=nscd))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:24,512][MyVD-10] INFO  AccessLog - RESULT op=2 con=4 result=0 time=14
+[2008-03-29 13:18:24,512][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,512][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=nscd));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,512][MyVD-10] INFO  AccessLog - SRCH-RESULT op=2 con=4 entries=0 time=15
+[2008-03-29 13:18:24,512][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,512][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=group)(memberUid=nscd));Base=cn=users,ou=ad;Scope=2;Attributes=[gidNumber, objectSID, primaryGroupID, objectClass, uidNumber, gidNumber, objectguid]
+[2008-03-29 13:18:24,512][MyVD-10] INFO  AccessLog - SRCH-RESULT op=2 con=4 entries=0 time=15
+[2008-03-29 13:18:24,512][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,514][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:24,515][MyVD-10] INFO  AccessLog - SRCH op=3 con=4 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=nscd))' scope='2' attribs=''
+[2008-03-29 13:18:24,515][MyVD-10] INFO  AccessLog - RESULT op=3 con=4 result=0 time=1
+[2008-03-29 13:18:24,515][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,515][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,515][MyVD-10] INFO  AccessLog - SRCH-RESULT op=3 con=4 entries=0 time=1
+[2008-03-29 13:18:24,515][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,515][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,515][MyVD-10] INFO  AccessLog - SRCH-RESULT op=3 con=4 entries=0 time=1
+[2008-03-29 13:18:24,515][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,519][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:24,519][MyVD-10] INFO  AccessLog - SRCH op=4 con=4 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=nscd))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:24,519][MyVD-10] INFO  AccessLog - RESULT op=4 con=4 result=0 time=0
+[2008-03-29 13:18:24,519][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,519][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:24,519][MyVD-10] INFO  AccessLog - SRCH-RESULT op=4 con=4 entries=0 time=0
+[2008-03-29 13:18:24,519][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,519][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=nscd));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:24,519][MyVD-10] INFO  AccessLog - SRCH-RESULT op=4 con=4 entries=0 time=0
+[2008-03-29 13:18:24,519][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,976][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Bind : 
+[2008-03-29 13:18:24,977][MyVD-12] INFO  AccessLog - BIND op=0 con=5 dn=''
+[2008-03-29 13:18:24,977][MyVD-12] INFO  AccessLog - RESULT op=0 con=5 result=0 time=0
+[2008-03-29 13:18:24,977][MyVD-12] INFO  DumpTransaction - [GLOBAL] Bind Complete
+[2008-03-29 13:18:24,979][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:24,979][MyVD-12] INFO  AccessLog - SRCH op=1 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:24,979][MyVD-12] INFO  AccessLog - RESULT op=1 con=5 result=0 time=0
+[2008-03-29 13:18:24,979][MyVD-12] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,979][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,979][MyVD-12] INFO  AccessLog - SRCH-RESULT op=1 con=5 entries=0 time=0
+[2008-03-29 13:18:24,979][MyVD-12] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,979][MyVD-12] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,979][MyVD-12] INFO  AccessLog - SRCH-RESULT op=1 con=5 entries=0 time=0
+[2008-03-29 13:18:24,980][MyVD-12] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,984][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:24,985][MyVD-13] INFO  AccessLog - SRCH op=2 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:24,985][MyVD-13] INFO  AccessLog - RESULT op=2 con=5 result=0 time=1
+[2008-03-29 13:18:24,985][MyVD-13] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,985][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:24,986][MyVD-13] INFO  AccessLog - SRCH-RESULT op=2 con=5 entries=0 time=1
+[2008-03-29 13:18:24,986][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,986][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:24,986][MyVD-13] INFO  AccessLog - SRCH-RESULT op=2 con=5 entries=0 time=2
+[2008-03-29 13:18:24,986][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,991][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:24,991][MyVD-15] INFO  AccessLog - SRCH op=3 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:24,991][MyVD-15] INFO  AccessLog - RESULT op=3 con=5 result=0 time=0
+[2008-03-29 13:18:24,992][MyVD-15] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,992][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,992][MyVD-15] INFO  AccessLog - SRCH-RESULT op=3 con=5 entries=0 time=1
+[2008-03-29 13:18:24,992][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,992][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:24,992][MyVD-15] INFO  AccessLog - SRCH-RESULT op=3 con=5 entries=0 time=1
+[2008-03-29 13:18:24,992][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,996][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:24,996][MyVD-16] INFO  AccessLog - SRCH op=4 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:24,996][MyVD-16] INFO  AccessLog - RESULT op=4 con=5 result=0 time=0
+[2008-03-29 13:18:24,996][MyVD-16] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:24,996][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:24,997][MyVD-16] INFO  AccessLog - SRCH-RESULT op=4 con=5 entries=0 time=1
+[2008-03-29 13:18:24,997][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:24,997][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:24,997][MyVD-16] INFO  AccessLog - SRCH-RESULT op=4 con=5 entries=0 time=1
+[2008-03-29 13:18:24,997][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,000][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:25,000][MyVD-1] INFO  AccessLog - SRCH op=5 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:25,000][MyVD-1] INFO  AccessLog - RESULT op=5 con=5 result=0 time=0
+[2008-03-29 13:18:25,000][MyVD-1] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,000][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,000][MyVD-1] INFO  AccessLog - SRCH-RESULT op=5 con=5 entries=0 time=0
+[2008-03-29 13:18:25,000][MyVD-1] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,000][MyVD-1] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,001][MyVD-1] INFO  AccessLog - SRCH-RESULT op=5 con=5 entries=0 time=1
+[2008-03-29 13:18:25,001][MyVD-1] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,004][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:25,004][MyVD-2] INFO  AccessLog - SRCH op=6 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:25,005][MyVD-2] INFO  AccessLog - RESULT op=6 con=5 result=0 time=1
+[2008-03-29 13:18:25,005][MyVD-2] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,005][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,005][MyVD-2] INFO  AccessLog - SRCH-RESULT op=6 con=5 entries=0 time=1
+[2008-03-29 13:18:25,005][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,005][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,005][MyVD-2] INFO  AccessLog - SRCH-RESULT op=6 con=5 entries=0 time=1
+[2008-03-29 13:18:25,006][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,015][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:25,015][MyVD-2] INFO  AccessLog - SRCH op=7 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:25,015][MyVD-2] INFO  AccessLog - RESULT op=7 con=5 result=0 time=0
+[2008-03-29 13:18:25,015][MyVD-2] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,015][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,015][MyVD-2] INFO  AccessLog - SRCH-RESULT op=7 con=5 entries=0 time=0
+[2008-03-29 13:18:25,015][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,015][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,015][MyVD-2] INFO  AccessLog - SRCH-RESULT op=7 con=5 entries=0 time=0
+[2008-03-29 13:18:25,015][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,018][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:25,018][MyVD-3] INFO  AccessLog - SRCH op=8 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:25,018][MyVD-3] INFO  AccessLog - RESULT op=8 con=5 result=0 time=0
+[2008-03-29 13:18:25,018][MyVD-3] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,018][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,018][MyVD-3] INFO  AccessLog - SRCH-RESULT op=8 con=5 entries=0 time=0
+[2008-03-29 13:18:25,018][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,018][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,018][MyVD-3] INFO  AccessLog - SRCH-RESULT op=8 con=5 entries=0 time=0
+[2008-03-29 13:18:25,018][MyVD-3] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,316][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:25,316][MyVD-6] INFO  AccessLog - SRCH op=9 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:25,316][MyVD-6] INFO  AccessLog - RESULT op=9 con=5 result=0 time=0
+[2008-03-29 13:18:25,316][MyVD-6] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,316][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,316][MyVD-6] INFO  AccessLog - SRCH-RESULT op=9 con=5 entries=0 time=0
+[2008-03-29 13:18:25,317][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,317][MyVD-6] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,317][MyVD-6] INFO  AccessLog - SRCH-RESULT op=9 con=5 entries=0 time=1
+[2008-03-29 13:18:25,317][MyVD-6] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,318][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:25,318][MyVD-7] INFO  AccessLog - SRCH op=10 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:25,319][MyVD-7] INFO  AccessLog - RESULT op=10 con=5 result=0 time=1
+[2008-03-29 13:18:25,319][MyVD-7] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,319][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,319][MyVD-7] INFO  AccessLog - SRCH-RESULT op=10 con=5 entries=0 time=1
+[2008-03-29 13:18:25,319][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,319][MyVD-7] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,319][MyVD-7] INFO  AccessLog - SRCH-RESULT op=10 con=5 entries=0 time=1
+[2008-03-29 13:18:25,319][MyVD-7] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,321][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:25,321][MyVD-8] INFO  AccessLog - SRCH op=11 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:25,321][MyVD-8] INFO  AccessLog - RESULT op=11 con=5 result=0 time=0
+[2008-03-29 13:18:25,321][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,321][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,321][MyVD-8] INFO  AccessLog - SRCH-RESULT op=11 con=5 entries=0 time=0
+[2008-03-29 13:18:25,321][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,322][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,322][MyVD-8] INFO  AccessLog - SRCH-RESULT op=11 con=5 entries=0 time=1
+[2008-03-29 13:18:25,322][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,323][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:25,323][MyVD-8] INFO  AccessLog - SRCH op=12 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:25,323][MyVD-8] INFO  AccessLog - RESULT op=12 con=5 result=0 time=0
+[2008-03-29 13:18:25,323][MyVD-8] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,324][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,324][MyVD-8] INFO  AccessLog - SRCH-RESULT op=12 con=5 entries=0 time=1
+[2008-03-29 13:18:25,324][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,324][MyVD-8] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,324][MyVD-8] INFO  AccessLog - SRCH-RESULT op=12 con=5 entries=0 time=1
+[2008-03-29 13:18:25,324][MyVD-8] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,326][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:25,326][MyVD-9] INFO  AccessLog - SRCH op=13 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:25,326][MyVD-9] INFO  AccessLog - RESULT op=13 con=5 result=0 time=0
+[2008-03-29 13:18:25,326][MyVD-9] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,327][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,327][MyVD-9] INFO  AccessLog - SRCH-RESULT op=13 con=5 entries=0 time=1
+[2008-03-29 13:18:25,327][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,328][MyVD-9] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,328][MyVD-9] INFO  AccessLog - SRCH-RESULT op=13 con=5 entries=0 time=2
+[2008-03-29 13:18:25,328][MyVD-9] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,329][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:25,330][MyVD-10] INFO  AccessLog - SRCH op=14 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:25,330][MyVD-10] INFO  AccessLog - RESULT op=14 con=5 result=0 time=0
+[2008-03-29 13:18:25,330][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,330][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,330][MyVD-10] INFO  AccessLog - SRCH-RESULT op=14 con=5 entries=0 time=0
+[2008-03-29 13:18:25,330][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,331][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,331][MyVD-10] INFO  AccessLog - SRCH-RESULT op=14 con=5 entries=0 time=1
+[2008-03-29 13:18:25,331][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,332][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:25,332][MyVD-10] INFO  AccessLog - SRCH op=15 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:25,332][MyVD-10] INFO  AccessLog - RESULT op=15 con=5 result=0 time=0
+[2008-03-29 13:18:25,333][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,333][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,333][MyVD-10] INFO  AccessLog - SRCH-RESULT op=15 con=5 entries=0 time=1
+[2008-03-29 13:18:25,333][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,333][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:25,333][MyVD-10] INFO  AccessLog - SRCH-RESULT op=15 con=5 entries=0 time=1
+[2008-03-29 13:18:25,333][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,338][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:25,338][MyVD-10] INFO  AccessLog - SRCH op=16 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:25,339][MyVD-10] INFO  AccessLog - RESULT op=16 con=5 result=0 time=1
+[2008-03-29 13:18:25,339][MyVD-10] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:25,339][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,339][MyVD-10] INFO  AccessLog - SRCH-RESULT op=16 con=5 entries=0 time=1
+[2008-03-29 13:18:25,339][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:25,339][MyVD-10] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:25,339][MyVD-10] INFO  AccessLog - SRCH-RESULT op=16 con=5 entries=0 time=1
+[2008-03-29 13:18:25,339][MyVD-10] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,520][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:26,520][MyVD-11] INFO  AccessLog - SRCH op=17 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:26,520][MyVD-11] INFO  AccessLog - RESULT op=17 con=5 result=0 time=0
+[2008-03-29 13:18:26,520][MyVD-11] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,520][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,521][MyVD-11] INFO  AccessLog - SRCH-RESULT op=17 con=5 entries=0 time=1
+[2008-03-29 13:18:26,521][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,521][MyVD-11] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,521][MyVD-11] INFO  AccessLog - SRCH-RESULT op=17 con=5 entries=0 time=1
+[2008-03-29 13:18:26,521][MyVD-11] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,523][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:26,523][MyVD-13] INFO  AccessLog - SRCH op=18 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:26,523][MyVD-13] INFO  AccessLog - RESULT op=18 con=5 result=0 time=0
+[2008-03-29 13:18:26,523][MyVD-13] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,523][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,523][MyVD-13] INFO  AccessLog - SRCH-RESULT op=18 con=5 entries=0 time=0
+[2008-03-29 13:18:26,523][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,523][MyVD-13] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,523][MyVD-13] INFO  AccessLog - SRCH-RESULT op=18 con=5 entries=0 time=0
+[2008-03-29 13:18:26,523][MyVD-13] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,526][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:26,526][MyVD-14] INFO  AccessLog - SRCH op=19 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:26,526][MyVD-14] INFO  AccessLog - RESULT op=19 con=5 result=0 time=0
+[2008-03-29 13:18:26,526][MyVD-14] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,526][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,526][MyVD-14] INFO  AccessLog - SRCH-RESULT op=19 con=5 entries=0 time=0
+[2008-03-29 13:18:26,526][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,526][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,526][MyVD-14] INFO  AccessLog - SRCH-RESULT op=19 con=5 entries=0 time=0
+[2008-03-29 13:18:26,526][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,528][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:26,528][MyVD-14] INFO  AccessLog - SRCH op=20 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:26,528][MyVD-14] INFO  AccessLog - RESULT op=20 con=5 result=0 time=0
+[2008-03-29 13:18:26,528][MyVD-14] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,528][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,528][MyVD-14] INFO  AccessLog - SRCH-RESULT op=20 con=5 entries=0 time=0
+[2008-03-29 13:18:26,528][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,528][MyVD-14] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,528][MyVD-14] INFO  AccessLog - SRCH-RESULT op=20 con=5 entries=0 time=0
+[2008-03-29 13:18:26,528][MyVD-14] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,530][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:26,530][MyVD-15] INFO  AccessLog - SRCH op=21 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:26,530][MyVD-15] INFO  AccessLog - RESULT op=21 con=5 result=0 time=0
+[2008-03-29 13:18:26,530][MyVD-15] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,530][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,531][MyVD-15] INFO  AccessLog - SRCH-RESULT op=21 con=5 entries=0 time=0
+[2008-03-29 13:18:26,531][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,531][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,531][MyVD-15] INFO  AccessLog - SRCH-RESULT op=21 con=5 entries=0 time=1
+[2008-03-29 13:18:26,531][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,532][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:26,532][MyVD-15] INFO  AccessLog - SRCH op=22 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:26,532][MyVD-15] INFO  AccessLog - RESULT op=22 con=5 result=0 time=0
+[2008-03-29 13:18:26,532][MyVD-15] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,533][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,533][MyVD-15] INFO  AccessLog - SRCH-RESULT op=22 con=5 entries=0 time=1
+[2008-03-29 13:18:26,533][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,533][MyVD-15] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,533][MyVD-15] INFO  AccessLog - SRCH-RESULT op=22 con=5 entries=0 time=1
+[2008-03-29 13:18:26,533][MyVD-15] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,535][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:26,535][MyVD-16] INFO  AccessLog - SRCH op=23 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=root))' scope='2' attribs=''
+[2008-03-29 13:18:26,535][MyVD-16] INFO  AccessLog - RESULT op=23 con=5 result=0 time=0
+[2008-03-29 13:18:26,535][MyVD-16] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,535][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,535][MyVD-16] INFO  AccessLog - SRCH-RESULT op=23 con=5 entries=0 time=0
+[2008-03-29 13:18:26,535][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,536][MyVD-16] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]
+[2008-03-29 13:18:26,536][MyVD-16] INFO  AccessLog - SRCH-RESULT op=23 con=5 entries=0 time=1
+[2008-03-29 13:18:26,536][MyVD-16] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,542][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=gidNumber 
+[2008-03-29 13:18:26,542][MyVD-2] INFO  AccessLog - SRCH op=24 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixGroup)(memberUid=root))' scope='2' attribs='gidNumber '
+[2008-03-29 13:18:26,542][MyVD-2] INFO  AccessLog - RESULT op=24 con=5 result=0 time=0
+[2008-03-29 13:18:26,542][MyVD-2] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:26,543][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,543][MyVD-2] INFO  AccessLog - SRCH-RESULT op=24 con=5 entries=0 time=1
+[2008-03-29 13:18:26,543][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:26,543][MyVD-2] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixGroup)(memberUid=root));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[gidNumber]
+[2008-03-29 13:18:26,543][MyVD-2] INFO  AccessLog - SRCH-RESULT op=24 con=5 entries=0 time=1
+[2008-03-29 13:18:26,543][MyVD-2] INFO  DumpTransaction - [GLOBAL] Post Search Complete Complete
+[2008-03-29 13:18:27,078][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Seach - Filter=(&(objectClass=posixAccount)(uid=avahi));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=
+[2008-03-29 13:18:27,078][MyVD-3] INFO  AccessLog - SRCH op=25 con=5 base='cn=users,o=mycompany,c=us' filter='(&(objectClass=posixAccount)(uid=avahi))' scope='2' attribs=''
+[2008-03-29 13:18:27,078][MyVD-3] INFO  AccessLog - RESULT op=25 con=5 result=0 time=0
+[2008-03-29 13:18:27,078][MyVD-3] INFO  DumpTransaction - [GLOBAL] Seach submitted
+[2008-03-29 13:18:27,078][MyVD-3] INFO  DumpTransaction - [GLOBAL] Begin Post Search Complete - Filter=(&(objectClass=posixAccount)(uid=avahi));Base=cn=users,o=mycompany,c=us;Scope=2;Attributes=[]

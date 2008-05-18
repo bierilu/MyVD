@@ -27,10 +27,17 @@ if [ $1 = "start" ]; then
 		export LOCAL_CLASSPATH="$jarFile:$LOCAL_CLASSPATH"
 	done
 	
+	if [ -d $MYVD_HOME/qslib ]; then
+		for jarFile in `ls $MYVD_HOME/qslib/*.jar`
+		do
+			export LOCAL_CLASSPATH="$jarFile:$LOCAL_CLASSPATH"
+		done
+	fi
+	
 	echo "Classpath : $LOCAL_CLASSPATH"
 
 	
-	export MYVD_CMD="$JAVA_CMD -server net.sourceforge.myvd.server.Server $MYVD_HOME/conf/myvd.conf"
+	export MYVD_CMD="$JAVA_CMD -server -Djavax.net.ssl.trustStore=$MYVD_HOME/conf/myvd-server.ks -Dderby.system.home=$MYVD_HOME/derbyHome net.sourceforge.myvd.server.Server $MYVD_HOME/conf/myvd.conf"
 	
 
 	
