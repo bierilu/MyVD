@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -24,12 +24,12 @@ public class NameSpace {
 	int weight;
 	String label;
 	
-	Insert[] chain;
+	InsertChain chain;
 	Router router;
 	
 	boolean isGlobal;
 	
-	public NameSpace(String label,DistinguishedName base,int weight,Insert[] chain,boolean isGlobal) {
+	public NameSpace(String label,DistinguishedName base,int weight,InsertChain chain,boolean isGlobal) {
 		this.base = base;
 		this.weight = weight;
 		this.label = label;
@@ -53,7 +53,7 @@ public class NameSpace {
 		return this.label + ";" + this.base.getDN().toString() + ";" + this.weight;
 	}
 
-	public Insert[] getChain() {
+	public InsertChain getChain() {
 		return this.chain;
 	}
 
@@ -66,16 +66,15 @@ public class NameSpace {
 	}
 	
 	public int getPositionInChain(Insert insert) {
-		for (int i=0;i<this.chain.length;i++) {
-			if (this.chain[i] == insert) {
-				return i;
-			}
-		}
-		
-		return -1;
+		return this.chain.getPositionInChain(insert);
 	}
 
 	public boolean isGlobal() {
 		return isGlobal;
 	}
+
+	/*public void setChain(Insert chain) {
+		this.chain = chain;
+		
+	}*/
 }

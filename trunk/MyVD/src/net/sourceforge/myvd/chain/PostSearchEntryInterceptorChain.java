@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -18,6 +18,7 @@ package net.sourceforge.myvd.chain;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.types.Attribute;
 import net.sourceforge.myvd.types.Bool;
@@ -34,10 +35,10 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 public class PostSearchEntryInterceptorChain extends InterceptorChain {
 	
-	Insert[] globalChain;
+	InsertChain globalChain;
 	
 
-	public PostSearchEntryInterceptorChain(DistinguishedName dn, Password pass,int startPos,Insert[] chain,Insert[] globalChain,HashMap<Object,Object> session,HashMap<Object,Object> request) {
+	public PostSearchEntryInterceptorChain(DistinguishedName dn, Password pass,int startPos,InsertChain chain,InsertChain globalChain,HashMap<Object,Object> session,HashMap<Object,Object> request) {
 		super(dn, pass,startPos,chain,session,request);
 		this.globalChain = globalChain;
 	}
@@ -46,8 +47,8 @@ public class PostSearchEntryInterceptorChain extends InterceptorChain {
 	protected Insert getNext() {
 		
 		if (globalChain != null) {
-			if (pos < globalChain.length) {
-				return globalChain[pos++];
+			if (pos < globalChain.getLength()) {
+				return globalChain.getInsert(pos++);
 			} else {
 				pos = 0;
 				globalChain = null;

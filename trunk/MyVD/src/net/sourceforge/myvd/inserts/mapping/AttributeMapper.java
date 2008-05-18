@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -95,9 +95,18 @@ public class AttributeMapper implements Insert {
 	}
 
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn, Attribute attrib, LDAPConstraints constraints) throws LDAPException {
-		attrib.rename(this.localMap.get(attrib.getAttribute().getBaseName()));
+
 		
-		chain.nextCompare(dn,attrib,constraints);
+		String oldName = attrib.getAttribute().getName().toLowerCase();
+		String newName = this.localMap.get(oldName);
+		
+		if (newName != null) {
+			Attribute nattrib = new Attribute(new LDAPAttribute(newName,attrib.getAttribute().getByteValue()));
+			chain.nextCompare(dn,nattrib,constraints);
+		} else {
+			chain.nextCompare(dn,attrib,constraints);
+		}
+		
 		
 	}
 

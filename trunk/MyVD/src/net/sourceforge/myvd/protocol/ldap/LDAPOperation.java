@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -18,6 +18,7 @@ package net.sourceforge.myvd.protocol.ldap;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
@@ -32,7 +33,7 @@ import org.apache.mina.handler.demux.MessageHandler;
 
 public abstract class LDAPOperation implements MessageHandler {
 
-	Insert[] globalChain;
+	InsertChain globalChain;
     Router router;
 	
 	public LDAPOperation() {
@@ -96,7 +97,7 @@ public abstract class LDAPOperation implements MessageHandler {
 	}
 
 	
-	public void setEnv(Insert[] globalChain,Router router) {
+	public void setEnv(InsertChain globalChain,Router router) {
 		this.globalChain = globalChain;
 		this.router = router;
 	}

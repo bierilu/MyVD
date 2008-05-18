@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
@@ -58,16 +59,19 @@ import net.sourceforge.myvd.util.EntryUtil;
 
 public class DynamicGroups implements Insert {
 	private static Logger logger = Logger.getLogger(DynamicGroups.class);
-	private static final String REQUEST_UM_ = "DynamicGroups_Requested_UniqueMember_";
-	private static final String REQUEST_MU_ = "DynamicGroups_Requested_MemberURLS_";
-	private static final String REQUEST_MEMBERS_ = "DynamicGroups_Requested_MEMBERS_";
-	private static final String REQUEST_FILTER_ = "DnamicGroups_New_Filter_";
+	
+	
+	
+	
 	private String name;
 	
 	private String urlAttribute;
 	private String staticAttribute;
 	private String dynOC;
 	private String staticOC;
+	private boolean mapOC;
+	
+	String stackKey;
 	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
@@ -94,6 +98,8 @@ public class DynamicGroups implements Insert {
 		this.staticAttribute = props.getProperty("staticAttribute");
 		this.dynOC = props.getProperty("dynamicObjectClass");
 		this.staticOC = props.getProperty("staticObjectClass");
+		this.mapOC = props.getProperty("mapObjectClass","true").equalsIgnoreCase("true");
+		this.stackKey = "DG_" + nameSpace.getBase().getDN().toString() + "_" + name;
 	}
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
@@ -125,7 +131,19 @@ public class DynamicGroups implements Insert {
 			ArrayList<Attribute> attributes, Bool typesOnly,
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchComplete(base, scope, filter, attributes, typesOnly, constraints);
-
+		
+	
+		
+		Stack<DGRequest> stack = (Stack<DGRequest>) chain.getRequest().get(this.stackKey);
+		
+		
+		if (stack.size() > 0) {
+			
+			stack.pop();
+			
+			
+		}
+		
 	}
 
 	public void postSearchEntry(PostSearchEntryInterceptorChain chain,
@@ -134,33 +152,47 @@ public class DynamicGroups implements Insert {
 			LDAPSearchConstraints constraints) throws LDAPException {
 		chain.nextPostSearchEntry(entry, base, scope, filter, attributes, typesOnly, constraints);
 		
+		Stack<DGRequest> stack = (Stack<DGRequest>) chain.getRequest().get(this.stackKey);
+		
+		DGRequest req = stack.peek();
+		
+
+		
 		LDAPAttribute nocs = new LDAPAttribute("objectClass");
 		if (checkObjectClass(entry, nocs)) {
 			
-			boolean requestedMembers = (Boolean) chain.getRequest().get(DynamicGroups.REQUEST_UM_ + this.name);
+			boolean requestedMembers = req.requestedMembers;
 			
 			LDAPAttribute urls = entry.getEntry().getAttribute(urlAttribute);
 		
 			
-			ArrayList<TestMembers> testmembers = (ArrayList<TestMembers>) chain.getRequest().get(DynamicGroups.REQUEST_MEMBERS_ + this.name);
+			ArrayList<TestMembers> testmembers = req.testmembers;
 			Iterator<TestMembers> it = testmembers.iterator();
+			
+			
+			
 			while (it.hasNext()) {
 				TestMembers tm = it.next();
 				checkMember(tm,urls,entry.getEntry().getDN(),chain);
 			}
 			
-			Filter useFilter = (Filter) chain.getRequest().get(DynamicGroups.REQUEST_FILTER_ + this.name);
+			Filter useFilter = req.newFilter;
 			
 			entry.setReturnEntry(useFilter.getRoot().checkEntry(entry.getEntry()));
 			
 			if (requestedMembers && entry.isReturnEntry()) {
-			LDAPAttribute members = entry.getEntry().getAttribute(staticAttribute);
+				LDAPAttribute members = entry.getEntry().getAttribute(staticAttribute);
 				if (members == null) {
 					members = new LDAPAttribute(staticAttribute);
 					entry.getEntry().getAttributeSet().add(members);
 				}
 				createStaticMembers(chain, entry, constraints, urls, members);
+				if (members.size() == 0) {
+					entry.getEntry().getAttributeSet().remove(staticAttribute);
+				}
 			}
+			
+			
 			
 			if (nocs.size() > 0) {
 				entry.getEntry().getAttributeSet().remove("objectClass");
@@ -358,15 +390,23 @@ public class DynamicGroups implements Insert {
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
 		
+		Stack<DGRequest> stack = (Stack<DGRequest>) chain.getRequest().get(this.stackKey);
+		if (stack == null) {
+			stack = new Stack<DGRequest>();
+			chain.getRequest().put(this.stackKey, stack);
+		}
+		
+		DGRequest req = new DGRequest();
+		stack.push(req);
 		
 		
-		boolean requestedMembers = false;
-		boolean requestedUrls = false;
+		req.requestedMembers = false;
+		req.requestedUrls = false;
 		boolean requestedOC = false;
 		
 		if (attributes.size() == 0) {
-			requestedMembers = true;
-			requestedUrls = true;
+			req.requestedMembers = true;
+			req.requestedUrls = true;
 			requestedOC = true;
 		}
 		
@@ -377,16 +417,16 @@ public class DynamicGroups implements Insert {
 			Attribute attrib = it.next();
 			String name = attrib.getAttribute().getBaseName();
 			if (name.equalsIgnoreCase("*")) {
-				requestedMembers = true;
-				requestedUrls = true;
+				req.requestedMembers = true;
+				req.requestedUrls = true;
 				requestedOC = true;
 				
 				nattribs.add(new Attribute("*"));
 				
 			} else if (name.equalsIgnoreCase(staticAttribute)) {
-				requestedMembers = true;
+				req.requestedMembers = true;
 			} else if (name.equalsIgnoreCase(urlAttribute)) {
-				requestedUrls = true;
+				req.requestedUrls = true;
 				nattribs.add(new Attribute(name));
 			} else if (name.equalsIgnoreCase("objectclass")) {
 				requestedOC = true;
@@ -397,7 +437,7 @@ public class DynamicGroups implements Insert {
 		}
 		
 		
-		if (! requestedUrls) {
+		if (! req.requestedUrls) {
 			nattribs.add(new Attribute(urlAttribute));
 		}
 		
@@ -405,31 +445,39 @@ public class DynamicGroups implements Insert {
 			nattribs.add(new Attribute("objectclass"));
 		}
 		
-		chain.getRequest().put(DynamicGroups.REQUEST_UM_ + this.name, requestedMembers);
-		chain.getRequest().put(DynamicGroups.REQUEST_MU_ + this.name, requestedUrls);
+		if (req.requestedMembers) {
+			if (attributes.size() != 0) {
+				nattribs.add(new Attribute(this.staticAttribute));
+			}
+		}
+		
+		
+		
 		
 		
 		Filter newfilter = null; 
-		ArrayList<TestMembers> testmembers = new ArrayList<TestMembers>();
-		chain.getRequest().put(DynamicGroups.REQUEST_MEMBERS_ + this.name, testmembers);
+		req.testmembers = new ArrayList<TestMembers>();
+		
 		try {
-			newfilter =	new Filter(this.trimSearchFilter(filter.getRoot(), testmembers,nattribs));
+			newfilter =	new Filter(this.trimSearchFilter(filter.getRoot(), req.testmembers,nattribs));
 		} catch (CloneNotSupportedException e) {
 			
 		}
 		
-		chain.getRequest().put(DynamicGroups.REQUEST_FILTER_ + this.name, newfilter);
-		
-		Filter useNewFilter = null;
 		
 		
-		useNewFilter =	new Filter(newfilter.getRoot().toString());
 		
-		chain.nextSearch(base, scope, useNewFilter, nattribs, typesOnly, results, constraints);
+		req.newFilter =	newfilter; //new Filter(newfilter.getRoot().toString());
+		
+		chain.nextSearch(base, scope, req.newFilter, nattribs, typesOnly, results, constraints);
 
 	}
 	
 	private void addAttribute(ArrayList<Attribute> nattribs,String name) {
+		if (name == null) {
+			name = "objectClass";
+		}
+		
 		Attribute attrib = new Attribute(name);
 		
 		if (! (nattribs.size() == 0 || nattribs.contains(attrib))) {
@@ -461,7 +509,16 @@ public class DynamicGroups implements Insert {
 					newNode = (FilterNode) root.clone();
 					if (root.getName().equalsIgnoreCase("objectclass")) {
 						if (newNode.getValue().equalsIgnoreCase(staticOC)) {
-							newNode.setValue(dynOC);
+							if (this.mapOC) {
+								newNode.setValue(dynOC);
+							} else {
+								ArrayList<FilterNode> orChildren = new ArrayList<FilterNode>();
+								orChildren.add(newNode);
+								orChildren.add(new FilterNode(FilterType.EQUALS,"objectClass",this.dynOC));
+								
+								FilterNode newOr = new FilterNode(FilterType.OR,orChildren);
+								newNode = newOr;
+							}
 						}
 					}
 					
@@ -515,4 +572,11 @@ public class DynamicGroups implements Insert {
 class TestMembers {
 	String member;
 	FilterNode filterNode;
+}
+
+class DGRequest {
+	boolean requestedMembers;
+	boolean requestedUrls;
+	Filter newFilter;
+	ArrayList<TestMembers> testmembers;
 }

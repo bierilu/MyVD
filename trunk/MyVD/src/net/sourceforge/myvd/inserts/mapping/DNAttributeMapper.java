@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -81,7 +81,17 @@ public class DNAttributeMapper implements Insert {
 
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn,
 			Attribute attrib, LDAPConstraints constraints) throws LDAPException {
-		chain.nextCompare(dn, attrib, constraints);
+		
+		
+		if (this.dnAttribs.contains(attrib.getAttribute().getBaseName())) {
+			LDAPAttribute nattrib = new LDAPAttribute(attrib.getAttribute().getName());
+			NamingUtils util = new NamingUtils();
+			nattrib.addValue(util.getRemoteMappedDN(new DN(attrib.getAttribute().getStringValue()), this.localBase, this.remoteBase).toString());
+			
+			chain.nextCompare(dn, new Attribute(nattrib), constraints);
+		} else {
+			chain.nextCompare(dn, attrib, constraints);
+		}
 
 	}
 

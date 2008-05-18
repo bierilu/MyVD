@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -17,6 +17,7 @@ package net.sourceforge.myvd.test.router;
 
 import java.util.Iterator;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Level;
@@ -34,7 +35,7 @@ public class TestRouter extends TestCase {
 		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
-		Router router = new Router(new Insert[0]);
+		Router router = new Router(new InsertChain(new Insert[0]));
 		router.addBackend(root.getLabel(),root.getBase().getDN(),root);
 		router.addBackend(internal.getLabel(),internal.getBase().getDN(),internal);
 		router.addBackend(external.getLabel(),external.getBase().getDN(),external);
@@ -49,7 +50,7 @@ public class TestRouter extends TestCase {
 		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
-		Router router = new Router(new Insert[0]);
+		Router router = new Router(new InsertChain(new Insert[0]));
 		router.addBackend(root.getLabel(),root.getBase().getDN(),root);
 		router.addBackend(external.getLabel(),external.getBase().getDN(),external);
 		router.addBackend(internal.getLabel(),internal.getBase().getDN(),internal);
@@ -150,7 +151,7 @@ public class TestRouter extends TestCase {
 		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
-		Router router = new Router(new Insert[0]);
+		Router router = new Router(new InsertChain(new Insert[0]));
 		router.addBackend(root.getLabel(),root.getBase().getDN(),root);
 		router.addBackend(external.getLabel(),external.getBase().getDN(),external);
 		router.addBackend(internal.getLabel(),internal.getBase().getDN(),internal);
@@ -168,7 +169,7 @@ public class TestRouter extends TestCase {
 		NameSpace external = new NameSpace("external",new DistinguishedName("ou=external,dc=domain,dc=com"),15,null,false);
 		
 		
-		Router router = new Router(new Insert[0]);
+		Router router = new Router(new InsertChain(new Insert[0]));
 		router.addBackend(root.getLabel(),root.getBase().getDN(),root);
 		router.addBackend(internal.getLabel(),internal.getBase().getDN(),internal);
 		router.addBackend(external.getLabel(),external.getBase().getDN(),external);

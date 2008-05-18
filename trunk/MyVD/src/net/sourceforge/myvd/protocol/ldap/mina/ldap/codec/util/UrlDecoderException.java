@@ -25,7 +25,7 @@ package net.sourceforge.myvd.protocol.ldap.mina.ldap.codec.util;
  * Thrown when a Decoder has encountered a failure condition during a decode.
  * 
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
- * @version $Id: UrlDecoderException.java 437007 2006-08-25 23:06:17 +0000 (Fri, 25 Aug 2006) elecharny $
+ * @version $Id: UrlDecoderException.java 437007 2008-08-25 23:06:17 +0000 (Fri, 25 Aug 2008) elecharny $
  */
 public class UrlDecoderException extends Exception
 {

@@ -32,7 +32,7 @@ package net.sourceforge.myvd.protocol.ldap.mina.ldap.util;
  * 
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  * @since 2.0
- * @version $Id: BooleanUtils.java 491689 2007-01-01 23:18:58 +0000 (Mon, 01 Jan 2007) elecharny $
+ * @version $Id: BooleanUtils.java 491689 2008-01-01 23:18:58 +0000 (Mon, 01 Jan 2008) elecharny $
  */
 public class BooleanUtils
 {

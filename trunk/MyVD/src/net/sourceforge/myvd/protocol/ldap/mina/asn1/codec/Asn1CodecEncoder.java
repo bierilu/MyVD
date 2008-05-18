@@ -36,7 +36,7 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
  * Adapts {@link StatefulEncoder} to MINA <tt>ProtocolEncoder</tt>
  * 
  * @author The Apache Directory Project (mina-dev@directory.apache.org)
- * @version $Rev: 442820 $, $Date: 2006-09-13 03:38:59Z $, 
+ * @version $Rev: 442820 $, $Date: 2008-09-13 03:38:59Z $, 
  */
 public class Asn1CodecEncoder implements ProtocolEncoder
 {

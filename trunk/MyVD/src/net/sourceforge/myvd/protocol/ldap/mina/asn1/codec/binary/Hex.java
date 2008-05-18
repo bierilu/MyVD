@@ -32,7 +32,7 @@ import net.sourceforge.myvd.protocol.ldap.mina.asn1.codec.EncoderException;
  * 
  * @since 1.1
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
- * @version $Id: Hex.java 437004 2006-08-25 22:53:17 +0000 (Fri, 25 Aug 2006) elecharny $
+ * @version $Id: Hex.java 437004 2008-08-25 22:53:17 +0000 (Fri, 25 Aug 2008) elecharny $
  */
 public class Hex implements BinaryEncoder, BinaryDecoder
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -17,6 +17,7 @@ package net.sourceforge.myvd.chain;
 
 import java.util.HashMap;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.Attribute;
@@ -28,12 +29,12 @@ import com.novell.ldap.LDAPException;
 
 public class CompareInterceptorChain extends InterceptorChain {
 
-	public CompareInterceptorChain(DistinguishedName dn, Password pass,int startPos,Insert[] chain,HashMap<Object,Object> session,HashMap<Object,Object> request,Router router) {
+	public CompareInterceptorChain(DistinguishedName dn, Password pass,int startPos,InsertChain chain,HashMap<Object,Object> session,HashMap<Object,Object> request,Router router) {
 		super(dn, pass,startPos,chain,session,request,router);
 		// TODO Auto-generated constructor stub
 	}
 	
-	public CompareInterceptorChain(DistinguishedName dn, Password pass,int startPos,Insert[] chain,HashMap<Object,Object> session,HashMap<Object,Object> request) {
+	public CompareInterceptorChain(DistinguishedName dn, Password pass,int startPos,InsertChain chain,HashMap<Object,Object> session,HashMap<Object,Object> request) {
 		super(dn, pass,startPos,chain,session,request);
 		// TODO Auto-generated constructor stub
 	}

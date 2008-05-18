@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -28,6 +28,7 @@ import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.extensions.PasswordChangeOperation;
@@ -74,8 +75,8 @@ public class TestChooseRoute extends TestCase {
 
 
 	LDAPInterceptor baseInterceptor;
-	Insert[] chain;
-	Insert[] globalChain;
+	InsertChain chain;
+	InsertChain globalChain;
 	Router router;
 	private StartOpenLDAP baseServer;
 	private StartOpenLDAP internalServer;
@@ -112,13 +113,18 @@ public class TestChooseRoute extends TestCase {
 		
 		
 		
-		chain = new Insert[2];
-		chain[0] = new TestChainR();
-		chain[1] = baseInterceptor;
+		
+		
+		Insert[] tchain = new Insert[2];
+		tchain[0] = new TestChainR();
+		tchain[1] = baseInterceptor;
+		chain = new InsertChain(tchain);
+		
+		
 		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		baseInterceptor.configure("TestLDAP",props,ns);
 		
-		this.router = new Router(new Insert[0]);
+		this.router = new Router(new InsertChain(new Insert[0]));
 		router.addBackend("LDAPBase",ns.getBase().getDN(),ns);
 		
 		
@@ -130,10 +136,12 @@ public class TestChooseRoute extends TestCase {
 		props.put("proxyDN","cn=admin,ou=internal,dc=domain,dc=com");
 		props.put("proxyPass","manager");
 		
-		chain = new Insert[3];
-		chain[0] = new TestChainR();
-		chain[2] = baseInterceptor;
-		chain[1] = new PasswordChangeOperation();
+		tchain = new Insert[3];
+		tchain[0] = new TestChainR();
+		tchain[2] = baseInterceptor;
+		tchain[1] = new PasswordChangeOperation();
+		chain = new InsertChain(tchain);
+		
 		ns = new NameSpace("LDAPInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 10, chain,false);
 		baseInterceptor.configure("LDAPInternal",props,ns);
 		router.addBackend("LDAPInternal",ns.getBase().getDN(),ns);
@@ -141,7 +149,7 @@ public class TestChooseRoute extends TestCase {
 		Properties nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
 		nprops.put("localBase","o=mycompany,c=us");
-		chain[1].configure("localPwdChange",nprops,ns);
+		tchain[1].configure("localPwdChange",nprops,ns);
 		
 		
 		
@@ -153,10 +161,12 @@ public class TestChooseRoute extends TestCase {
 		props.put("proxyDN","cn=admin,ou=internal,dc=domain,dc=com");
 		props.put("proxyPass","manager");
 		
-		chain = new Insert[3];
-		chain[0] = new TestChainR();
-		chain[2] = baseInterceptor;
-		chain[1] = new PasswordChangeOperation();
+		tchain = new Insert[3];
+		tchain[0] = new TestChainR();
+		tchain[2] = baseInterceptor;
+		tchain[1] = new PasswordChangeOperation();
+		chain = new InsertChain(tchain);
+		
 		ns = new NameSpace("LDAPBogusInternal", new DistinguishedName(new DN("ou=internal,o=mycompany,c=us")), 20, chain,false);
 		baseInterceptor.configure("LDAPInternal",props,ns);
 		router.addBackend("LDAPBogusInternal",ns.getBase().getDN(),ns);
@@ -164,7 +174,7 @@ public class TestChooseRoute extends TestCase {
 		nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
 		nprops.put("localBase","o=mycompany,c=us");
-		chain[1].configure("localPwdChange",nprops,ns);
+		tchain[1].configure("localPwdChange",nprops,ns);
 		
 		
 		
@@ -177,17 +187,17 @@ public class TestChooseRoute extends TestCase {
 		props.put("proxyDN","cn=admin,ou=external,dc=domain,dc=com");
 		props.put("proxyPass","manager");
 		
-		chain = new Insert[3];
-		chain[0] = new TestChainR();
-		chain[2] = baseInterceptor;
-		chain[1] = new PasswordChangeOperation();
-		
+		tchain = new Insert[3];
+		tchain[0] = new TestChainR();
+		tchain[2] = baseInterceptor;
+		tchain[1] = new PasswordChangeOperation();
+		chain = new InsertChain(tchain);
 		ns = new NameSpace("LDAPExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 15, chain,false);
 		
 		nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
 		nprops.put("localBase","o=mycompany,c=us");
-		chain[1].configure("localPwdChange",nprops,ns);
+		tchain[1].configure("localPwdChange",nprops,ns);
 		
 		baseInterceptor.configure("LDAPExternal",props,ns);
 		router.addBackend("LDAPExternal",ns.getBase().getDN(),ns);
@@ -203,31 +213,35 @@ public class TestChooseRoute extends TestCase {
 		props.put("proxyDN","cn=admin,ou=external,dc=domain,dc=com");
 		props.put("proxyPass","manager");
 		
-		chain = new Insert[3];
-		chain[0] = new TestChainR();
-		chain[2] = baseInterceptor;
-		chain[1] = new PasswordChangeOperation();
+		tchain = new Insert[3];
+		tchain[0] = new TestChainR();
+		tchain[2] = baseInterceptor;
+		tchain[1] = new PasswordChangeOperation();
+		chain = new InsertChain(tchain);
 		
 		ns = new NameSpace("LDAPBogusExternal", new DistinguishedName(new DN("ou=external,o=mycompany,c=us")), 25, chain,false);
 		
 		nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
 		nprops.put("localBase","o=mycompany,c=us");
-		chain[1].configure("localPwdChange",nprops,ns);
+		tchain[1].configure("localPwdChange",nprops,ns);
 		
 		baseInterceptor.configure("LDAPBogusExternal",props,ns);
 		router.addBackend("LDAPBogusExternal",ns.getBase().getDN(),ns);
 		
 		
 		
-		this.globalChain = new Insert[2];
-		this.globalChain[0] = new TestglobalChain();
+		
+		
+		tchain = new Insert[2];
+		this.globalChain = new InsertChain(tchain);
+		tchain[0] = new TestglobalChain();
 		pwdInterceptor = new PasswordChangeOperation();
 		nprops = new Properties();
 		nprops.put("remoteBase", "o=mycompany,c=us");
 		nprops.put("localBase","o=mycompany,c=us");
 		pwdInterceptor.configure("pwdMgr",nprops,null);
-		this.globalChain[1] = pwdInterceptor;
+		tchain[1] = pwdInterceptor;
 		
  	}
 	
@@ -271,7 +285,7 @@ public class TestChooseRoute extends TestCase {
 		backends.add("LDAPBase");
 		request.put(RequestVariables.ROUTE_NAMESPACE,backends);
 		
-		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new Insert[0],session,new HashMap());
+		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new InsertChain(new Insert[0]),session,new HashMap());
 		bindChain.nextBind(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),new LDAPConstraints());
 		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),0,this.globalChain,session,request,router);
 		ArrayList<Attribute> attribsToRequest = new ArrayList<Attribute>();
@@ -361,7 +375,7 @@ public void testSearchOneLevelResults() throws LDAPException {
 		Results res = new Results(this.globalChain);
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
-		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new Insert[0],session,new HashMap());
+		BindInterceptorChain bindChain = new BindInterceptorChain(new DistinguishedName(""),new Password(),0,new InsertChain(new Insert[0]),session,new HashMap());
 		bindChain.nextBind(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),new LDAPConstraints());
 		SearchInterceptorChain chain = new SearchInterceptorChain(new DistinguishedName(new DN("cn=admin,o=mycompany,c=us")), new Password("manager".getBytes()),0,this.globalChain,session,request,router);
 		ArrayList<Attribute> attribsToRequest = new ArrayList<Attribute>();

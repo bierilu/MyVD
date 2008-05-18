@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -77,6 +77,8 @@ public class JdbcInsert implements Insert {
 	public static final String MYVD_DB_CON = "MYVD_DB_CON_";
 	public static final String MYVD_DB_LDAP2DB = "MYVD_DB_LDAP2DB_";
 	public static final String MYVD_DB_DB2LDAP = "MYVD_DB_DB2LDAP_";
+
+	private static final String MYVD_DID_BIND = null;
 	String driver;
 	String url;
 	String user;
@@ -108,19 +110,27 @@ public class JdbcInsert implements Insert {
 	private boolean hasPostWhere;
 	private Object postWhere;
 	
+	NameSpace ns;
+	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		
 		this.name = name;
 		
 		driver = props.getProperty("driver");
+		logger.info("Driver : " + driver);
 		url = props.getProperty("url");
+		logger.info("URL : " + url);
 		user = props.getProperty("user");
+		logger.info("User : " + user);
 		pwd = props.getProperty("password");
+		logger.info("Password : **********");
 		
 		
 		this.maxCons = Integer.parseInt(props.getProperty("maxCons","5"));
+		logger.info("Max Cons : " + this.maxCons);
 		this.maxIdleCons = Integer.parseInt(props.getProperty("maxIdleCons","5"));
+		logger.info("maxIdleCons : " + this.maxIdleCons);
 		
 		
 		DriverAdapterCPDS pool = new DriverAdapterCPDS();
@@ -146,8 +156,10 @@ public class JdbcInsert implements Insert {
 		base = nameSpace.getBase().toString();
 		
 		rdn = props.getProperty("rdn");
+		logger.info("RDN : " + rdn);
 		
 		String mapping = props.getProperty("mapping");
+		logger.info("Mapping : " + mapping);
 		StringTokenizer toker = new StringTokenizer(mapping,",");
 		
 		this.ldap2db = new HashMap<String,String>();
@@ -164,14 +176,56 @@ public class JdbcInsert implements Insert {
 		}
 		
 		this.objectClass = props.getProperty("objectClass");
+		logger.info("objectClass : " + objectClass);
 		this.rdn = props.getProperty("rdn");
 		this.dbRdn = ldap2db.get(rdn);
 		
 		this.useSimple = props.getProperty("useSimple","false").equalsIgnoreCase("true");
+		logger.info("Use Simple : " + useSimple);
 		this.SQL = props.getProperty("sql");
+		logger.info("SQL : " + this.SQL);
 		int whereEnd;
 		
-		logger.debug("Use Simple : " + this.useSimple);
+		String fields = this.SQL.substring(this.SQL.toLowerCase().indexOf("select") + "select".length() + 1,this.SQL.toLowerCase().indexOf("from"));
+		logger.info("fields : " + fields);
+		int where = this.SQL.toLowerCase().indexOf("where");
+		String table = "";
+		if (where == -1) {
+			table = this.SQL.substring(this.SQL.toLowerCase().indexOf("from") + "from".length() + 1).trim();
+		} else {
+			table = this.SQL.substring(this.SQL.toLowerCase().indexOf("from") + "from".length() + 1,where).trim();
+		}
+		
+		logger.info("table - " + table);
+		
+		try {
+			Class.forName(this.driver).newInstance();
+		} catch (Exception e) {
+			
+		}
+		
+		/*
+		try {
+			Connection con = DriverManager.getConnection(this.url,this.user,this.pwd);
+			
+			toker = new StringTokenizer(fields,",",false);
+			while (toker.hasMoreTokens()) {
+				String field = toker.nextToken();
+				ResultSet rs = con.getMetaData().getColumns(null, null, table, field);
+				rs.next();
+				String type = rs.getString("TYPE_NAME");
+				logger.info(field + " - " + type);
+			}
+			
+			PreparedStatement ps = null;
+			ps
+			
+			con.close();
+		} catch (SQLException e) {
+			logger.error("Error loading db schema",e);
+		}
+		
+		*/
 		
 		if (this.useSimple) {
 			this.searchSQL = this.SQL.substring(this.SQL.toLowerCase().indexOf(" from "));
@@ -216,6 +270,9 @@ public class JdbcInsert implements Insert {
 		this.baseDN = new DN(base);
 		
 		this.addBaseToFilter = Boolean.parseBoolean(props.getProperty("addBaseToFilter","true"));
+		logger.info("Add Base To Filter : " + this.addBaseToFilter);
+		
+		this.ns = nameSpace;
 
 	}
 
@@ -262,6 +319,8 @@ public class JdbcInsert implements Insert {
 			Password pwd, LDAPConstraints constraints) throws LDAPException {
 		Connection con = null;
 		
+		chain.getRequest().put(JdbcInsert.MYVD_DID_BIND + this.name, false);
+		
 		try {
 			con = this.getCon();
 			chain.getRequest().put(JdbcInsert.MYVD_DB_CON + this.name, con);
@@ -275,6 +334,9 @@ public class JdbcInsert implements Insert {
 			
 		} finally {
 			unloadRequest(chain, con);
+			if (! ((Boolean) chain.getRequest().get(MYVD_DID_BIND + this.name))) {
+				throw new LDAPException(LDAPException.resultCodeToString(LDAPException.INVALID_CREDENTIALS),LDAPException.INVALID_CREDENTIALS,"No authentication occurred");
+			}
 		}
 
 	}
@@ -361,6 +423,9 @@ public class JdbcInsert implements Insert {
 			Int scope, Filter filter, ArrayList<Attribute> attributes,
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
+		
+		
+		
 		if (scope.getValue() == 0) {
 			
 			if (base.getDN().toString().equals(this.base)) {
@@ -390,6 +455,7 @@ public class JdbcInsert implements Insert {
 		
 		String mappedSearch;
 		String querySQL = "";
+		ArrayList<Object> vals = new ArrayList<Object>();
 		
 		if (this.useSimple) {
 			StringBuffer buf = new StringBuffer();
@@ -411,7 +477,7 @@ public class JdbcInsert implements Insert {
 				querySQL = buf.toString();
 			} else {
 				StringBuffer filterString = new StringBuffer();
-				this.stringFilter(filter.getRoot(),filterString);
+				this.stringFilter(filter.getRoot(),filterString,vals);
 				buf.append("SELECT ");
 				
 				createSELECT(attributes, buf);
@@ -439,7 +505,7 @@ public class JdbcInsert implements Insert {
 				mappedSearch = this.searchSQL;
 			} else {
 				StringBuffer filterString = new StringBuffer();
-				this.stringFilter(filter.getRoot(),filterString);
+				this.stringFilter(filter.getRoot(),filterString,vals);
 				mappedSearch = this.searchSQL + " WHERE " + filterString.toString();
 			}
 			
@@ -454,7 +520,15 @@ public class JdbcInsert implements Insert {
 				logger.debug("Search SQL : \"" + querySQL + "\"");
 			}
 			
+			
+			
+			
 			PreparedStatement ps = con.prepareStatement(querySQL);
+			
+			for (int i=0,m=vals.size();i<m;i++) {
+				ps.setObject(i + 1, vals.get(i));
+			}
+			
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				chain.addResult(results,new JdbcEntrySet(con,ps,rs,this,filter,scope.getValue(),base.getDN()),base,scope,filter,attributes,typesOnly,constraints);
@@ -475,13 +549,14 @@ public class JdbcInsert implements Insert {
 		Iterator<Attribute> it = attributes.iterator();
 		
 		boolean foundRDN = false;
-		
+		boolean foundAttrib = false;
 		if (attributes.size() == 0) {
 			buf.append(" * ");
 			return;
 		}
 		
 		while (it.hasNext()) {
+			foundAttrib = false;
 			String attrib = it.next().getAttribute().getName();
 			
 			if (attrib.equalsIgnoreCase(this.rdn)) {
@@ -491,13 +566,26 @@ public class JdbcInsert implements Insert {
 			if (attrib.equalsIgnoreCase("*")) {
 				buf.append("* ");
 			} else {
-				buf.append(ldap2db.get(attrib.toLowerCase())).append(' ');
+				
+				String ldap2dbVal = ldap2db.get(attrib.toLowerCase());
+				if (ldap2dbVal != null) {
+					buf.append(ldap2dbVal).append(' ');
+					foundAttrib = true;
+				} else {
+					continue;
+				}
 			}
 			
-			if (it.hasNext() || ! foundRDN) {
+			if ((it.hasNext()  || ! foundRDN) && foundAttrib) {
 				buf.append(',');
 			}
 		}
+		
+		if (! foundAttrib) {
+			buf.setLength(buf.lastIndexOf(",") - 1);
+		}
+		
+		
 		
 		if (! foundRDN) {
 			buf.append(this.ldap2db.get(this.rdn.toLowerCase())).append(' ');
@@ -593,7 +681,7 @@ public class JdbcInsert implements Insert {
 
 	}
 	
-	private String stringFilter(FilterNode root, StringBuffer filter) {
+	private String stringFilter(FilterNode root, StringBuffer filter,ArrayList<Object> vals) {
         FilterType op;
         //filter.append('(');
         String comp = null;
@@ -656,7 +744,7 @@ public class JdbcInsert implements Insert {
                         			Iterator<FilterNode> itNodes = nodes.iterator();
                         			filter.append(" ( ");
                         			while (itNodes.hasNext()) {
-                        				stringFilter(itNodes.next(),filter);
+                        				stringFilter(itNodes.next(),filter,vals);
                         				if (itNodes.hasNext()) {
                         					filter.append(" AND ");
                         				}
@@ -672,7 +760,7 @@ public class JdbcInsert implements Insert {
                         			Iterator<FilterNode> itNodes = nodes.iterator();
                         			filter.append(" ( ");
                         			while (itNodes.hasNext()) {
-                        				stringFilter(itNodes.next(),filter);
+                        				stringFilter(itNodes.next(),filter,vals);
                         				if (itNodes.hasNext()) {
                         					filter.append(" AND ");
                         				}
@@ -686,7 +774,7 @@ public class JdbcInsert implements Insert {
                         			Iterator<FilterNode> itNodes = nodes.iterator();
                         			filter.append(" ( ");
                         			while (itNodes.hasNext()) {
-                        				stringFilter(itNodes.next(),filter);
+                        				stringFilter(itNodes.next(),filter,vals);
                         				if (itNodes.hasNext()) {
                         					filter.append(" AND ");
                         				}
@@ -700,7 +788,7 @@ public class JdbcInsert implements Insert {
                         			Iterator<FilterNode> itNodes = nodes.iterator();
                         			filter.append(" ( ");
                         			while (itNodes.hasNext()) {
-                        				stringFilter(itNodes.next(),filter);
+                        				stringFilter(itNodes.next(),filter,vals);
                         				if (itNodes.hasNext()) {
                         					filter.append(" OR ");
                         				}
@@ -724,7 +812,7 @@ public class JdbcInsert implements Insert {
                         children = root.getChildren();
                         filterIt = children.iterator();
                         while (filterIt.hasNext()) {
-                        		stringFilter(filterIt.next(),filter);
+                        		stringFilter(filterIt.next(),filter,vals);
                         		if (filterIt.hasNext()) {
                         			filter.append(" OR ");
                         		}
@@ -734,7 +822,7 @@ public class JdbcInsert implements Insert {
                         
                     case NOT:
                         filter.append(" NOT ( ");
-                        stringFilter(root.getNot(),filter);
+                        stringFilter(root.getNot(),filter,vals);
                         filter.append(" ) ");
                         
                         break;
@@ -742,11 +830,17 @@ public class JdbcInsert implements Insert {
                     		if (root.getName().equalsIgnoreCase("objectclass")) {
                     			filter.append(" 1=1 ");
                     		} else {
-	                        attribName = this.ldap2db.get(root.getName().toLowerCase());
-	                    		filter.append(attribName);
-	                        filter.append("='");
-	                        
-	                        filter.append(root.getValue()).append('\'');
+		                        attribName = this.ldap2db.get(root.getName().toLowerCase());
+		                        
+		                        if (attribName == null) {
+		                        	filter.append(" 1 = 0 ");
+		                        } else {
+		                        
+		                    		filter.append(attribName);
+		                    		filter.append("=?");
+		                        
+		                    		vals.add(root.getValue());
+		                        }
                     		}
                         
                         
@@ -756,15 +850,15 @@ public class JdbcInsert implements Insert {
                     case GREATER_THEN:{
                     		attribName = this.ldap2db.get(root.getName().toLowerCase());
                     		filter.append(attribName);
-                        filter.append(">='");
-                        filter.append(root.getValue()).append('\'');
+                        filter.append(">=?");
+                        vals.add(root.getValue());
                         break;
                     }
                     case LESS_THEN:{
                     		attribName = this.ldap2db.get(root.getName().toLowerCase());
                     		filter.append(attribName);
-                        filter.append("<='");
-                        filter.append(root.getValue()).append('\'');
+                        filter.append("<=?");
+                        vals.add(root.getValue());
                         break;
                         
                         
@@ -846,4 +940,7 @@ public class JdbcInsert implements Insert {
 		
 	}
 
+	public String getObjectClass() {
+		return this.objectClass;
+	}
 }

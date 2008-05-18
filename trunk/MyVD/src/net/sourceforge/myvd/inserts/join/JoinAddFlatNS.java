@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ import net.sourceforge.myvd.chain.PostSearchCompleteInterceptorChain;
 import net.sourceforge.myvd.chain.PostSearchEntryInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.jdbc.JdbcInsert;
@@ -73,10 +75,20 @@ public class JoinAddFlatNS implements Insert {
 	
 	NameSpace ns;
 	private Joiner insert;
+	private boolean addToJoinedOnly;
+	private String stackKey;
 	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
-		HashSet joinAttribs = (HashSet) chain.getRequest().get(Joiner.MYVD_JOIN_JATTRIBS + this.joinerName);
+		Stack<JoinData> jd = (Stack<JoinData>) chain.getRequest().get(stackKey);
+		
+		HashSet<String> joinAttribs;
+		
+		if (jd != null) {
+			joinAttribs = jd.peek().joinedAttribsSet;
+		} else {
+			joinAttribs = (HashSet) chain.getRequest().get(Joiner.MYVD_JOIN_JATTRIBS + this.joinerName);
+		}
 		LDAPAttributeSet primaryAttribs = new LDAPAttributeSet(),joinedAttribs = new LDAPAttributeSet();
 		
 		LDAPAttributeSet toadd = entry.getEntry().getAttributeSet();
@@ -115,10 +127,14 @@ public class JoinAddFlatNS implements Insert {
 		
 		AddInterceptorChain nchain = null;
 		
-		nchain = new AddInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
-		nchain.nextAdd(new Entry(primary), constraints);
+		//logger.info("Add to joined only? : " + this.addToJoinedOnly);
 		
-		nchain = new AddInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new Insert[0],chain.getSession(),chain.getRequest(),ns.getRouter());
+		if (! this.addToJoinedOnly){
+			nchain = new AddInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new InsertChain(new Insert[0]),chain.getSession(),chain.getRequest(),ns.getRouter());
+			nchain.nextAdd(new Entry(primary), constraints);
+		}
+		
+		nchain = new AddInterceptorChain(chain.getBindDN(),chain.getBindPassword(),0,new InsertChain(new Insert[0]),chain.getSession(),chain.getRequest(),ns.getRouter());
 		nchain.nextAdd(new Entry(joined),constraints);
 
 	}
@@ -141,10 +157,10 @@ public class JoinAddFlatNS implements Insert {
 		this.ns = nameSpace;
 		this.joinerName = props.getProperty("joinerName");
 		
-		Insert[] inserts = nameSpace.getChain();
-		for (int i=0;i<inserts.length;i++) {
-			if (inserts[i].getName().equals(this.joinerName)) {
-				this.insert = (Joiner) inserts[i];
+		
+		for (int i=0;i<nameSpace.getChain().getLength();i++) {
+			if (nameSpace.getChain().getInsert(i).getName() != null && nameSpace.getChain().getInsert(i).getName().equals(this.joinerName)) {
+				this.insert = (Joiner) nameSpace.getChain().getInsert(i);
 				break;
 			}
 		}
@@ -172,6 +188,9 @@ public class JoinAddFlatNS implements Insert {
 			this.sharedAttributes.add(toker.nextToken().toLowerCase());
 		}
 
+		//logger.info("add to joined only prop? : " + props.getProperty("addToJoinedOnly","false"));
+		this.addToJoinedOnly = props.getProperty("addToJoinedOnly","false").equalsIgnoreCase("true");
+		this.stackKey = this.insert.getStackKey();
 	}
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,

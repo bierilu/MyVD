@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -22,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 
 
@@ -45,10 +47,23 @@ public class TestJoin extends TestCase {
 	private StartOpenLDAP server;
 	private StartMyVD myvd;
 
+	private void deleteDir(File path) {
+		
+		if (path.isDirectory()) {
+			File[] children = path.listFiles();
+			for (int i=0,m=children.length;i<m;i++) {
+				deleteDir(children[i]);
+			}
+			path.delete();
+		} else {
+			path.delete();
+		}
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/TestJoin/db/joindb.log");
+		/*File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/TestJoin/db/joindb.log");
 		File dbdata = new File(System.getenv("PROJ_DIR") + "/test/TestJoin/db/joindb.script.orig");
 		File dbdatascript = new File(System.getenv("PROJ_DIR") + "/test/TestJoin/db/joindb.script");
 		
@@ -70,7 +85,28 @@ public class TestJoin extends TestCase {
 		
 		in.close();
 		out.close();
+		*/
 		
+		System.getProperties().setProperty("derby.system.home", System.getenv("PROJ_DIR") + "/test/derbyHome");
+		
+		deleteDir(new File(System.getenv("PROJ_DIR") + "/test/derbyHome"));
+		
+		(new File(System.getenv("PROJ_DIR") + "/test/derbyHome")).mkdir();
+		
+		
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+		Connection con = DriverManager.getConnection("jdbc:derby:myvdTestJoin;create=true");
+		con.createStatement().execute("CREATE TABLE APPDATA(USERNAME VARCHAR(50),APPATTRIB1 VARCHAR(50),APPATTRIB2 VARCHAR(50))");
+		con.createStatement().execute("INSERT INTO APPDATA VALUES('user1','sysx','app-g')");
+		con.createStatement().execute("INSERT INTO APPDATA VALUES('user2','sysy','app-g')");
+		con.createStatement().execute("INSERT INTO APPDATA VALUES('user3','sysx','app-i')");
+		con.close();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:myvdTestJoin;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
 		
 		this.server = new StartOpenLDAP();
 		this.server.startServer(
@@ -86,6 +122,12 @@ public class TestJoin extends TestCase {
 		super.tearDown();
 		this.server.stopServer();
 		this.myvd.stopServer();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:myvdTestJoin;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
 	}
 	
 	public void testStartup() {

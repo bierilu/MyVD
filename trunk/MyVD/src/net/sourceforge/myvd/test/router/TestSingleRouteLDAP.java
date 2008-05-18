@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -29,6 +29,7 @@ import net.sourceforge.myvd.chain.ExetendedOperationInterceptorChain;
 import net.sourceforge.myvd.chain.ModifyInterceptorChain;
 import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.extensions.PasswordChangeOperation;
@@ -76,7 +77,7 @@ public class TestSingleRouteLDAP extends TestCase {
 
 	LDAPInterceptor interceptor;
 
-	Insert[] chain;
+	InsertChain chain;
 
 	Router router;
 
@@ -102,14 +103,16 @@ public class TestSingleRouteLDAP extends TestCase {
 		Properties nprops = new Properties();
 		nprops.put("remoteBase", "dc=domain,dc=com");
 		
-		chain = new Insert[3];
-		chain[0] = new TestChainR();
-		chain[1] = this.pwdInterceptor;
-		chain[2] = interceptor;
+		Insert[] tchain = new Insert[3];
+		tchain[0] = new TestChainR();
+		tchain[1] = this.pwdInterceptor;
+		tchain[2] = interceptor;
+		
+		chain = new InsertChain(tchain);
 		NameSpace ns = new NameSpace("LDAP", new DistinguishedName(new DN("o=mycompany,c=us")), 0, chain,false);
 		interceptor.configure("TestLDAP", props, ns);
 		this.pwdInterceptor.configure("pwdInterceptor",nprops,ns);
-		this.router = new Router(new Insert[0]);
+		this.router = new Router(new InsertChain(new Insert[0]));
 		router.addBackend("TestLDAP", ns.getBase().getDN(), ns);
 
 	}
@@ -136,7 +139,7 @@ public class TestSingleRouteLDAP extends TestCase {
 				attribs);
 		control.put("cn=Test User,ou=internal,o=mycompany,c=us", entry);
 
-		Results res = new Results(new Insert[0]);
+		Results res = new Results(new InsertChain(new Insert[0]));
 		HashMap session = new HashMap();
 		session.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		SearchInterceptorChain chain = new SearchInterceptorChain(
@@ -444,7 +447,7 @@ public class TestSingleRouteLDAP extends TestCase {
 				new ArrayList<String>());
 		ExetendedOperationInterceptorChain extChain = new ExetendedOperationInterceptorChain(
 				new DistinguishedName(""), new Password(""), 0,
-				new Insert[0], session, new HashMap<Object, Object>());
+				new InsertChain(new Insert[0]), session, new HashMap<Object, Object>());
 
 		extChain.nextExtendedOperations(localOp,
 				new LDAPConstraints());
@@ -456,7 +459,7 @@ public class TestSingleRouteLDAP extends TestCase {
 		session.put(SessionVariables.BOUND_INTERCEPTORS,
 				new ArrayList<String>());
 		bindChain = new BindInterceptorChain(new DistinguishedName(""),
-				new Password(""), 0, new Insert[0], session,
+				new Password(""), 0, new InsertChain(new Insert[0]), session,
 				new HashMap<Object, Object>());
 
 		try {

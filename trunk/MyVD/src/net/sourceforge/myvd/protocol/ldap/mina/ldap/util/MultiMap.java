@@ -50,7 +50,7 @@ import java.util.Map;
  * anyway.
  * 
  * @since Commons Collections 2.0
- * @version $Revision: 437007 $ $Date: 2006-08-25 23:06:17 +0000 (Fri, 25 Aug 2006) $
+ * @version $Revision: 437007 $ $Date: 2008-08-25 23:06:17 +0000 (Fri, 25 Aug 2008) $
  * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
  */
 public interface MultiMap extends Map

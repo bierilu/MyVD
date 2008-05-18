@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -123,7 +123,7 @@ public class CompareHandler extends LDAPOperation
 				}
             }
 
-            session.write( result );
+            session.write( req.getResultResponse() );
             return;
         }catch (Throwable t) {
         	
@@ -144,13 +144,13 @@ public class CompareHandler extends LDAPOperation
             result.setErrorMessage( msg );
             
 
-            session.write( result );
+            session.write( req.getResultResponse() );
             return;
         
     }
 
         result.setMatchedDn( req.getName() );
-        session.write( result );
+        session.write( req.getResultResponse() );
     }
 
 	

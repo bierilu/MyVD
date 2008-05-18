@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -23,6 +23,7 @@ import net.sourceforge.myvd.types.Password;
 import com.novell.ldap.DsmlConnection;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.SPMLConnection;
 import com.novell.ldap.util.DN;
 
@@ -61,7 +62,7 @@ public class ConnectionWrapper {
 		
 		
 		try {
-			LDAPInterceptor.logger.info("CREDS : " + bindDN.toString() + " " + password);
+			
 			
 			con.bind(3,bindDN.toString(),password.getValue());
 			this.bindDN = bindDN;
@@ -74,8 +75,13 @@ public class ConnectionWrapper {
 		
 	}
 	
-	public LDAPConnection getConnection() {
-		return this.con;
+	public LDAPConnection getConnection() throws LDAPException {
+		if (this.con.isConnected() && this.con.isConnectionAlive()) {
+			return this.con;
+		} else {
+			this.reConnect();
+			return this.con;
+		}
 	}
 	
 	public void reConnect() throws LDAPException {
@@ -84,11 +90,18 @@ public class ConnectionWrapper {
 		}
 		
 		this.con = this.createConnection();
+		this.bindDN = null;
+		this.pass = null;
 	}
 	
 	private LDAPConnection createConnection() throws LDAPException {
 		LDAPConnection ldapcon = null;
 		switch (interceptor.type) {
+			case LDAPS :
+						ldapcon = new LDAPConnection(new LDAPJSSESecureSocketFactory());
+				//ldapcon = new LDAPConnection();
+						break;
+						
 			case LDAP : ldapcon = new LDAPConnection();
 			            break;
 			case DSMLV2 : DsmlConnection con = new DsmlConnection();
@@ -105,6 +118,7 @@ public class ConnectionWrapper {
 		if (ldapcon == null) {
 			return null;
 		} else {
+			
 			ldapcon.connect(this.interceptor.host,this.interceptor.port);
 			return ldapcon;
 		}

@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.naming.Context;
 
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
@@ -174,7 +175,7 @@ public class LdapProtocolProvider
      * @param env environment properties used to configure the provider and
      * underlying codec providers if any
      */
-    public LdapProtocolProvider( Insert[] globalChain,Router router,String binaryAttribs ) throws LdapNamingException
+    public LdapProtocolProvider( InsertChain globalChain,Router router,String binaryAttribs ) throws LdapNamingException
     {
         
 

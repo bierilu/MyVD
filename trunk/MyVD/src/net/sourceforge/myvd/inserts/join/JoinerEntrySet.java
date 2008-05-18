@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -26,6 +26,7 @@ import com.novell.ldap.LDAPSearchConstraints;
 import java.util.ArrayList;
 
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.Attribute;
@@ -47,9 +48,9 @@ public class JoinerEntrySet implements EntrySet {
 	
 	
 	public JoinerEntrySet(Router router,SearchInterceptorChain chain,DistinguishedName base,Int scope,Filter filter,ArrayList<Attribute> attributes,Bool typesOnly,LDAPSearchConstraints constraints,DistinguishedName bindDN) throws LDAPException {
-		results = new Results(new Insert[0],0);
+		results = new Results(new InsertChain(new Insert[0]),0);
 		
-		SearchInterceptorChain searchChain = new SearchInterceptorChain(bindDN,chain.getBindPassword(),router.getGlobalChain().length,router.getGlobalChain(),chain.getSession(),chain.getRequest(),router);
+		SearchInterceptorChain searchChain = new SearchInterceptorChain(bindDN,chain.getBindPassword(),router.getGlobalChain().getLength(),router.getGlobalChain(),chain.getSession(),chain.getRequest(),router);
 		searchChain.nextSearch(base,scope,filter,attributes,typesOnly,results,constraints);
 		results.start();
 	}

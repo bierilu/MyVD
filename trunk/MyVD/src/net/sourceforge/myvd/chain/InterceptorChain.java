@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Marc Boorshtein 
+ * Copyright 2008 Marc Boorshtein 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 import net.sourceforge.myvd.chain.jdbcLdapImpl.ChainedImpl;
+import net.sourceforge.myvd.core.InsertChain;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
@@ -33,7 +34,7 @@ import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
 
 public class InterceptorChain {
 	static Logger logger = Logger.getLogger(InterceptorChain.class);
-	Insert[] chain;
+	InsertChain chain;
 	int pos;
 	
 	
@@ -47,24 +48,24 @@ public class InterceptorChain {
 	JndiLdapConnection jdbcCon;
 	
 	protected Insert getNext() {
-		if (pos < chain.length) {
+		if (pos < chain.getLength()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Chain Position : " + pos);
-				logger.debug("Insert : " + chain[pos].toString());
+				logger.debug("Insert : " + chain.getInsert(pos).toString());
 			}
-			return chain[pos++];
+			return chain.getInsert(pos++);
 		} else {
 			logger.debug("Chain Completed");
 			return null;
 		}
 	}
 	
-	public InterceptorChain(DistinguishedName dn,Password pass,int startPos,Insert[] chain,HashMap<Object,Object> session,HashMap<Object,Object> request,Router router) {
+	public InterceptorChain(DistinguishedName dn,Password pass,int startPos,InsertChain chain,HashMap<Object,Object> session,HashMap<Object,Object> request,Router router) {
 		this(dn,pass,startPos,chain,session,request);
 		this.router = router;
 	}
 	
-	public InterceptorChain(DistinguishedName dn,Password pass,int startPos,Insert[] chain,HashMap<Object,Object> session,HashMap<Object,Object> request) {
+	public InterceptorChain(DistinguishedName dn,Password pass,int startPos,InsertChain chain,HashMap<Object,Object> session,HashMap<Object,Object> request) {
 		this.bindDN = dn;
 		this.password = pass;
 		this.chain = chain;
@@ -226,23 +227,19 @@ public class InterceptorChain {
 	}
 	
 	public int getPositionInChain(Insert insert) {
-		for (int i=0;i<this.chain.length;i++) {
-			if (this.chain[i] == insert) {
-				return i;
-			}
-		}
-		
-		return -1;
+		return this.chain.getPositionInChain(insert);
 	}
 	
 
-	public Insert[] getInterceptors() {
+	public InsertChain getInterceptors() {
 		return this.chain;
 	}
 	
 	public int getPos() {
 		return this.pos;
 	}
+	
+	
 	
 	public void setBindDN(DistinguishedName dn) {
 		this.bindDN = dn;
