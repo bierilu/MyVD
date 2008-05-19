@@ -7,6 +7,8 @@
 MyVD LDAP Virtual Directory
 
  Welcome to the home of MyVD, a Java based LDAP Virtual Directory.
+ 
+ NEW: Utilize MyVirtualDirectory to {{{http://myvd.sourceforge.net/wiki/index.php/Linux2AD} integrate Linux with Active Directory}} 
 
 * What is a virtual directory?
 

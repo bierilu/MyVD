@@ -41,24 +41,12 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>MyVD</id>
-      <name>MyVD Repository</name>
-      <layout>default</layout>
-      <!--
-      <url>http://www.ibiblio.org/maven2</url>
-      -->
-            <url>http://myvd.sourceforge.net/maven</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
   
   
   
     <pluginRepositories>
-    <!-- <pluginRepository>
+     <pluginRepository>
       <id>central</id>
       <name>Maven Plugin Repository</name>
       
@@ -71,22 +59,7 @@
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
-    </pluginRepository> -->
-    <pluginRepository>
-      <id>myvd</id>
-      <name>MyVD Plugin Repository</name>
-      <!--
-      <url>http://www.ibiblio.org/maven2</url>
-      -->
-            <url>http://myvd.sourceforge.net/maven</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <updatePolicy>allways</updatePolicy>
-      </releases>
-    </pluginRepository>
+    </pluginRepository> 
   </pluginRepositories>
   <dependencies>
     <dependency>
@@ -96,18 +69,5 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>jldap</groupId>
-      <artifactId>jldap</artifactId>
-      <version>20060928</version>
-      <scope>build</scope>
-    </dependency>
-    <!--<dependency>
-	<groupId>activation</groupId>
-	<artifactId>activation</artifactId>
-	<version>1.0.2</version>
-	<scope>runtime</scope>
-	<optional>true</optional>
-    </dependency>-->
   </dependencies>
 </project>

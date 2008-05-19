@@ -28,6 +28,8 @@
       	<item name="Directory Inserts" href="inserts_directory.html" />
       	<item name="Database Inserts" href="inserts_db.html" />
       	<item name="Web Services Inserts" href="inserts_webservices.html" />
+      	<item name="Active Directory Inserts" href="inserts_ad.html" />
+      	
       	
       </item>
       <item name="Creating Custom Inserts" href="custominserts.html"/>
@@ -36,6 +38,10 @@
 	      <item name="Directories" href="directories.html" />
 	      <item name="Databases" href="databases.html" />
 	      <item name="Joinining Identities" href="joiners.html" />
+	  </item>
+	  <item name="Quick Starts" href="quickstart.html">
+	  	<item name="ADQuickStart" href="adquickstart.html" />
+	  	<item name="ADQuickStartJDBC" href="adquickstartjdbc.html" />
 	  </item>
       <item name="Running The Unit Tests" href="unittests.html"/>
       <item name="JDBC-LDAP" href="jdbcldap.html" >
