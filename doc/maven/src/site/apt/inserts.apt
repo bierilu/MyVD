@@ -22,7 +22,10 @@ Insert Reference
 *-----------+-----------+
 |Web Services|Inserts that assist with the integration of of web services|
 *-----------+-----------+
-
+|Active Directory|Inserts designed specifically for working with MS Active Directory|
+*-----------+-----------+
+|Posix      |These inserts are meant to help provide POSIX attributes|
+*-----------+-----------+
 
 
 

@@ -99,9 +99,31 @@ scope-base#scope#grant/deny:permisions#scope#users
 |Public            |This ACI applies to all users, bound an anonymous|
 *------------------+--------------------+--------------------+--------------------------+
   
+* Access Log
+ 
+  The access log provides information about who is accessing MyVirtualDirectory.  The access log provides the ability to roll when the log reaches 
+  a certain size or at a certain time.  
+  
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.AccessLog                 |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |All                                                    |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|                                                       |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |fileName                                               |The path and name of the file, ie /var/log/myvd.log|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |type                                                   |rolling or periodic, based on if the log files should roll over based on the size of the log file or the time of the day.  If periodic the log will roll at midnight every nights|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |maxFileSile											   |When rolling, the size when to roll.  Default is 100MB|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |backupIndex                                            |The maximum number of files to keep   |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+  
+  
 * DumpTransaction
 
- This insert dumps the details of a request to the log.  DumpTransaction is very usefull when debugging a MyVD deployment. By placing this insert at various points in the server it's possible to see how requests and responses are effected.  Note that this insert can have an adverse effect on performance. 
+ This insert dumps the details of a request to the log.  DumpTransaction is very useful when debugging a MyVD deployment. By placing this insert at various points in the server it's possible to see how requests and responses are effected.  Note that this insert can have an adverse effect on performance. 
 
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |Class Name           |net.sourceforge.myvd.inserts.DumpTransaction           |                                      |
