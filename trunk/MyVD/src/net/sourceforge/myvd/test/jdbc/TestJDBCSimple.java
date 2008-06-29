@@ -22,6 +22,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 import net.sourceforge.myvd.server.Server;
 import net.sourceforge.myvd.test.util.Util;
@@ -40,10 +43,51 @@ public class TestJDBCSimple extends TestCase {
 
 	Server server;
 	
+	private void deleteDir(File path) {
+		
+		if (path.isDirectory()) {
+			File[] children = path.listFiles();
+			for (int i=0,m=children.length;i<m;i++) {
+				deleteDir(children[i]);
+			}
+			path.delete();
+		} else {
+			path.delete();
+		}
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
+	
+		System.getProperties().setProperty("derby.system.home", System.getenv("PROJ_DIR") + "/test/derbyHome");
 		
-		File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter-Simple/dbdata.log");
+		deleteDir(new File(System.getenv("PROJ_DIR") + "/test/derbyHome"));
+		
+		(new File(System.getenv("PROJ_DIR") + "/test/derbyHome")).mkdir();
+		
+		
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+		Connection con = DriverManager.getConnection("jdbc:derby:dbsimple;create=true");
+		
+		Statement stmt = con.createStatement();
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/DBAdapter-Simple/derby.sql")));
+		String line;
+		
+		while ((line = in.readLine()) != null) {
+			stmt.executeUpdate(line);
+		}
+		
+		in.close();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:myvdPosix;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
+		
+		
+		/*File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter-Simple/dbdata.log");
 		File dbdata = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter-Simple/dbdata.script.orig");
 		File dbdatascript = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter-Simple/dbdata.script");
 		
@@ -65,7 +109,7 @@ public class TestJDBCSimple extends TestCase {
 		
 		in.close();
 		out.close();
-		
+		*/
 		
 		this.server = new Server(System.getenv("PROJ_DIR") + "/test/DBAdapter-Simple/vldap.props");
 		this.server.startServer();
@@ -75,7 +119,34 @@ public class TestJDBCSimple extends TestCase {
 		//do notthing
 	}
 	
-	
+	public void testSearchNoAttribsFilter() throws Exception {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost", 50983);
+		Util util = new Util();
+		LDAPSearchResults res = con.search("dc=nam,dc=compinternal,dc=com",2,"(uid=aa*)",new String[] {"1.1"},false);
+		
+		
+		 
+		
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("uid","aalberts"));
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		/*
+		attribs.add(new LDAPAttribute("givenname","Al"));
+		attribs.add(new LDAPAttribute("sn","Alberts"));*/
+		
+		LDAPEntry entry = new LDAPEntry("uid=aalberts,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		if (! res.hasMore()) {
+			fail("entries not returned");
+			return;
+		}
+		LDAPEntry fromServer = res.next();
+		if (! util.compareEntry(entry,fromServer)) {
+			fail("2nd entry failed : \n" + util.toLDIF(fromServer));
+		}
+		
+	}
 	
 	public void testAllUsersNoWhereOrder() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
@@ -99,22 +170,6 @@ public class TestJDBCSimple extends TestCase {
 			fail("base entry failed");
 		}
 		
-		attribs = new LDAPAttributeSet();
-		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
-		attribs.add(new LDAPAttribute("uid","aalberts"));
-		attribs.add(new LDAPAttribute("givenname","Al"));
-		attribs.add(new LDAPAttribute("sn","Alberts"));
-		
-		entry = new LDAPEntry("uid=aalberts,dc=nam,dc=compinternal,dc=com",attribs);
-		
-		if (! res.hasMore()) {
-			fail("entries not returned");
-			return;
-		}
-		
-		if (! util.compareEntry(entry,res.next())) {
-			fail("1st entry failed");
-		}
 		
 		attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
@@ -130,8 +185,27 @@ public class TestJDBCSimple extends TestCase {
 		}
 		
 		if (! util.compareEntry(entry,res.next())) {
-			fail("2st entry failed");
+			fail("1st entry failed");
 		}
+		
+		attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("uid","aalberts"));
+		attribs.add(new LDAPAttribute("givenname","Al"));
+		attribs.add(new LDAPAttribute("sn","Alberts"));
+		
+		entry = new LDAPEntry("uid=aalberts,dc=nam,dc=compinternal,dc=com",attribs);
+		
+		if (! res.hasMore()) {
+			fail("entries not returned");
+			return;
+		}
+		
+		if (! util.compareEntry(entry,res.next())) {
+			fail("2nd entry failed");
+		}
+		
+		
 		
 		attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
@@ -471,6 +545,13 @@ public class TestJDBCSimple extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.stopServer();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
+		
 		//Thread.sleep(10000);
 	}
 

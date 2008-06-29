@@ -42,8 +42,8 @@ public class TestMapDNAttribute extends TestCase {
 		
 		this.server = new StartOpenLDAP();
 		this.server.startServer(
-				System.getenv("PROJ_DIR") + "/test/Groups", 10983,
-				"cn=admin,dc=domain,dc=com", "manager");
+				System.getenv("PROJ_DIR") + "/test/InternalUsers", 10983,
+				"cn=admin,ou=internal,dc=domain,dc=com", "manager");
 		
 		this.myvd = new StartMyVD();
 		this.myvd.startServer(System.getenv("PROJ_DIR") + "/test/TestServer/testdnmap.conf",50983);
@@ -57,7 +57,7 @@ public class TestMapDNAttribute extends TestCase {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost", 50983);
 		
-		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/Groups/basesearch.ldif"));
+		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/InternalUsers/basesearch.ldif"));
 		
 		
 		
@@ -91,7 +91,7 @@ public class TestMapDNAttribute extends TestCase {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost", 50983);
 		
-		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/Groups/basesearch.ldif"));
+		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/InternalUsers/basesearch.ldif"));
 		
 		
 		
@@ -136,7 +136,7 @@ public class TestMapDNAttribute extends TestCase {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost", 50983);
 		
-		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/Groups/add-src.ldif"));
+		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/InternalUsers/add-src.ldif"));
 		LDAPEntry toadd = ((LDAPSearchResult) reader.readMessage()).getEntry();
 		
 		con.add(toadd);
@@ -148,7 +148,7 @@ public class TestMapDNAttribute extends TestCase {
 		
 		
 		LDAPSearchResults res = con.search("cn=Test Group2,ou=groups,dc=domain,dc=com", 0, "(objectClass=*)", new String[0], false);
-		reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/Groups/add-result.ldif"));
+		reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/InternalUsers/add-result.ldif"));
 		Util util = new Util();
 		
 		while (res.hasMore()) {
@@ -188,7 +188,7 @@ public class TestMapDNAttribute extends TestCase {
 		
 		
 		LDAPSearchResults res = con.search("cn=Test Group,ou=groups,dc=domain,dc=com", 0, "(objectClass=*)", new String[0], false);
-		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/Groups/mod-result.ldif"));
+		LDIFReader reader = new LDIFReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/InternalUsers/mod-result.ldif"));
 		Util util = new Util();
 		
 		while (res.hasMore()) {
