@@ -22,6 +22,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 import net.sourceforge.myvd.server.Server;
 import net.sourceforge.myvd.test.util.Util;
@@ -40,31 +43,49 @@ public class TestJDBC extends TestCase {
 
 	Server server;
 	
+	
+	private void deleteDir(File path) {
+		
+		if (path.isDirectory()) {
+			File[] children = path.listFiles();
+			for (int i=0,m=children.length;i<m;i++) {
+				deleteDir(children[i]);
+			}
+			path.delete();
+		} else {
+			path.delete();
+		}
+	}
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter/dbdata.log");
-		File dbdata = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter/dbdata.script.orig");
-		File dbdatascript = new File(System.getenv("PROJ_DIR") + "/test/DBAdapter/dbdata.script");
+System.getProperties().setProperty("derby.system.home", System.getenv("PROJ_DIR") + "/test/derbyHome");
 		
-		if (dbdatascript.exists()) {
-			dbdatascript.delete();
-		}
+		deleteDir(new File(System.getenv("PROJ_DIR") + "/test/derbyHome"));
 		
-		if (dbdatalog.exists()) {
-			dbdatalog.delete();
-		}
+		(new File(System.getenv("PROJ_DIR") + "/test/derbyHome")).mkdir();
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(dbdata)));
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(dbdatascript)));
+		
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+		Connection con = DriverManager.getConnection("jdbc:derby:dbdb;create=true");
+		
+		Statement stmt = con.createStatement();
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/DBAdapter/derby.sql")));
 		String line;
 		
 		while ((line = in.readLine()) != null) {
-			out.println(line);
+			stmt.executeUpdate(line);
 		}
 		
 		in.close();
-		out.close();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:dbdb;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
 		
 		
 		this.server = new Server(System.getenv("PROJ_DIR") + "/test/DBAdapter/vldap.props");
@@ -117,6 +138,7 @@ public class TestJDBC extends TestCase {
 		con.disconnect();
 	}
 	
+	
 	public void testModReplace() throws Exception {
 		LDAPAttributeSet attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
@@ -144,7 +166,7 @@ public class TestJDBC extends TestCase {
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
 		attribs.add(new LDAPAttribute("uid","testadd"));
 		attribs.add(new LDAPAttribute("givenName","test"));
-		attribs.add(new LDAPAttribute("sn","theadd"));
+		attribs.add(new LDAPAttribute("sn","add"));
 		l = new LDAPAttribute("l");
 		l.addValue("Boston");
 		
@@ -169,7 +191,8 @@ public class TestJDBC extends TestCase {
 		
 		if (! util.compareEntry(fromdir, entry)) {
 			con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
-			fail("Entries not the same : " + fromdir.toString());
+			fail("Entries not the same : \nFrom Server:\n" + util.toLDIF(fromdir) + "\nControl:\n" + util.toLDIF(entry));
+			
 		}
 		
 		con.delete("uid=testadd,dc=nam,dc=compinternal,dc=com");
@@ -721,6 +744,13 @@ public class TestJDBC extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.stopServer();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:dbdb;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
+		
 		//Thread.sleep(10000);
 	}
 

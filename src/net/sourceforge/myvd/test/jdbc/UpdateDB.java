@@ -70,10 +70,10 @@ public class UpdateDB implements Insert {
 			
 			HashMap<String,String> db2ldap = (HashMap<String, String>) chain.getRequest().get(JdbcInsert.MYVD_DB_DB2LDAP + "LDAPBaseServer");
 			
-			PreparedStatement ps = con.prepareStatement("INSERT INTO USERS (id,first,last,username) VALUES (?,?,?,?)");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO USERS (id,firstname,lastname,username) VALUES (?,?,?,?)");
 			ps.setInt(1, 5); //this is horrible practice
-			ps.setString(2, entry.getEntry().getAttribute(db2ldap.get("first")).getStringValue());
-			ps.setString(3, entry.getEntry().getAttribute(db2ldap.get("last")).getStringValue());
+			ps.setString(2, entry.getEntry().getAttribute(db2ldap.get("firstname")).getStringValue());
+			ps.setString(3, entry.getEntry().getAttribute(db2ldap.get("lastname")).getStringValue());
 			ps.setString(4, entry.getEntry().getAttribute(db2ldap.get("username")).getStringValue());
 			
 			ps.executeUpdate();

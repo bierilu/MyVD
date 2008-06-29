@@ -34,15 +34,15 @@ server.db.Log2.className=net.sourceforge.myvd.inserts.DumpTransaction
 server.db.Log2.config.logLevel=info
 server.db.Log2.config.label=Log2
 server.db.LDAPBaseServer.className=net.sourceforge.myvd.inserts.jdbc.JdbcInsert
-server.db.LDAPBaseServer.config.driver=org.hsqldb.jdbcDriver
-server.db.LDAPBaseServer.config.url=jdbc:hsqldb:file:/home/mlb/workspace/MyVD/test/DBAdapterUID/dbdata
-server.db.LDAPBaseServer.config.user=sa
+server.db.LDAPBaseServer.config.driver=org.apache.derby.jdbc.EmbeddedDriver
+server.db.LDAPBaseServer.config.url=jdbc:derby:dbuid;create=true
+server.db.LDAPBaseServer.config.user=
 server.db.LDAPBaseServer.config.password=
 server.db.LDAPBaseServer.config.maxCons=1
 server.db.LDAPBaseServer.config.maxConsIdle=100
 server.db.LDAPBaseServer.config.rdn=empid
-server.db.LDAPBaseServer.config.mapping=empid=id,givenName=first,sn=last,l=name
+server.db.LDAPBaseServer.config.mapping=empid=uid,givenName=firstname,sn=lastname,l=name
 server.db.LDAPBaseServer.config.objectClass=inetOrgPerson
-server.db.LDAPBaseServer.config.sql=SELECT Users.id, Users.first,Users.last, locations.name FROM Users, Locations INNER JOIN LocationMap ON Users.id = LocationMap.person AND LocationMap.location = Locations.id
+server.db.LDAPBaseServer.config.sql=SELECT Users.id AS uid, Users.firstname,Users.lastname, locations.name FROM Users INNER JOIN LocationMap ON Users.id = LocationMap.person INNER JOIN Locations ON LocationMap.location = Locations.id
 
 

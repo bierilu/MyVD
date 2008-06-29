@@ -22,6 +22,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 import net.sourceforge.myvd.server.Server;
 import net.sourceforge.myvd.test.util.Util;
@@ -40,31 +43,48 @@ public class TestJDBCUid extends TestCase {
 
 	Server server;
 	
+	private void deleteDir(File path) {
+		
+		if (path.isDirectory()) {
+			File[] children = path.listFiles();
+			for (int i=0,m=children.length;i<m;i++) {
+				deleteDir(children[i]);
+			}
+			path.delete();
+		} else {
+			path.delete();
+		}
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		File dbdatalog = new File(System.getenv("PROJ_DIR") + "/test/DBAdapterUID/dbdata.log");
-		File dbdata = new File(System.getenv("PROJ_DIR") + "/test/DBAdapterUID/dbdata.script.orig");
-		File dbdatascript = new File(System.getenv("PROJ_DIR") + "/test/DBAdapterUID/dbdata.script");
+		System.getProperties().setProperty("derby.system.home", System.getenv("PROJ_DIR") + "/test/derbyHome");
 		
-		if (dbdatascript.exists()) {
-			dbdatascript.delete();
-		}
+		deleteDir(new File(System.getenv("PROJ_DIR") + "/test/derbyHome"));
 		
-		if (dbdatalog.exists()) {
-			dbdatalog.delete();
-		}
+		(new File(System.getenv("PROJ_DIR") + "/test/derbyHome")).mkdir();
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(dbdata)));
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(dbdatascript)));
+		
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+		Connection con = DriverManager.getConnection("jdbc:derby:dbuid;create=true");
+		
+		Statement stmt = con.createStatement();
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(System.getenv("PROJ_DIR") + "/test/DBAdapterUID/derby.sql")));
 		String line;
 		
 		while ((line = in.readLine()) != null) {
-			out.println(line);
+			stmt.executeUpdate(line);
 		}
 		
 		in.close();
-		out.close();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:dbuid;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
 		
 		
 		this.server = new Server(System.getenv("PROJ_DIR") + "/test/DBAdapterUID/vldap.props");
@@ -598,6 +618,12 @@ public class TestJDBCUid extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.stopServer();
+		
+		try {
+			DriverManager.getConnection("jdbc:derby:dbuid;shutdown=true");
+		} catch (Throwable t) {
+			//ignore?
+		}
 		//Thread.sleep(10000);
 	}
 

@@ -4,6 +4,13 @@ dn: dc=domain,dc=com
 objectClass: domain
 dc: domain
 
+
+dn: ou=internal,dc=domain,dc=com
+objectClass: organizationalUnit
+ou: internal
+
+
+
 dn: ou=groups,dc=domain,dc=com
 objectClass: organizationalUnit
 ou: groups
@@ -13,3 +20,10 @@ objectClass: groupOfUniqueNames
 cn: Test Group
 uniqueMember: uid=testuser1,ou=people,dc=domain,dc=com
 uniqueMember: uid=testuser2,ou=people,dc=domain,dc=com
+
+dn: cn=Test User,ou=internal,dc=domain,dc=com
+objectClass: inetOrgPerson
+cn: Test User
+sn: User
+uid: testUser
+userPassword: secret

@@ -581,15 +581,20 @@ public class JdbcInsert implements Insert {
 			}
 		}
 		
+		if (! foundRDN) {
+			buf.append(this.ldap2db.get(this.rdn.toLowerCase())).append(" ,");
+		}
+		
+		
+		
+		
 		if (! foundAttrib) {
 			buf.setLength(buf.lastIndexOf(",") - 1);
 		}
 		
 		
 		
-		if (! foundRDN) {
-			buf.append(this.ldap2db.get(this.rdn.toLowerCase())).append(' ');
-		}
+		
 	}
 
 	private Filter addBaseToFilter(DistinguishedName base, Filter filter) {
