@@ -562,7 +562,7 @@ public class SearchRequestImpl extends AbstractAbandonableRequest implements Sea
                     sb.append( ", " );
                 }
                 
-                sb.append( '\'' ).append( (String)it.next() ).append( '\'' );
+                sb.append( '\'' ).append( it.next().toString() ).append( '\'' );
             }
             
         }

@@ -64,7 +64,7 @@ public class Attribute {
 	
 	public String toString() {
 		if (this.attribute != null) {
-			return this.attribute.getName();
+			return this.attribute.toString();
 		} else {
 			return "NONE";
 		}
