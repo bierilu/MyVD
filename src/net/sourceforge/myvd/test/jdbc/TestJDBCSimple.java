@@ -117,6 +117,7 @@ public class TestJDBCSimple extends TestCase {
 
 	public void testStartup() {
 		//do notthing
+		System.out.println("");
 	}
 	
 	public void testSearchNoAttribsFilter() throws Exception {
