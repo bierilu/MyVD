@@ -81,7 +81,10 @@ public class ADKerberosInsert implements Insert {
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,Password pwd, LDAPConstraints constraints) throws LDAPException {
 		String userPrincipalName = getUserPrincipal(chain, dn);
 		
-		
+		//check to see if this is an anonymous bind
+		if (userPrincipalName.length() == 0) {
+			return;
+		}
 		
 		KerberosPrincipal clientPrincipal = new KerberosPrincipal( userPrincipalName );
 		KdcConnection con = new KdcConnection(this.domainServer);
@@ -107,7 +110,12 @@ public class ADKerberosInsert implements Insert {
 	private String getUserPrincipal(BindInterceptorChain chain,
 			DistinguishedName dn) throws LDAPException {
 		
-		System.out.println("dn: " + dn.getDN());
+		
+		
+		if (dn.getDN().toString().length() == 0) {
+			return "";
+		}
+		
 		String userPrincipalName = this.principalCache.get(dn.getDN().toString().toLowerCase());
 		
 		if (userPrincipalName != null) {

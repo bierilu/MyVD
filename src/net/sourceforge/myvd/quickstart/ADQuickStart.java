@@ -402,8 +402,30 @@ public class ADQuickStart {
 		while (keyIt.hasNext()) {
 			String key = keyIt.next();
 			String val = vars.get(key);
+			String skey = "%" + key + "%";
+			boolean done = false;
 			
-			cfgFile = cfgFile.replaceAll("[%]" + key + "[%]", val);
+			while (! done) {
+				int begin = cfgFile.indexOf(skey);
+				
+				if (begin == -1) {
+					done = true;
+					break;
+				}
+				
+				String tmp = cfgFile.substring(0,begin);
+				tmp += val;
+				tmp += cfgFile.substring(begin + skey.length());
+				cfgFile = tmp;
+			}
+			
+			
+			
+			/*if (cfgFile.contains("%" + key + "%")) {
+				System.out.println("key:" + key);
+				System.out.println("val:" + val);
+				cfgFile = cfgFile.replaceAll("[%]" + key + "[%]", val);
+			}*/
 		}
 		
 		PrintWriter out = new PrintWriter(new FileOutputStream(resultPath));

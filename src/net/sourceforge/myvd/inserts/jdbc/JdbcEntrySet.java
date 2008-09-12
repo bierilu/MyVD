@@ -124,7 +124,10 @@ public class JdbcEntrySet implements EntrySet {
 				ldapAttribs.add(attrib);
 				Iterator<String> valIt = vals.iterator();
 				while (valIt.hasNext()) {
-					attrib.addValue(valIt.next());
+                    String nextValue = valIt.next();
+                    if (nextValue != null) {
+                        attrib.addValue(nextValue);
+                    }
 				}
 			}
 			
