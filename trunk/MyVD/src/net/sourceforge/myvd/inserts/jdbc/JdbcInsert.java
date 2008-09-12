@@ -78,7 +78,7 @@ public class JdbcInsert implements Insert {
 	public static final String MYVD_DB_LDAP2DB = "MYVD_DB_LDAP2DB_";
 	public static final String MYVD_DB_DB2LDAP = "MYVD_DB_DB2LDAP_";
 
-	private static final String MYVD_DID_BIND = null;
+	public static final String MYVD_DID_BIND = "MYVD_DB_DID_BIND_";
 	String driver;
 	String url;
 	String user;

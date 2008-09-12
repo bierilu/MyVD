@@ -416,8 +416,12 @@ public class ADQuickStartJDBC {
 		while (keyIt.hasNext()) {
 			String key = keyIt.next();
 			String val = vars.get(key);
-			
-			cfgFile = cfgFile.replaceAll("[%]" + key + "[%]", val);
+			if (cfgFile.contains("%" + key + "%")) {
+				System.out.println("key:" + key);
+				System.out.println("val:" + val);
+				
+				cfgFile = cfgFile.replaceAll("[%]" + key + "[%]", val);
+			}
 		}
 		
 		PrintWriter out = new PrintWriter(new FileOutputStream(resultPath));

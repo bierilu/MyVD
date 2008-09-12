@@ -74,7 +74,7 @@ public class Server {
 	
 	protected static IoAcceptor tcpAcceptor;
 	protected static ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance( "MyVD" );
-	public final static String VERSION = "0.8.4";
+	public final static String VERSION = "0.8.5b1";
 	
 	String configFile;
 	Properties props;
