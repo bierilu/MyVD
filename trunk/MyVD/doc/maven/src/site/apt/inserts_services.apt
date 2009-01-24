@@ -185,3 +185,16 @@ scope-base#scope#grant/deny:permisions#scope#users
 |                     |master|The nams of a namespace used to write operations|
 *---------------------+-------------------------------------------------------+--------------------------------------+
   
+* Schema Insert
+
+ This insert allows for a schema ldif file to be used as a schema entry
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.SchemaInsert                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                     |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|schemaLDIF|Path to the ldif file.  NOTE: this ldap file MUST contain a full schema entry, including DN and objectClasses.  The DN should match the root of this insert.  The first line of the ldif file MUST be "version: 1"|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+  
