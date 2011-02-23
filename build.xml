@@ -61,6 +61,15 @@
 		            <fileset dir="${classes}" includes="net/sourceforge/myvd/test/**/*.class"/>
 			</jar>
 		</target>
+	
+	<target name="jar-embedd" depends="build">
+			<mkdir dir="${bin}"/>
+			<delete file="${bin}/myvd-embedded.jar"/>
+			<jar jarfile="${bin}/myvd-embedded.jar">
+		            <fileset dir="${classes}" includes="**/*.class" excludes="net/sourceforge/myvd/test/**/*.class,net/sourceforge/myvd/protocol/**/*.class"/>
+			</jar>
+		</target>
+	
 
     <!-- - - - - - - - - - - - - - - - - - 
           target: depends                      
