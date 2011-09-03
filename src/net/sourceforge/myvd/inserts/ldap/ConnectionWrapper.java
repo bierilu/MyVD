@@ -35,12 +35,16 @@ public class ConnectionWrapper {
 	LDAPInterceptor interceptor;
 	static Logger logger = Logger.getLogger(ConnectionWrapper.class);
 	
+	long lastAccessed;
+	
+	
 	
 	public ConnectionWrapper(LDAPInterceptor interceptor) {
 		this.interceptor = interceptor;
 		this.locked = new Bool(false);
 		this.locked.setValue(false);
 		this.bindDN = null;
+		
 	}
 	
 	public synchronized boolean wasLocked() {
@@ -75,13 +79,43 @@ public class ConnectionWrapper {
 		
 	}
 	
+	private boolean conValid() {
+		long now = System.currentTimeMillis();
+		
+		
+		if (this.interceptor.getMaxIdleTime() == 0) {
+			return true;
+		} else {
+			if ((now - this.lastAccessed >= this.interceptor.getMaxIdleTime())) {
+				
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+	
 	public LDAPConnection getConnection() throws LDAPException {
-		if (this.con.isConnected() && this.con.isConnectionAlive()) {
+		
+		if (this.con.isConnected() && this.con.isConnectionAlive() && conValid()) {
+			
+			this.lastAccessed = System.currentTimeMillis();
 			return this.con;
 		} else {
-			this.reConnect();
+			
+			this.lastAccessed = System.currentTimeMillis();
+			this.localReConnect();
 			return this.con;
 		}
+	}
+	
+	private void localReConnect() throws LDAPException {
+		if (con != null && con.isConnectionAlive()) {
+			con.disconnect();
+		}
+		
+		this.con = this.createConnection();
+		this.reBind();
 	}
 	
 	public void reConnect() throws LDAPException {
@@ -98,7 +132,13 @@ public class ConnectionWrapper {
 		LDAPConnection ldapcon = null;
 		switch (interceptor.type) {
 			case LDAPS :
-						ldapcon = new LDAPConnection(new LDAPJSSESecureSocketFactory());
+						if (this.interceptor.getSocketFactory() == null) {
+							
+							ldapcon = new LDAPConnection(new LDAPJSSESecureSocketFactory());
+						} else {
+							
+							ldapcon = new LDAPConnection(new LDAPJSSESecureSocketFactory(this.interceptor.getSocketFactory().getSSLSocketFactory()));
+						}
 				//ldapcon = new LDAPConnection();
 						break;
 						
@@ -114,6 +154,7 @@ public class ConnectionWrapper {
 			
 		}
 		
+		this.lastAccessed = System.currentTimeMillis();
 		
 		if (ldapcon == null) {
 			return null;

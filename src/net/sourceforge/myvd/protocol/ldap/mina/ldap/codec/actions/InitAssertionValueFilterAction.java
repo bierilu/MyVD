@@ -24,6 +24,7 @@ import net.sourceforge.myvd.protocol.ldap.mina.asn1.ber.IAsn1Container;
 import net.sourceforge.myvd.protocol.ldap.mina.asn1.ber.grammar.GrammarAction;
 import net.sourceforge.myvd.protocol.ldap.mina.asn1.ber.tlv.TLV;
 import net.sourceforge.myvd.types.FilterNode;
+import net.sourceforge.myvd.util.SchemaUtil;
 
 import net.sourceforge.myvd.protocol.ldap.mina.asn1.codec.DecoderException;
 import net.sourceforge.myvd.protocol.ldap.mina.ldap.codec.AttributeValueAssertion;
@@ -74,20 +75,45 @@ public class InitAssertionValueFilterAction extends GrammarAction
             assertionValue = tlv.getValue().getData();
         }
 
-        /*AttributeValueAssertionFilter terminalFilter = ( AttributeValueAssertionFilter ) searchRequest
-            .getTerminalFilter();
-        AttributeValueAssertion assertion = terminalFilter.getAssertion();*/
+        //AttributeValueAssertionFilter terminalFilter = ( AttributeValueAssertionFilter ) searchRequest.getTerminalFilter();
+        //AttributeValueAssertion assertion = terminalFilter.getAssertion();
         
         FilterNode node = searchRequest.getTerminalFilter();
 
-        /*if ( ldapMessageContainer.isBinary( assertion.getAttributeDesc() ) )
-        {
-            assertion.setAssertionValue( assertionValue );
-        }
-        else
-        {*/
+        //if ( ldapMessageContainer.isBinary( assertion.getAttributeDesc() ) )
+        //{
+           // assertion.setAssertionValue( assertionValue );
+        //	System.out.println("HERE!!!!");
+        //}
+        //else
+        //{
             //assertion.setAssertionValue( StringTools.utf8ToString( ( byte[] ) assertionValue ) );
-            node.setValue(StringTools.utf8ToString( ( byte[] ) assertionValue ));
+        byte[]  enc = ( byte[] ) assertionValue;
+        	if (SchemaUtil.getSchemaUtil().isBinary(node.getName())) {
+        		StringBuilder sb = new StringBuilder(enc.length * 2);
+    			
+    			for (int i=0; i< enc.length; i++)
+    			
+    			{
+    			
+    			sb.append(String.format("\\%02x", enc[i]));
+    			
+    			}
+    			
+    			String hex1 = sb.toString();
+    			
+    			node.setValue(hex1);
+        	} else {
+        		node.setValue(StringTools.utf8ToString( ( byte[] ) assertionValue ));
+        	}
+        
+        	
+            
+            
+            
+          
+            
+            
         //}
 
         // We now have to get back to the nearest filter which is

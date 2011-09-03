@@ -86,8 +86,11 @@ public class LDAPInterceptor implements Insert {
 	NamingUtils utils;
 	
 	LDAPConnectionPool pool;
+	LDAPSocketFactory socketFactory;
 	
 	String noMapBindFlag;
+	
+	long maxIdleTime;
 	
 	public void configure(String name, Properties props,NameSpace nameSpace) throws LDAPException {
 		this.name = name;
@@ -119,6 +122,20 @@ public class LDAPInterceptor implements Insert {
 			throw new LDAPLocalException("Unrecognized ldap interceptor type : " + type, LDAPException.OPERATIONS_ERROR);
 		}
 		
+		String socketFactoryClassName = props.getProperty("sslSocketFactory");
+		
+		if (socketFactoryClassName != null) {
+			try {
+				this.socketFactory = (LDAPSocketFactory) Class.forName(socketFactoryClassName).newInstance();
+			} catch (Exception e) {
+				throw new LDAPException("Could not initiate socket factory",LDAPException.OPERATIONS_ERROR,"Operations Error",e);
+			} 
+		} else {
+			this.socketFactory = null;
+		}
+		
+		this.maxIdleTime = Long.parseLong(props.getProperty("maxIdle","0"));
+		
 		this.pool = new LDAPConnectionPool(this, Integer.parseInt(props.getProperty("minimumConnections","5")), Integer.parseInt(props.getProperty("maximumConnections","30")), Integer.parseInt(props.getProperty("maximumRetries","5")),this.type,this.spmlImpl,this.isSoap);
 		
 		this.passThroughBindOnly = props.getProperty("passBindOnly","false").equalsIgnoreCase("true");
@@ -127,6 +144,8 @@ public class LDAPInterceptor implements Insert {
 		this.utils = new NamingUtils();
 		
 		this.noMapBindFlag = LDAPInterceptor.NO_MAP_BIND_DN + this.name;
+		
+		
 	}
 	
 	private ConnectionWrapper getConnection(DN bindDN,Password pass,boolean force,DN base,HashMap<Object,Object> session) throws LDAPException {
@@ -149,7 +168,7 @@ public class LDAPInterceptor implements Insert {
 		}
 		
 		if (wrapper == null) {
-			System.out.println("pool : " + pool.pool.toString());
+			
 			throw new LDAPException("Could not get remote connection",LDAPException.SERVER_DOWN,base.toString());
 		} else {
 			return wrapper;
@@ -172,7 +191,7 @@ public class LDAPInterceptor implements Insert {
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
 		
-		System.out.println("binddn: " + chain.getBindDN());
+		
 		
 		ConnectionWrapper wrapper;
 		
@@ -430,6 +449,18 @@ public class LDAPInterceptor implements Insert {
 		this.pool.shutDownPool();
 		logger.info("Pool shutdown...");
 		
+	}
+
+	public LDAPSocketFactory getSocketFactory() {
+		return this.socketFactory;
+	}
+
+	public long getMaxIdleTime() {
+		return maxIdleTime;
+	}
+
+	public void setMaxIdleTime(long maxIdleTime) {
+		this.maxIdleTime = maxIdleTime;
 	}
 
 }

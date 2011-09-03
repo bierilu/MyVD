@@ -147,7 +147,7 @@ public class Filter {
                         String name = (String)itr.next();
                     	
                         
-                        boolean noStarLast = false;
+                        boolean noStarLast = true;
                         while (itr.hasNext()){
                             op = ((Integer)itr.next()).intValue();
                             switch(op){

@@ -269,7 +269,7 @@ public class Server {
 			
 			props.load(new FileInputStream(home + "/logging.conf"));
 			
-			if (! props.containsKey("log4j.rootLogger")) props.put("log4j.rootLogger", "info,logfile");
+			if (! props.containsKey("log4j.rootLogger")) props.put("log4j.rootLogger", "debug,logfile");
 			if (! props.containsKey("log4j.appender.logfile")) props.put("log4j.appender.logfile", "org.apache.log4j.RollingFileAppender");
 			if (! props.containsKey("log4j.appender.logfile.File")) props.put("log4j.appender.logfile.File",loghome + "/logs/myvd.log");
 			if (! props.containsKey("log4j.appender.logfile.MaxFileSize")) props.put("log4j.appender.logfile.MaxFileSize","100KB");

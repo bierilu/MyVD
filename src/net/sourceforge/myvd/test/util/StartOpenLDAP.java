@@ -108,9 +108,13 @@ public class StartOpenLDAP {
 	}
 	
 	public boolean startServer(String fullPath,int port,String adminDN,String adminPass) throws IOException,Exception {
+		return this.startServer(fullPath, port, adminDN, adminPass,0);
+	}
+	
+	public boolean startServer(String fullPath,int port,String adminDN,String adminPass,int sslPort) throws IOException,Exception {
 		LDAPConnection con = new LDAPConnection();
 		try {
-			con.connect("localhost",port);
+			con.connect("127.0.0.1",port);
 			con.disconnect();
 			
 			
@@ -127,9 +131,13 @@ public class StartOpenLDAP {
 		
 		clearData(fullPath);
 		this.createTestConf(fullPath);
-		String exec = System.getenv("SLAPD_PATH") + "/slapd -d 1 -h ldap://:" + port + "/ -f " + fullPath + "/slapd-gen.conf";
+		String exec = System.getenv("SLAPD_PATH") + "/slapd -d 1 -h 'ldap://:" + port + "/" + (sslPort > 0 ? " ldaps://:" + sslPort + "/" : "") + "' -f " + fullPath + "/slapd-gen.conf";
+		String[] execa = new String[] {System.getenv("SLAPD_PATH") + "/slapd","-d","1","-h","ldap://:" + port + "/" + (sslPort > 0 ? " ldaps://:" + sslPort + "/" : ""),"-f",fullPath + "/slapd-gen.conf"};
+		
 		System.out.println(exec);
-		process = Runtime.getRuntime().exec(exec);
+		process = Runtime.getRuntime().exec(execa);
+		
+		
 		
 		StreamReader reader = new StreamReader(process.getInputStream(),false);
 		StreamReader errReader = new StreamReader(process.getErrorStream(),false);
@@ -140,8 +148,15 @@ public class StartOpenLDAP {
 		for (int i=0,m=10;i<m;i++) {
 			con = new LDAPConnection();
 			try {
-				con.connect("localhost",port);
+				System.out.println("Try : " + i);
+				con.connect("127.0.0.1",port);
+				
 				con.disconnect();
+				
+				if (sslPort > 0) {
+					con.connect("127.0.0.1", sslPort);
+					con.disconnect();
+				}
 				
 				this.loadLDIF(fullPath,adminDN,adminPass,port);
 				servers.put(port, this);
