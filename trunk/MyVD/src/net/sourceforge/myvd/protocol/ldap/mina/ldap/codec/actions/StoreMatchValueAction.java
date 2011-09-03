@@ -70,6 +70,7 @@ public class StoreMatchValueAction extends GrammarAction
         
         
         String value = StringTools.utf8ToString( tlv.getValue().getData() );
+        
         //extensibleMatchFilter.setMatchValue( value );
         
         searchRequest.getTerminalFilter().setValue(value);

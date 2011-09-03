@@ -28,6 +28,7 @@ import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
+import net.sourceforge.myvd.util.SchemaUtil;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.util.DN;
@@ -139,12 +140,22 @@ public class ServerCore {
 	}
 	
 	public void startService() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException {
-		
+		logger.debug("Initializing Server wide config...");
+		this.buildServerWideConfig();
 		logger.debug("Loading global chain...");
 		this.buildGlobalChain();
 		logger.debug("Global chain loaded");
 		logger.debug("Loading local chain...");
 		this.buildNamespaces();
 		logger.debug("Local chain loaded");
+	}
+
+	private void buildServerWideConfig() {
+		String binaryAttrs = props.getProperty("server.binaryAttributes","objectguid,orclguid,entryuuid");
+		StringTokenizer toker = new StringTokenizer(binaryAttrs,",",false);
+		while (toker.hasMoreTokens()) {
+			SchemaUtil.getSchemaUtil().addBinaryAttribute(toker.nextToken().toLowerCase());
+		}
+		
 	}
 }

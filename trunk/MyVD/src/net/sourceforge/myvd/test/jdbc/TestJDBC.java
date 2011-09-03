@@ -60,7 +60,7 @@ public class TestJDBC extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-System.getProperties().setProperty("derby.system.home", System.getenv("PROJ_DIR") + "/test/derbyHome");
+		System.getProperties().setProperty("derby.system.home", System.getenv("PROJ_DIR") + "/test/derbyHome");
 		
 		deleteDir(new File(System.getenv("PROJ_DIR") + "/test/derbyHome"));
 		

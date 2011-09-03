@@ -37,7 +37,10 @@ package net.sourceforge.myvd.protocol.ldap;
 import java.util.HashMap;
 
 import net.sourceforge.myvd.inserts.Insert;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AbandonRequest;
 import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AbandonRequestImpl;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.AddRequest;
+import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.LdapResult;
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.types.DistinguishedName;
 import net.sourceforge.myvd.types.Password;
@@ -59,15 +62,20 @@ public class AbandonHandler extends LDAPOperation
 {
     public void messageReceived( IoSession session, Object request,HashMap userRequest,HashMap userSession,DistinguishedName bindDN,Password pass )
     {
-        AbandonRequestImpl req = ( AbandonRequestImpl ) request;
-        int abandonedId = req.getAbandoned();
+        /*AbandonRequestImpl req = ( AbandonRequestImpl ) request;
+        int abandonedId = req.getAbandoned();*/
 
-        if ( abandonedId < 0 )
+        /*if ( abandonedId < 0 )
         {
             return;
         }
         
-        throw new net.sourceforge.myvd.protocol.ldap.mina.ldap.NotImplementedException( "don't know how to do this just yet" );
+        throw new net.sourceforge.myvd.protocol.ldap.mina.ldap.NotImplementedException( "don't know how to do this just yet" );*/
+        
+        //no op
+        //AbandonRequest req = ( AbandonRequest ) request;
+        //LdapResult result = req.get
+        
     }
 
 	
