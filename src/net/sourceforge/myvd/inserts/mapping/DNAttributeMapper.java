@@ -65,6 +65,9 @@ public class DNAttributeMapper implements Insert {
 	String[] localBase;
 	String[] remoteBase;
 	
+	String localBaseDN;
+	String remoteBaseDN;
+	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
 		
@@ -116,6 +119,8 @@ public class DNAttributeMapper implements Insert {
 		
 		this.remoteBase = (new DN(props.getProperty("remoteBase",""))).explodeDN(false);
 		this.localBase = (new DN(props.getProperty("localBase",""))).explodeDN(false);
+		this.localBaseDN = props.getProperty("localBase","").toLowerCase();
+		this.remoteBaseDN = props.getProperty("remoteBase","").toLowerCase();
 		
 
 	}
@@ -236,9 +241,17 @@ public class DNAttributeMapper implements Insert {
 				String dn = (String) enumer.nextElement();
 				
 				if (outbound) {
-					nattrib.addValue(util.getRemoteMappedDN(new DN(dn), this.localBase, this.remoteBase).toString());
+					if (dn.toLowerCase().endsWith(this.localBaseDN)) {
+						nattrib.addValue(util.getRemoteMappedDN(new DN(dn), this.localBase, this.remoteBase).toString());
+					} else {
+						nattrib.addValue(dn);
+					}
 				} else {
-					nattrib.addValue(util.getLocalMappedDN(new DN(dn), this.remoteBase, this.localBase).toString());
+					if (dn.toLowerCase().endsWith(this.remoteBaseDN)) {
+						nattrib.addValue(util.getLocalMappedDN(new DN(dn), this.remoteBase, this.localBase).toString());
+					} else {
+						nattrib.addValue(dn);
+					}
 				}
 			}
 		} else if (this.urlAttribs.contains(origAttrib.getName().toLowerCase())) {
@@ -275,7 +288,7 @@ public class DNAttributeMapper implements Insert {
 		
 		switch (node.getType()) {
 			case EQUALS 	  :
-				if (this.dnAttribs.contains(node.getName().toLowerCase())) {
+				if (this.dnAttribs.contains(node.getName().toLowerCase()) && node.getValue().toLowerCase().endsWith(this.localBaseDN)) {
 					node.setValue(util.getRemoteMappedDN(new DN(node.getValue()), this.localBase, this.remoteBase).toString());
 				}
 				break;
