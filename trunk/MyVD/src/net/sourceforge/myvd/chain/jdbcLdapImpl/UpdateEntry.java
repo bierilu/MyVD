@@ -84,8 +84,8 @@ public class UpdateEntry implements ChainedImpl,DirectoryUpdateEntry {
 					name = p.getName();
 					
 					if (p.getValue().equals("?")) {
-						//System.out.println("paramnum : " + paramnum);
-						//System.out.println("val : " + stmt.getArgVals()[paramnum]);
+						////System.out.println("paramnum : " + paramnum);
+						////System.out.println("val : " + stmt.getArgVals()[paramnum]);
 						val = stmt.getArgVals()[paramnum];
 						paramnum++;
 						//i++;
@@ -95,12 +95,12 @@ public class UpdateEntry implements ChainedImpl,DirectoryUpdateEntry {
 					}
 					
 					
-					//System.out.println("moditem : " + modtype + ", " + name + "=" + val);
+					////System.out.println("moditem : " + modtype + ", " + name + "=" + val);
 					mods.add(new LDAPModification(modtype,new LDAPAttribute(name,val)));
 				}
 				else {
 					name = (String) it.next();
-					//System.out.println("moditem : " + modtype + ", " + name);
+					////System.out.println("moditem : " + modtype + ", " + name);
 					mods.add(new LDAPModification(modtype,new LDAPAttribute(name)));
 				}
 				i++;
@@ -128,7 +128,7 @@ public class UpdateEntry implements ChainedImpl,DirectoryUpdateEntry {
 					
 					
 					count++;
-					//System.out.println("count : " + count);
+					////System.out.println("count : " + count);
 				
 				}
 			} else {
@@ -139,7 +139,7 @@ public class UpdateEntry implements ChainedImpl,DirectoryUpdateEntry {
 			}
 			
 			
-			//System.out.println("final count : " + count);
+			////System.out.println("final count : " + count);
 			return count;
 			//stmt.getContext().modifyAttributes(dn.toString(),doMods);
 		} catch (LDAPException ne) {

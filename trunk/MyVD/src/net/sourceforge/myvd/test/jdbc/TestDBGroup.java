@@ -76,7 +76,7 @@ public class TestDBGroup extends TestCase {
 
 	
 	public void testStartServer() {
-		System.out.println("");
+		//System.out.println("");
 	}
 	
 	public void testBaseSearch() throws Exception {

@@ -108,22 +108,22 @@ public class LDAPConnectionPool {
 				
 				/*
 				if (wrapper == null) {
-					System.out.println("wrapper is null");
+					//System.out.println("wrapper is null");
 				}
 				
 				if (bindDN == null) {
-					System.out.println("bindDN is null");
+					//System.out.println("bindDN is null");
 				}
 				
 				if (wrapper.getBindDN() == null) {
-					System.out.println("wrapper.getBindDN is null");
+					//System.out.println("wrapper.getBindDN is null");
 				}
 				
 				if (bindDN.toString() == null) {
-					System.out.println("bindDN.toString() is null");
+					//System.out.println("bindDN.toString() is null");
 				}*/
 				
-				//System.out.println("?" + wrapper.getBindDN().toString());
+				////System.out.println("?" + wrapper.getBindDN().toString());
 				
 				if (wrapper.getBindDN() != null && bindDN.toString().equals(wrapper.getBindDN().toString())) {
 					return wrapper;
@@ -141,7 +141,7 @@ public class LDAPConnectionPool {
 		}
 		
 		
-		//System.out.println("max cons:" + this.maxCons + "; cur cons : " + this.pool.size());
+		////System.out.println("max cons:" + this.maxCons + "; cur cons : " + this.pool.size());
 		
 		if (this.maxCons > this.pool.size()) {
 			ConnectionWrapper wrapper = new ConnectionWrapper(this.interceptor);

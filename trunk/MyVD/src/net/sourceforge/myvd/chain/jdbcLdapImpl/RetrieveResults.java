@@ -76,17 +76,17 @@ public class RetrieveResults implements ChainedImpl,DirectoryRetrieveResults {
 				
 			}
 			
-			/*System.out.println("attribs");
+			/*//System.out.println("attribs");
 			for (int i=0,m=searchAttribs.length;i<m;i++) {
-				System.out.println("attrib : " + searchAttribs[i]);
+				//System.out.println("attrib : " + searchAttribs[i]);
 			}*/
 			
 			
 			
 			String useBase = JndiLdapConnection.getRealBase(select);
-			//System.out.println("useBase : " + useBase);
+			////System.out.println("useBase : " + useBase);
 			String filter = select.getFilterWithParams();
-			//System.out.println("filter : " + filter);
+			////System.out.println("filter : " + filter);
 			
 			LDAPSearchConstraints constraints = null;
 			
@@ -167,9 +167,9 @@ public class RetrieveResults implements ChainedImpl,DirectoryRetrieveResults {
 				constraints.setTimeLimit(sql.getJDBCConnection().getMaxTimeLimit());
 			}
     		
-//	    	System.out.println("sql.getBaseContext() " + sql.getBaseContext());
-//	    	System.out.println("where : " + filter);
-//	    	System.out.println("scope  : " + sql.getSearchScope());
+//	    	//System.out.println("sql.getBaseContext() " + sql.getBaseContext());
+//	    	//System.out.println("where : " + filter);
+//	    	//System.out.println("scope  : " + sql.getSearchScope());
 			
 			Results res = new Results(this.getChain().getInterceptors(),this.chain.getPos());
 			SearchInterceptorChain searchChain = this.chain.createSearchChain();

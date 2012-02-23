@@ -485,7 +485,7 @@ public class ObjectGuidToString implements Insert {
 		
 		
 		
-		//System.out.println("version : " + version);
+		////System.out.println("version : " + version);
 		
 		begin = objectSID.indexOf('-',end) + 1;
 		end = objectSID.indexOf('-',begin);

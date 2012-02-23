@@ -39,7 +39,7 @@ public class StartOpenDS {
 		}*/
 		
 		String exec = System.getenv("PROJ_DIR") + "/test/opends-1.0b7/bin/stop-ds";
-		System.out.println(exec);
+		//System.out.println(exec);
 		
 		
 		
@@ -131,7 +131,7 @@ public class StartOpenDS {
 			con.connect("localhost",port);
 			con.bind(3,adminDN,adminPass.getBytes());
 			
-			System.out.println(path + "/data.ldif");
+			//System.out.println(path + "/data.ldif");
 			
 			LDIFReader reader = new LDIFReader(new FileInputStream(path + "/data.ldif"));
 			
@@ -185,7 +185,7 @@ public class StartOpenDS {
 		clearData(System.getenv("PROJ_DIR") + "/test/opends-1.0b7");
 		//this.createTestConf(fullPath);
 		String exec = System.getenv("PROJ_DIR") + "/test/opends-1.0b7/bin/start-ds";
-		System.out.println(exec);
+		//System.out.println(exec);
 		
 		
 		
@@ -265,7 +265,7 @@ public class StartOpenDS {
 		boolean isStarted = start.startServer(System.getenv("PROJ_DIR") + "/test/EmbeddedGroups",12389,"cn=Directory Manager","secret");
 		
 		if (isStarted) {
-			System.out.println("Server started on 12389....");
+			//System.out.println("Server started on 12389....");
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			in.readLine();
 			start.stopServer();

@@ -79,7 +79,7 @@ public class DBGroups implements Insert {
 
 	public void compare(CompareInterceptorChain chain, DistinguishedName dn,
 			Attribute attrib, LDAPConstraints constraints) throws LDAPException {
-		System.out.println("here");
+		//System.out.println("here");
 		chain.nextCompare(dn,attrib,constraints);
 
 	}

@@ -512,7 +512,7 @@ public class JdbcInsert implements Insert {
 			
 			querySQL = "SELECT * FROM (" + SQL + ") X WHERE " + this.dbRdn + " IN (" + mappedSearch + ") ORDER BY " + this.dbRdn;
 		}
-		//System.out.println(querySQL);
+		////System.out.println(querySQL);
 		//System.err.println(querySQL);
 		try {
 			
@@ -613,7 +613,7 @@ public class JdbcInsert implements Insert {
 		}
 		FilterNode newroot = new FilterNode(FilterType.AND,ands);
 		filter = new Filter(newroot);
-		//System.out.println("filter : " + filter.getRoot().toString());
+		////System.out.println("filter : " + filter.getRoot().toString());
 		return filter;
 	}
 

@@ -71,7 +71,7 @@ public class AccessControlItem {
 	
 	public AccessControlItem(int index,String aci) throws Exception {
 		this.num = index;
-		//System.out.println(aci);
+		////System.out.println(aci);
 		StringTokenizer toker = new StringTokenizer(aci,"#");
 		
 		//first the DN

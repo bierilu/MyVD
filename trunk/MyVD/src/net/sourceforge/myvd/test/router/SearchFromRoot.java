@@ -78,7 +78,7 @@ public class SearchFromRoot extends TestCase {
 	
 	@Test
 	public void testStartup() {
-		System.out.println();
+		//System.out.println();
 	}
 
 }

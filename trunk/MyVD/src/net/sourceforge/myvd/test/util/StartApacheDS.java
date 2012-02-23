@@ -39,7 +39,7 @@ public class StartApacheDS {
 		}*/
 		
 		String exec = System.getenv("PROJ_DIR") + "/test/apacheds102/bin/server.init stop";
-		System.out.println(exec);
+		//System.out.println(exec);
 		
 		
 		
@@ -131,7 +131,7 @@ public class StartApacheDS {
 			con.connect("localhost",port);
 			con.bind(3,adminDN,adminPass.getBytes());
 			
-			System.out.println(path + "/data-apacheds.ldif");
+			//System.out.println(path + "/data-apacheds.ldif");
 			
 			LDIFReader reader = new LDIFReader(new FileInputStream(path + "/data-apacheds.ldif"));
 			
@@ -185,7 +185,7 @@ public class StartApacheDS {
 		clearData(System.getenv("PROJ_DIR") + "/test/apacheds102");
 		//this.createTestConf(fullPath);
 		String exec = System.getenv("PROJ_DIR") + "/test/apacheds102/bin/server.init start";
-		System.out.println(exec);
+		//System.out.println(exec);
 		
 		
 		
@@ -265,7 +265,7 @@ public class StartApacheDS {
 		boolean isStarted = start.startServer(System.getenv("PROJ_DIR") + "/test/EmbeddedGroups",10983,"uid=admin,ou=system","secret");
 		
 		if (isStarted) {
-			System.out.println("Server started on 10983....");
+			//System.out.println("Server started on 10983....");
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			in.readLine();
 			start.stopServer();

@@ -51,7 +51,7 @@ public class Delete implements DirectoryDelete, ChainedImpl {
 		StringBuffer buf = new StringBuffer();
 		SqlStore store = del.getSqlStore();
 		int count = 0;
-		//System.out.println("from : " + store.getFrom());
+		////System.out.println("from : " + store.getFrom());
 		if (store.getSimple()) {
 			try {
 				

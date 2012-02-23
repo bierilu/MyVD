@@ -54,7 +54,7 @@ import java.util.Set;
  * </p>
  * 
  * <pre>
- * System.out.println( &quot;An object: &quot; + ReflectionToStringBuilder.toString( anObject ) );
+ * //System.out.println( &quot;An object: &quot; + ReflectionToStringBuilder.toString( anObject ) );
  * </pre>
  * 
  * <p>

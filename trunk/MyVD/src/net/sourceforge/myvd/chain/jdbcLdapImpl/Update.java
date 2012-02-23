@@ -70,7 +70,7 @@ public class Update implements ChainedImpl,DirectoryUpdate {
 		try {
 			if (update.getSearchScope() != 0) {
 				LDAPSearchResults enumer = res.searchUpInsJldap(update);
-				//System.out.println("enum.hasMore : " + enum.hasMore());
+				////System.out.println("enum.hasMore : " + enum.hasMore());
 				while (enumer.hasMore()) {
 					seres =  enumer.next();
 					buf.setLength(0);
@@ -83,7 +83,7 @@ public class Update implements ChainedImpl,DirectoryUpdate {
 					
 					
 					count++;
-					//System.out.println("count : " + count);
+					////System.out.println("count : " + count);
 				}
 			} else {
 				ModifyInterceptorChain modChain = this.chain.createModifyChain();
@@ -93,7 +93,7 @@ public class Update implements ChainedImpl,DirectoryUpdate {
 			}
 			
 			
-			//System.out.println("final count : " + count);
+			////System.out.println("final count : " + count);
 			return count;
 		}
 		catch (LDAPException ne) {

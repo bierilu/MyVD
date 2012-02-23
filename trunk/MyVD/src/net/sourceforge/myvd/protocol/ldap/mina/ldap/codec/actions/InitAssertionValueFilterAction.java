@@ -83,7 +83,7 @@ public class InitAssertionValueFilterAction extends GrammarAction
         //if ( ldapMessageContainer.isBinary( assertion.getAttributeDesc() ) )
         //{
            // assertion.setAssertionValue( assertionValue );
-        //	System.out.println("HERE!!!!");
+        //	//System.out.println("HERE!!!!");
         //}
         //else
         //{

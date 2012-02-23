@@ -40,14 +40,14 @@ public class StreamWriter extends Thread {
 		
 		try {
 			while ((line = in.readLine()) != null ) {
-				System.out.println(line);
+				//System.out.println(line);
 				System.out.flush();
 				/*if (line.trim().endsWith(":")) {
-					System.out.print(line);
+					//System.out.print(line);
 					String fromc = sin.readLine();
 					out.println(fromc);
 				} else {
-					System.out.println(line);
+					//System.out.println(line);
 				}*/
 				
 			}
