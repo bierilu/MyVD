@@ -91,7 +91,7 @@ public class ModifyDNHandler extends LDAPOperation
             else
             {
             	DistinguishedName oldDn = new DistinguishedName( req.getName().toString() );
-            	System.out.println("oldDN : " + oldDn.getDN());
+            	//System.out.println("oldDN : " + oldDn.getDN());
             	DistinguishedName newRDN = new DistinguishedName( req.getNewRdn().toString() );
             	
             	RenameInterceptorChain chain = new RenameInterceptorChain(bindDN,pass,0,this.globalChain,userSession,userRequest,this.router);

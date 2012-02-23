@@ -91,7 +91,7 @@ package net.sourceforge.myvd.protocol.ldap.mina.ldap.util;
  * </p>
  * 
  * <pre>
- * System.out.println( &quot;An object: &quot; + ToStringBuilder.reflectionToString( anObject ) );
+ * //System.out.println( &quot;An object: &quot; + ToStringBuilder.reflectionToString( anObject ) );
  * </pre>
  * 
  * <p>

@@ -137,13 +137,13 @@ public class JdbcEntrySet implements EntrySet {
 			
 			boolean toReturn = false;
 			
-			//System.out.println("entry to return : " + tmpentry.getDN());
+			////System.out.println("entry to return : " + tmpentry.getDN());
 			if (filter.getRoot().checkEntry(tmpentry)) {
 				this.entry = tmpentry;
 				toReturn = true;
 			} 
 			
-			//System.out.println("Filter : " + filter.getRoot().toString() + ";passed = " + toReturn);
+			////System.out.println("Filter : " + filter.getRoot().toString() + ";passed = " + toReturn);
 			
 			if (newRdnVal.equalsIgnoreCase(rdnVal)) {
 				this.hasMore = false;

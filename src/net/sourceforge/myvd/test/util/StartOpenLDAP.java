@@ -78,7 +78,7 @@ public class StartOpenLDAP {
 			con.connect("localhost",port);
 			con.bind(3,adminDN,adminPass.getBytes());
 			
-			System.out.println(path + "/data.ldif");
+			//System.out.println(path + "/data.ldif");
 			
 			LDIFReader reader = new LDIFReader(new FileInputStream(path + "/data.ldif"));
 			
@@ -134,7 +134,7 @@ public class StartOpenLDAP {
 		String exec = System.getenv("SLAPD_PATH") + "/slapd -d 1 -h 'ldap://:" + port + "/" + (sslPort > 0 ? " ldaps://:" + sslPort + "/" : "") + "' -f " + fullPath + "/slapd-gen.conf";
 		String[] execa = new String[] {System.getenv("SLAPD_PATH") + "/slapd","-d","1","-h","ldap://:" + port + "/" + (sslPort > 0 ? " ldaps://:" + sslPort + "/" : ""),"-f",fullPath + "/slapd-gen.conf"};
 		
-		System.out.println(exec);
+		//System.out.println(exec);
 		process = Runtime.getRuntime().exec(execa);
 		
 		
@@ -148,7 +148,7 @@ public class StartOpenLDAP {
 		for (int i=0,m=10;i<m;i++) {
 			con = new LDAPConnection();
 			try {
-				System.out.println("Try : " + i);
+				//System.out.println("Try : " + i);
 				con.connect("127.0.0.1",port);
 				
 				con.disconnect();
@@ -199,7 +199,7 @@ public class StartOpenLDAP {
 		boolean isStarted = start.startServer(System.getenv("PROJ_DIR") + "/test/startopenldap",10983,"cn=admin,dc=domain,dc=com","manager");
 		
 		if (isStarted) {
-			System.out.println("Server started on 10983....");
+			//System.out.println("Server started on 10983....");
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			in.readLine();
 			start.stopServer();

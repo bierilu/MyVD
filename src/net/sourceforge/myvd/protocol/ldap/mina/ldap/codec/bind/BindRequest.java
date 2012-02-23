@@ -327,7 +327,7 @@ public class BindRequest extends LdapMessage
                 stream.flip();
             }
             long t1 = System.currentTimeMillis();
-            System.out.println( "Delta = " + ( t1 - t0 ) );
+            //System.out.println( "Delta = " + ( t1 - t0 ) );
             
             ldapDecoder.decode( stream, ldapMessageContainer );
         }

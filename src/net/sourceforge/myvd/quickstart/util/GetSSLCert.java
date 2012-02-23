@@ -57,7 +57,7 @@ public class GetSSLCert {
 		GetMethod httpget = new GetMethod("/");
 		try {
 		  httpclient.executeMethod(httpget);
-		  System.out.println(httpget.getStatusLine());
+		  //System.out.println(httpget.getStatusLine());
 		} catch (Throwable t) {
 			//do nothing
 		}
@@ -73,9 +73,9 @@ public class GetSSLCert {
 	public static void main(String[] args) throws Exception {
 		javax.security.cert.X509Certificate cert = getCert("test.mydomain.com",636);
 		if (cert != null) {
-			System.out.println("Cert DN : " + cert.getIssuerDN());
+			//System.out.println("Cert DN : " + cert.getIssuerDN());
 		} else {
-			System.out.println("No cert");
+			//System.out.println("No cert");
 		}
 		
 		FileOutputStream fso = new FileOutputStream("/tmp/cert.der");

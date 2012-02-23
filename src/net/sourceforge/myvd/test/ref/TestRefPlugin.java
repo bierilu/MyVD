@@ -119,7 +119,7 @@ public class TestRefPlugin extends TestCase {
 		
 		LDAPSearchResults res = con.search("ou=internal,o=mycompany,c=us",2,"(objectClass=*)",new String[0],false);
 		while (res.hasMore()) {
-			System.out.println(res.next().getDN());
+			//System.out.println(res.next().getDN());
 		}
 		
 		con.disconnect();

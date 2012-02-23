@@ -132,7 +132,7 @@ public class TestJoin extends TestCase {
 	
 	public void testStartup() {
 		//do nothing
-		System.out.println();
+		//System.out.println();
 		
 	}
 	

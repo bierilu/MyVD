@@ -76,17 +76,17 @@ public class ADQuickStart {
 		
 		vars.put("MYVD_HOME", myVDHome);
 		
-		System.out.println("MyVirtualDirectory Active Directory Quick-Start");
-		System.out.println("===============================================");
+		//System.out.println("MyVirtualDirectory Active Directory Quick-Start");
+		//System.out.println("===============================================");
 		
-		System.out.println("This quick start will guide you through building out a virtual directory ");
-		System.out.println("that will expose an Active Directory domain for use by a Linux system.\n\n");
+		//System.out.println("This quick start will guide you through building out a virtual directory ");
+		//System.out.println("that will expose an Active Directory domain for use by a Linux system.\n\n");
 		
-		System.out.println("In order to move forward you will need:");
-		System.out.println("ActiveDirectory Domain Controller hostname or ip");
-		System.out.println("ActiveDirectory user with no search restrictions");
+		//System.out.println("In order to move forward you will need:");
+		//System.out.println("ActiveDirectory Domain Controller hostname or ip");
+		//System.out.println("ActiveDirectory user with no search restrictions");
 
-		System.out.println("Creating MyVirtualDirectory Keystore...");
+		//System.out.println("Creating MyVirtualDirectory Keystore...");
 		
 		String srcKsPwd = getPassword("CACERTS Password (usually 'changeit')",in);
 		ksPass = getPassword("MyVirtualDirectory Keystore Password",in);
@@ -131,7 +131,7 @@ public class ADQuickStart {
 			}
 		}
 		
-		System.out.println("Keystore created");
+		//System.out.println("Keystore created");
 		
 		String myvdBase = getInput("MyVirtualDirectory Base (ie ou=unix,o=mycompany)",in);
 		vars.put("VD_BASE", myvdBase);
@@ -169,10 +169,10 @@ public class ADQuickStart {
 		
 		
 		if (adIsSSL.equalsIgnoreCase("y")) {
-			System.out.println("Retrieving certificate parent from " + adHost + ":" + adPort + "...");
+			//System.out.println("Retrieving certificate parent from " + adHost + ":" + adPort + "...");
 			X509Certificate cert = GetSSLCert.getCert(adHost, Integer.parseInt(adPort));
 			
-			System.out.println("Exporting certificate parent from " + adHost + ":" + adPort + "...");
+			//System.out.println("Exporting certificate parent from " + adHost + ":" + adPort + "...");
 			File f = new File(myVDHome + "/tmp.ad.der");
 			FileOutputStream out = new FileOutputStream(f);
 			try {
@@ -184,7 +184,7 @@ public class ADQuickStart {
 			out.flush();
 			out.close();
 			
-			System.out.println("Import certificate parent from " + adHost + ":" + adPort + " into MyVirtualDirectory keystore...");
+			//System.out.println("Import certificate parent from " + adHost + ":" + adPort + " into MyVirtualDirectory keystore...");
 			
 			pb = new ProcessBuilder();
 			pb.redirectErrorStream(true);
@@ -230,7 +230,7 @@ public class ADQuickStart {
 				}
 			}
 			f.delete();
-			System.out.println("Import certificate parent from " + adHost + ":" + adPort + " into MyVirtualDirectory keystore complete");
+			//System.out.println("Import certificate parent from " + adHost + ":" + adPort + " into MyVirtualDirectory keystore complete");
 			vars.put("AD_TYPE", "LDAPS");
 			
 		} else {
@@ -259,7 +259,7 @@ public class ADQuickStart {
 		
 		
 		if (createSelfSignedCert.equalsIgnoreCase("y")) {
-			System.out.println("Creating a self signed SSL certificate...");
+			//System.out.println("Creating a self signed SSL certificate...");
 			
 			String myvdSecurePort = getInput("LDAPS Port (typically 636)",in);  
 			
@@ -350,17 +350,17 @@ public class ADQuickStart {
 	}
 	
 	public static String getInput(String label,BufferedReader in) throws IOException {
-		System.out.print(label + " : ");
+		//System.out.print(label + " : ");
 		String data = in.readLine();
 		
-		System.out.print("Is \"" + data + "\" correct? (y/n) : ");
+		//System.out.print("Is \"" + data + "\" correct? (y/n) : ");
 		String resp = in.readLine();
 		
 		while (! resp.equalsIgnoreCase("y")) {
-			System.out.print(label + " : ");
+			//System.out.print(label + " : ");
 			data = in.readLine();
 			
-			System.out.print("Is \"" + data + "\" correct? (y/n) : ");
+			//System.out.print("Is \"" + data + "\" correct? (y/n) : ");
 			resp = in.readLine();
 		}
 		
@@ -368,18 +368,18 @@ public class ADQuickStart {
 	}
 	
 	public static String getPassword(String label,BufferedReader in) throws IOException {
-		System.out.print(label + " : ");
+		//System.out.print(label + " : ");
 		String data = in.readLine();
 		
-		System.out.print("Please verify : ");
+		//System.out.print("Please verify : ");
 		String resp = in.readLine();
 		
 		while (! resp.equals(data)) {
-			System.out.println("Passwords don't match");
-			System.out.print(label + " : ");
+			//System.out.println("Passwords don't match");
+			//System.out.print(label + " : ");
 			data = in.readLine();
 			
-			System.out.print("Please verify : ");
+			//System.out.print("Please verify : ");
 			resp = in.readLine();
 		}
 		
@@ -422,8 +422,8 @@ public class ADQuickStart {
 			
 			
 			/*if (cfgFile.contains("%" + key + "%")) {
-				System.out.println("key:" + key);
-				System.out.println("val:" + val);
+				//System.out.println("key:" + key);
+				//System.out.println("val:" + val);
 				cfgFile = cfgFile.replaceAll("[%]" + key + "[%]", val);
 			}*/
 		}

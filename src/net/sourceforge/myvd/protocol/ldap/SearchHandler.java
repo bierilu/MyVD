@@ -137,12 +137,12 @@ public class SearchHandler extends LDAPOperation
             //req.getFilter().printToBuffer(buff);
             
             //String stringFilter = buff.toString();
-			//System.out.println("Filter b: \"" + stringFilter + "\"");
+			////System.out.println("Filter b: \"" + stringFilter + "\"");
 			//stringFilter = stringFilter.replaceAll("[|] ","|");
 			//stringFilter = stringFilter.replaceAll("[)] ",")");
 			//stringFilter = stringFilter.replaceAll("[&] ","&");
 			//stringFilter = stringFilter.replaceAll("[!] ","!");
-			//System.out.println("Filter a: \"" + stringFilter + "\"");
+			////System.out.println("Filter a: \"" + stringFilter + "\"");
             
 			Filter filter = req.getFilter();//   new Filter(stringFilter.trim()); 
             

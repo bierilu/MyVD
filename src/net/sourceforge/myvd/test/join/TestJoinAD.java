@@ -53,7 +53,7 @@ public class TestJoinAD extends TestCase {
 	}
 	
 	public void testStartup() {
-		System.out.println("");
+		//System.out.println("");
 	}
 	
 	public void testSearchUser() throws Exception {
