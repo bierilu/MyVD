@@ -47,11 +47,22 @@ public class NamingUtils {
 		
 		//first add the non-remote base pieces
 		for (i=0,m=currDN.length - explodedRemoteBase.length;i<m;i++) {
-			newDN.addRDNToBack(new RDN(currDN[i]));
+			RDN rdn = new RDN();
+			int eq = currDN[i].indexOf('=');
+			String attrType = currDN[i].substring(0,eq);
+			String attrVal = currDN[i].substring(eq + 1);
+			rdn.add(attrType, attrVal, currDN[i]);
+			newDN.addRDNToBack(rdn);
 		}
 		
 		for (i=0,m=explodedLocalBase.length;i<m;i++) {
-			newDN.addRDNToBack(new RDN(explodedLocalBase[i]));
+			RDN rdn = new RDN();
+			int eq = explodedLocalBase[i].indexOf('=');
+			String attrType = explodedLocalBase[i].substring(0,eq);
+			String attrVal = explodedLocalBase[i].substring(eq + 1);
+			rdn.add(attrType, attrVal, explodedLocalBase[i]);
+			
+			newDN.addRDNToBack(rdn);
 		}
 		
 		return newDN;
