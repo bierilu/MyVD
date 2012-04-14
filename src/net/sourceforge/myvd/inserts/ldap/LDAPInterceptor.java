@@ -50,6 +50,7 @@ import net.sourceforge.myvd.util.NamingUtils;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPConstraints;
+import com.novell.ldap.LDAPControl;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPExtendedOperation;
@@ -57,6 +58,7 @@ import com.novell.ldap.LDAPLocalException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.controls.LDAPPagedResultsControl;
 import com.novell.ldap.util.DN;
 import com.novell.ldap.util.RDN;
 
@@ -83,6 +85,9 @@ public class LDAPInterceptor implements Insert {
 	boolean passThroughBindOnly;
 	boolean ignoreRefs;
 	
+	boolean usePaging;
+	int pageSize;
+	
 	NamingUtils utils;
 	
 	LDAPConnectionPool pool;
@@ -99,6 +104,11 @@ public class LDAPInterceptor implements Insert {
 		this.remoteBase = new DN(props.getProperty("remoteBase"));
 		this.explodedRemoteBase = this.remoteBase.explodeDN(false);
 		this.explodedLocalBase = nameSpace.getBase().getDN().explodeDN(false);
+		
+		this.usePaging = Boolean.parseBoolean(props.getProperty("usePaging", "false"));
+		if (this.usePaging) {
+			this.pageSize = Integer.parseInt(props.getProperty("pageSize","500"));
+		}
 		
 		this.proxyDN = (String) props.getProperty("proxyDN","");
 		
@@ -362,8 +372,33 @@ public class LDAPInterceptor implements Insert {
 			if (remoteBase == null) {
 				remoteBase = "";
 			}
+			
+			if (this.usePaging) {
+				if (constraints != null) {
+					if (constraints.getControls() == null) {
+						LDAPControl[] controls = new LDAPControl[1];
+						controls[0] = new LDAPPagedResultsControl(this.pageSize,true);
+						constraints.setControls(controls);
+					} else {
+						LDAPControl[] controls = new LDAPControl[constraints.getControls().length + 1];
+						for (int i=0;i<constraints.getControls().length;i++) {
+							controls[i] = constraints.getControls()[i];
+						}
+						
+						controls[constraints.getControls().length] = new LDAPPagedResultsControl(this.pageSize,true);
+						constraints.setControls(controls);
+					}
+					
+				} else {
+					constraints = new LDAPSearchConstraints();
+					LDAPControl[] controls = new LDAPControl[1];
+					controls[0] = new LDAPPagedResultsControl(this.pageSize,true);
+					constraints.setControls(controls);
+				}
+			}
+			
 			LDAPSearchResults res = con.search(remoteBase,scope.getValue(),filter.getValue(),attribs,typesOnly.getValue(),constraints);
-			chain.addResult(results,new LDAPEntrySet(this,wrapper,res), base, scope, filter, attributes, typesOnly, constraints);
+			chain.addResult(results,new LDAPEntrySet(this,wrapper,res,remoteBase, scope.getValue(), filter.getValue(), attribs, typesOnly.getValue(), constraints), base, scope, filter, attributes, typesOnly, constraints);
 		} finally  {
 			
 			this.returnLDAPConnection(wrapper);
@@ -462,5 +497,23 @@ public class LDAPInterceptor implements Insert {
 	public void setMaxIdleTime(long maxIdleTime) {
 		this.maxIdleTime = maxIdleTime;
 	}
+
+	public boolean isUsePaging() {
+		return usePaging;
+	}
+
+	public void setUsePaging(boolean usePaging) {
+		this.usePaging = usePaging;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	
+	
 
 }
