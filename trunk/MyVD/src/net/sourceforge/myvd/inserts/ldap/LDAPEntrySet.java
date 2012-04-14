@@ -22,7 +22,10 @@ import com.novell.ldap.LDAPControl;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPReferralException;
+import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.controls.LDAPPagedResultsControl;
+import com.novell.ldap.controls.LDAPPagedResultsResponse;
 import com.novell.ldap.util.DN;
 
 public class LDAPEntrySet implements EntrySet {
@@ -37,14 +40,32 @@ public class LDAPEntrySet implements EntrySet {
 	boolean entryFetched;
 	boolean isFirst;
 	
+	int numRes;
 	
-	public LDAPEntrySet(LDAPInterceptor interceptor,ConnectionWrapper wrapper,LDAPSearchResults results) {
+	LDAPControl[] curCtls;
+	private String remoteBase;
+	private int scope;
+	private String filter;
+	private String[] attrs;
+	private boolean typesOnly;
+	private LDAPSearchConstraints constraints;
+	
+	
+	
+	public LDAPEntrySet(LDAPInterceptor interceptor,ConnectionWrapper wrapper,LDAPSearchResults results, String remoteBase, int scope, String filter, String[] attribs, boolean typesOnly, LDAPSearchConstraints constraints) {
 		this.done = false;
 		this.entryFetched = true;
 		this.interceptor = interceptor;
 		this.wrapper = wrapper;
 		this.results = results;
 		this.isFirst = true;
+		this.numRes = 0;
+		this.remoteBase = remoteBase;
+		this.scope = scope;
+		this.filter = filter;
+		this.attrs = attribs;
+		this.typesOnly = typesOnly;
+		this.constraints = constraints;
 	}
 	
 	public boolean hasMore() throws LDAPException {
@@ -68,7 +89,11 @@ public class LDAPEntrySet implements EntrySet {
 				LDAPControl[] respControls = null;
 				try {
 					entry = results.next();
+					this.numRes++;
+					
 					respControls = results.getResponseControls();
+					this.curCtls = respControls;
+					
 				} catch (LDAPReferralException e) {
 					if (this.interceptor.isIgnoreRefs()) {
 						//skip this entry
@@ -82,6 +107,24 @@ public class LDAPEntrySet implements EntrySet {
 				this.entryFetched = false;
 				return true;
 			} else {
+				
+				if (this.interceptor.isUsePaging()) {
+					if (this.numRes == this.interceptor.getPageSize()) {
+						//need to load the next page
+						for (LDAPControl control : this.results.getResponseControls()) {
+							if (control instanceof LDAPPagedResultsResponse) {
+								LDAPPagedResultsResponse resp = (LDAPPagedResultsResponse) control;
+								LDAPPagedResultsControl page = (LDAPPagedResultsControl) constraints.getControls()[constraints.getControls().length - 1];
+								page.setCookie(resp.getCookie());
+							}
+						}
+						
+						this.results = this.wrapper.getConnection().search(remoteBase, scope, filter, attrs, typesOnly,this.constraints);
+						this.numRes = 0;
+						return this.getNextLDAPEntry();
+					}
+				}
+				
 				this.done = true;
 				interceptor.returnLDAPConnection(this.wrapper);
 				return false;
