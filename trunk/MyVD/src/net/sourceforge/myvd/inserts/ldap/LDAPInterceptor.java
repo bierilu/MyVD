@@ -375,6 +375,11 @@ public class LDAPInterceptor implements Insert {
 			
 			if (this.usePaging) {
 				if (constraints != null) {
+					
+					LDAPSearchConstraints lc = (LDAPSearchConstraints) constraints.clone();
+					constraints = lc;
+					
+					
 					if (constraints.getControls() == null) {
 						LDAPControl[] controls = new LDAPControl[1];
 						controls[0] = new LDAPPagedResultsControl(this.pageSize,true);
