@@ -29,11 +29,21 @@ public class NamingUtils {
 		
 		//first add the non-remote base pieces
 		for (i=0,m=currDN.length - explodedLocalBase.length;i<m;i++) {
-			newDN.addRDNToBack(new RDN(currDN[i]));
+			RDN rdn = new RDN();
+			int eq = currDN[i].indexOf('=');
+			String attrType = currDN[i].substring(0,eq);
+			String attrVal = currDN[i].substring(eq + 1);
+			rdn.add(attrType, attrVal, currDN[i]);
+			newDN.addRDNToBack(rdn);
 		}
 		
 		for (i=0,m=explodedRemoteBase.length;i<m;i++) {
-				newDN.addRDNToBack(new RDN(explodedRemoteBase[i]));
+			RDN rdn = new RDN();
+			int eq = explodedRemoteBase[i].indexOf('=');
+			String attrType = explodedRemoteBase[i].substring(0,eq);
+			String attrVal = explodedRemoteBase[i].substring(eq + 1);
+			rdn.add(attrType, attrVal, explodedRemoteBase[i]);
+				newDN.addRDNToBack(rdn);
 		}
 		
 		return newDN;
