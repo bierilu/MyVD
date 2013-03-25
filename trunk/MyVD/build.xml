@@ -82,50 +82,18 @@
 	        <delete dir="${reports.tests}" />
 	        <mkdir dir="${reports.tests}"/>
 	        <mkdir dir="${reports.tests}/html"/>
-	        <junit showoutput="no" printsummary="yes" haltonfailure="no" fork="yes"  >
-	        	<test name="net.sourceforge.myvd.test.acl.TestACLPlugin" todir="${reports.tests}"/> 
-	        	<test name="net.sourceforge.myvd.test.acl.TestGetACI" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.acl.TestParseACI" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.acl.TestValidateSubjects" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.adposix.ADPosix" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.chain.TestFilter" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.chain.TestLocalChainLDAP" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.interceptor.TestJDBCLDAP" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.jdbc.TestJDBC" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.jdbc.TestJDBCSimple" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.jdbc.TestJDBCUid" todir="${reports.tests}"/>
-	        	
-	        	
-	        	<test name="net.sourceforge.myvd.test.join.TestJoin" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.join.TestJoinAD" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.ldap.TestDynGroup" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.ldap.TestEmbededGroups" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.ldap.TestEmbededGroupsSync" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.ldap.TestLDAP" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.ldap.TestLDAPSearch" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.ldap.TestMapDNAttribute" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.ldap.TestStaticDNMap" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.namespace.TestNamespaceMapper" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.ref.TestRefPlugin" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.router.TestChooseRoute" todir="${reports.tests}"/>     
-	        	<test name="net.sourceforge.myvd.test.router.TestMultiRouteGlobalLDAP" todir="${reports.tests}"/>	        	
-	        	<test name="net.sourceforge.myvd.test.router.TestMultiRouteLDAP" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.router.TestRouter" todir="${reports.tests}"/>
-	        	<test name="net.sourceforge.myvd.test.router.TestSingleRouteLDAP" todir="${reports.tests}"/>       	
-	        	<test name="net.sourceforge.myvd.test.router.TestRouteCredentials" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.Server.TestConfigServer" todir="${reports.tests}"/>	        		
-	        	<test name="net.sourceforge.myvd.test.Server.TestStartServer" todir="${reports.tests}"/>
-	        	
-	        	<test name="net.sourceforge.myvd.test.setrdn.SetRDN" todir="${reports.tests}"/>
+	        <junit showoutput="yes" printsummary="yes" haltonfailure="no" fork="yes"  >
+	        	<env key="PROJ_DIR" value="${basedir}" />
+	        	<env key="SLAPD_PATH" value="/usr/sbin" />
+	        		<env key="SCHEMA_DIR" value="/etc/openldap" />
+	        	<batchtest fork="yes" todir="${reports.tests}">
+	        		        	    <fileset dir="${src}">
+	        		        	      <include name="net/sourceforge/myvd/test/**/*.java"/>
+	        		        	    	<exclude name="net/sourceforge/myvd/test/util/**/*.java"/>
+	        		        	      	
+	        		        	      	
+	        		        	    </fileset>
+	        		        	  </batchtest>
 	        	
 	        	<classpath>
 	            	<fileset dir="${lib}">
