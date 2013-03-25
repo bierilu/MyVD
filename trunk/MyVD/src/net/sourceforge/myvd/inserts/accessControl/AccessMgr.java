@@ -127,7 +127,7 @@ public class AccessMgr {
 	}
 	
 	public AccessControlItem getApplicableACI(DN dn,String attributeName,char perm,InterceptorChain chain) {
-		if (dn.toString().length() == 0) {
+		if (dn.countRDNs() == 0 || dn.toString().length() == 0) {
 			dn = new DN("CN=ROOTDSE");
 		}
 		
