@@ -151,6 +151,32 @@ public class TestACLPlugin extends TestCase {
 		con.disconnect();
 	}
 	
+	public void testSearchRootNotBound() throws Exception {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		
+		
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("namingContexts","inetOrgPerson"));
+		attribs.add(new LDAPAttribute("cn","Test User1"));
+		attribs.add(new LDAPAttribute("sn","User1"));
+		attribs.add(new LDAPAttribute("uid","testuser1"));
+		attribs.add(new LDAPAttribute("l","location1"));
+		
+		LDAPSearchResults res = con.search("",0,"(objectClass=*)",new String[] {"1.1"},false);
+		if (! res.hasMore()) {
+			fail("no results");
+		}
+		
+		LDAPEntry fromServer = res.next();
+		/*LDAPEntry control = new LDAPEntry("uid=testuser1,ou=users,dc=domain,dc=com",attribs);
+		
+		if (! Util.compareEntry(fromServer,control)) {
+			fail("invalid entry : " + fromServer.toString());
+		}*/
+		con.disconnect();
+	}
+	
 	public void testSearchGroupsBound() throws Exception {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
