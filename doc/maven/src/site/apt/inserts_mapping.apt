@@ -22,6 +22,24 @@ Mapping Inserts
 |Configuration Options|None                                                   |                                      |
 *---------------------+-------------------------------------------------------+--------------------------------------+
 
+* Add Static Attribute
+
+ This insert allows for the addition of a static attribute value for a particuler objectClass.  It is useful for adding attributes to identify users
+ based on their directory or namespace.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.mapping.AddAttribute      |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search                                                 |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|attributeName                                          |The name of the attribute to create   |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |attributeValue                                         |The value of the attribute to create  |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |objectClass                                            |The objectClass to create this attribute on|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+
 * Attribute Mapper
 
  The attribute mapper insert is used to map the names of attributes.  For instance it could map uid to samaccountname.  This insert works on attribute names in both entries, dns and filters.
