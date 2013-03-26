@@ -110,6 +110,26 @@ public class DBGroups implements Insert {
 			throws LDAPException {
 		Filter newFilter = new Filter(filter.getValue());
 		updateFilter(newFilter.getRoot());
+		
+		
+		
+		if (attributes.size() > 0) {
+			boolean doAdd = true;
+			
+			for (Attribute attr : attributes) {
+				if (attr.getAttribute().getName().equalsIgnoreCase("*")) {
+					doAdd = false;
+				}
+			}
+			
+			if (doAdd) {
+				ArrayList nattribs = new ArrayList<Attribute>();
+				//nattribs.addAll(attributes);
+				//nattribs.add(new Attribute(new LDAPAttribute(this.attribName)));
+				attributes = nattribs;
+			}
+		}
+		
 		chain.nextSearch(base,scope,newFilter,attributes,typesOnly,results,constraints);
 
 	}
