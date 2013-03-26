@@ -1,7 +1,7 @@
 server.listener.port=50983
 server.globalChain=ACL
 server.globalChain.ACL.className=net.sourceforge.myvd.inserts.accessControl.AccessMgmt
-server.globalChain.ACL.config.numACIs=8
+server.globalChain.ACL.config.numACIs=10
 server.globalChain.ACL.config.aci.0=dc=domain,dc=com#subtree#deny:v,a,d#[entry]#public:
 server.globalChain.ACL.config.aci.1=dc=domain,dc=com#subtree#grant:a,d,v#[entry]#dn:cn=admin,dc=domain,dc=com
 server.globalChain.ACL.config.aci.2=dc=domain,dc=com#subtree#grant:r,w,s,o,p,c#[all]#dn:cn=admin,dc=domain,dc=com
@@ -10,6 +10,8 @@ server.globalChain.ACL.config.aci.4=ou=users,dc=domain,dc=com#subtree#grant:r,s,
 server.globalChain.ACL.config.aci.5=ou=users,dc=domain,dc=com#subtree#deny:r,s,c,w,o#userPassword#public:
 server.globalChain.ACL.config.aci.6=ou=users,dc=domain,dc=com#subtree#grant:r,s,c,w,o#userPassword#this:
 server.globalChain.ACL.config.aci.7=ou=groups,dc=domain,dc=com#subtree#grant:s#objectClass#public:
+server.globalChain.ACL.config.aci.8=cn=ROOTDSE#entry#grant:v#[entry]#public:
+server.globalChain.ACL.config.aci.9=cn=ROOTDSE#entry#grant:r,w,s,c,p#[all]#public:
 
 server.nameSpaces=Root,Proxy,Schema
 
