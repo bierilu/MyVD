@@ -104,7 +104,7 @@ public class AddAttribute implements Insert {
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
 		
-		boolean hasAttribute = attributes.size() == 0 || attributes.size() == 1 && (attributes.get(0).getAttribute().getStringValue().equalsIgnoreCase("*"));
+		boolean hasAttribute = attributes.size() == 0 || (attributes.size() == 1 && attributes.get(0).getAttribute().getName().equalsIgnoreCase("*"));
 		if (! hasAttribute) {
 			for (Attribute attr : attributes) {
 				if (attr.getAttribute().getName().equalsIgnoreCase("objectclass")) {
