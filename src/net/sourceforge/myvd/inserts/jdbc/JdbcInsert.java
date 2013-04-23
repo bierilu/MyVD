@@ -150,7 +150,8 @@ public class JdbcInsert implements Insert {
         tds.setConnectionPoolDataSource(pool);
         tds.setMaxActive(maxCons);
         tds.setMaxWait(50);
-        
+        tds.setTestOnBorrow(true);
+        tds.setValidationQuery("SELECT 1");
         this.ds = tds;
 		
 		base = nameSpace.getBase().toString();

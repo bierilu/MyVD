@@ -402,7 +402,14 @@ public class LDAPInterceptor implements Insert {
 				}
 			}
 			
-			LDAPSearchResults res = con.search(remoteBase,scope.getValue(),filter.getValue(),attribs,typesOnly.getValue(),constraints);
+			String filterVal = filter.getValue();
+			if (filterVal.contains("\\,")) {
+				filterVal = filterVal.replaceAll("[\\\\][,]","\\\\5C,");
+				
+			
+			}
+			
+			LDAPSearchResults res = con.search(remoteBase,scope.getValue(),filterVal,attribs,typesOnly.getValue(),constraints);
 			chain.addResult(results,new LDAPEntrySet(this,wrapper,res,remoteBase, scope.getValue(), filter.getValue(), attribs, typesOnly.getValue(), constraints), base, scope, filter, attributes, typesOnly, constraints);
 		} finally  {
 			

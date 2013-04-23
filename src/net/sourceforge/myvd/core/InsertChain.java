@@ -194,4 +194,14 @@ public class InsertChain {
 		}
 		
 	}
+
+	public void load(InsertChain globalChain) {
+		this.chain = globalChain.chain;
+		this.configIndex = globalChain.configIndex;
+		this.initialInserts = globalChain.initialInserts;
+		this.ns = globalChain.ns;
+		this.props = globalChain.props;
+		this.propsMap = globalChain.propsMap;
+		
+	}
 }

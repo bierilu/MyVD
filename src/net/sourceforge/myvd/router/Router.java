@@ -571,5 +571,16 @@ public class Router {
 		chain.shutdownChain();
 		
 	}
+
+
+	public void load(Router router) {
+		this.backends = router.backends;
+		this.globalChain = router.globalChain;
+		this.rootNS = router.rootNS;
+		this.searchAll = router.searchAll;
+		this.subtree = router.subtree;
+		this.writeAll = router.writeAll;
+		
+	}
 }
 
