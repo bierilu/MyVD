@@ -1,7 +1,9 @@
 package net.sourceforge.myvd.inserts.mapping;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConstraints;
@@ -31,26 +33,34 @@ import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
 
-public class AddAttribute implements Insert {
-
-	String name;
-	String attributeName;
-	String attributeValue;
-	String objectClass;
+public class AttributeFilter implements Insert {
 	
+	String name;
+	HashSet<String> allowed;
+	
+	String objectClass;
+
 	@Override
 	public String getName() {
-		return this.name;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
 		this.name = name;
-		this.attributeName = props.getProperty("attributeName");
-		this.attributeValue = props.getProperty("attributeValue");
+		
+		
 		this.objectClass = props.getProperty("objectClass");
 		
+		this.allowed = new HashSet<String>();
+		
+		String allowedStr = props.getProperty("allowedAttributes");
+		StringTokenizer toker = new StringTokenizer(allowedStr,",",false);
+		while (toker.hasMoreTokens()) {
+			this.allowed.add(toker.nextToken().toLowerCase());
+		}
 
 	}
 
@@ -103,7 +113,6 @@ public class AddAttribute implements Insert {
 			Int scope, Filter filter, ArrayList<Attribute> attributes,
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
-		
 		boolean hasAttribute = attributes.size() == 0 || (attributes.size() == 1 && attributes.get(0).getAttribute().getName().equalsIgnoreCase("*"));
 		if (! hasAttribute) {
 			for (Attribute attr : attributes) {
@@ -154,11 +163,22 @@ public class AddAttribute implements Insert {
 			String[] vals = attr.getStringValueArray();
 			for (String oc : vals) {
 				if (oc.equalsIgnoreCase(this.objectClass)) {
-					LDAPAttribute nattr = new LDAPAttribute(this.attributeName,this.attributeValue);
-					entry.getEntry().getAttributeSet().add(nattr);
+					ArrayList<LDAPAttribute> toRm = new ArrayList<LDAPAttribute>();
+					
+					for (Object obj : entry.getEntry().getAttributeSet()) {
+						LDAPAttribute ldapAttr = (LDAPAttribute) obj;
+						if (! this.allowed.contains(ldapAttr.getName().toLowerCase())) {
+							
+							toRm.add(ldapAttr);
+						}
+					}
+					
+					entry.getEntry().getAttributeSet().removeAll(toRm);
+					
 				}
 			}
 		}
+
 	}
 
 	@Override
@@ -176,6 +196,6 @@ public class AddAttribute implements Insert {
 
 	}
 
-
+	
 
 }
