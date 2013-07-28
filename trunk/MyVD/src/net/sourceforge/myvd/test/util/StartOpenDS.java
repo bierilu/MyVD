@@ -207,7 +207,7 @@ public class StartOpenDS {
 		process = Runtime.getRuntime().exec(exec,nenv);
 		
 		StreamReader reader = new StreamReader(process.getInputStream(),true);
-		StreamReader errReader = new StreamReader(process.getErrorStream(),false);
+		StreamReader errReader = new StreamReader(process.getErrorStream(),true);
 		
 		reader.start();
 		errReader.start();

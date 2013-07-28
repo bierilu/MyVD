@@ -134,7 +134,7 @@ public class StartOpenLDAP {
 		String exec = System.getenv("SLAPD_PATH") + "/slapd -d 1 -h 'ldap://:" + port + "/" + (sslPort > 0 ? " ldaps://:" + sslPort + "/" : "") + "' -f " + fullPath + "/slapd-gen.conf";
 		String[] execa = new String[] {System.getenv("SLAPD_PATH") + "/slapd","-d","1","-h","ldap://:" + port + "/" + (sslPort > 0 ? " ldaps://:" + sslPort + "/" : ""),"-f",fullPath + "/slapd-gen.conf"};
 		
-		//System.out.println(exec);
+		System.out.println(exec);
 		process = Runtime.getRuntime().exec(execa);
 		
 		

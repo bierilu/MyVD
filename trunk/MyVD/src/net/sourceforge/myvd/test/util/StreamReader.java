@@ -38,7 +38,7 @@ public class StreamReader extends Thread {
 		try {
 			while ((line = in.readLine()) != null) {
 				if (debug) {
-					//System.out.println(line);
+					System.out.println(line);
 				}
 			}
 		} catch (IOException e) {

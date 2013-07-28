@@ -1,4 +1,4 @@
 #!/bin/sh
 
-OPENDS_JAVA_HOME=/usr/java/jdk1.6.0_21
+OPENDS_JAVA_HOME=/usr/java/64/jdk1.7.0_10
 export OPENDS_JAVA_HOME
