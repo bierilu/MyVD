@@ -259,7 +259,7 @@ public class DynamicGroups implements Insert {
 				DN urlDN = new DN(ldapurl.getDN());
 				
 				
-				if (urlDN.isDescendantOf(memberDN) && 
+				if (memberDN.isDescendantOf(urlDN) && 
 						((ldapurl.getScope() == 0 && urlDN.equals(memberDN)) || 
 						(ldapurl.getScope() == 1 && (urlDN.getRDNs().size() - memberDN.getRDNs().size()) == 1) || 
 						(ldapurl.getScope() == 2)) )  {

@@ -111,6 +111,8 @@ public class JdbcInsert implements Insert {
 	private Object postWhere;
 	
 	NameSpace ns;
+
+	private String valQuery;
 	
 	public void configure(String name, Properties props, NameSpace nameSpace)
 			throws LDAPException {
@@ -126,6 +128,8 @@ public class JdbcInsert implements Insert {
 		pwd = props.getProperty("password");
 		logger.info("Password : **********");
 		
+		this.valQuery = props.getProperty("validationQuery");
+		logger.info("Validation Query : '" + this.valQuery + "'");
 		
 		this.maxCons = Integer.parseInt(props.getProperty("maxCons","5"));
 		logger.info("Max Cons : " + this.maxCons);
@@ -151,7 +155,10 @@ public class JdbcInsert implements Insert {
         tds.setMaxActive(maxCons);
         tds.setMaxWait(50);
         tds.setTestOnBorrow(true);
-        tds.setValidationQuery("SELECT 1");
+        
+        if (this.valQuery != null) {
+        	tds.setValidationQuery(this.valQuery);
+        }
         this.ds = tds;
 		
 		base = nameSpace.getBase().toString();
