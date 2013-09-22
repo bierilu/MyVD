@@ -57,7 +57,7 @@ import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.util.DN;
 import com.novell.ldap.util.RDN;
-import com.sun.security.auth.callback.TextCallbackHandler;
+
 
 public class KerberosInterceptor implements Insert {
 

@@ -26,7 +26,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import sun.security.util.Password;
+
 
 public class KerbHandler implements CallbackHandler {
 
