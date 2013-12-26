@@ -18,12 +18,15 @@ package net.sourceforge.myvd.inserts.ldap;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import net.sourceforge.myvd.types.Password;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.util.DN;
 
 public class LDAPConnectionPool {
+	static Logger logger = Logger.getLogger(LDAPConnectionPool.class.getName());
 	ArrayList<ConnectionWrapper> pool;
 	
 	int maxRetries;
@@ -46,11 +49,17 @@ public class LDAPConnectionPool {
 		
 		this.pool = new ArrayList<ConnectionWrapper>();
 		
-		for (int i=0;i<minCons;i++) {
-			ConnectionWrapper wrapper = new ConnectionWrapper(this.interceptor);
-			wrapper.unlock();
-			wrapper.reConnect();
-			this.pool.add(wrapper);
+		try {
+		
+			for (int i=0;i<minCons;i++) {
+				ConnectionWrapper wrapper = new ConnectionWrapper(this.interceptor);
+				wrapper.unlock();
+				wrapper.reConnect();
+				this.pool.add(wrapper);
+			}
+		
+		} catch (Throwable t) {
+			logger.warn("Could not initialize pool",t);
 		}
 		
 	}
