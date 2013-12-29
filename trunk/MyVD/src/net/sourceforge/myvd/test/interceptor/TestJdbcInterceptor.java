@@ -29,12 +29,14 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 
 
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import junit.framework.TestCase;
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
@@ -62,7 +64,11 @@ import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
 
-public class TestJdbcInterceptor implements Insert {
+public class TestJdbcInterceptor extends TestCase implements Insert {
+	
+	public void testdonothing() {
+		
+	}
 
 	String name;
 	public void configure(String name, Properties props, NameSpace nameSpace)

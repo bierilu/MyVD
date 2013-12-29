@@ -39,8 +39,12 @@ public class DNComparer implements Comparator {
 			return 1;
 		}
 		
-		if (dn1.equals(dn2)) {
-			return 0;
+		try {
+			if (dn1.equals(dn2)) {
+				return 0;
+			}
+		} catch (IllegalArgumentException e) {
+			
 		}
 		
 		return dn1.toString().compareTo(dn2.toString());

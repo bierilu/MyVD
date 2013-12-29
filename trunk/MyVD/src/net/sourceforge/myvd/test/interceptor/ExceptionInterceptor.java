@@ -26,9 +26,11 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Properties;
 
+import junit.framework.TestCase;
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
@@ -56,7 +58,11 @@ import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
 
-public class ExceptionInterceptor implements Insert {
+public class ExceptionInterceptor extends TestCase implements Insert {
+	
+	public void testdonothing() {
+		
+	}
 
 	public static final String FLAG = "TEST_FLAG";
 	String name;

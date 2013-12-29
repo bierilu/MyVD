@@ -19,14 +19,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -35,46 +30,45 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 import net.sourceforge.myvd.core.InsertChain;
-import net.sourceforge.myvd.core.NameSpace;
-import net.sourceforge.myvd.inserts.Insert;
-import net.sourceforge.myvd.protocol.ldap.LdapProtocolProvider;
 import net.sourceforge.myvd.router.Router;
-import net.sourceforge.myvd.types.DistinguishedName;
+import net.sourceforge.myvd.server.apacheds.ApacheDSUtil;
+import net.sourceforge.myvd.server.apacheds.MyVDInterceptor;
+import net.sourceforge.myvd.server.apacheds.MyVDReferalManager;
 
-
-import net.sourceforge.myvd.protocol.ldap.mina.ldap.exception.LdapNamingException;
-import net.sourceforge.myvd.protocol.ldap.mina.ldap.message.extended.NoticeOfDisconnect;
+import org.apache.directory.api.ldap.model.entry.DefaultAttribute;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.api.ldap.model.schema.SchemaManager;
+import org.apache.directory.api.ldap.model.schema.registries.SchemaLoader;
+import org.apache.directory.api.ldap.schemaextractor.SchemaLdifExtractor;
+import org.apache.directory.api.ldap.schemaextractor.impl.DefaultSchemaLdifExtractor;
+import org.apache.directory.api.ldap.schemaloader.LdifSchemaLoader;
+import org.apache.directory.api.ldap.schemamanager.impl.DefaultSchemaManager;
+import org.apache.directory.api.util.exception.Exceptions;
+import org.apache.directory.server.constants.ServerDNConstants;
+import org.apache.directory.server.core.DefaultDirectoryService;
+import org.apache.directory.server.core.api.InstanceLayout;
+import org.apache.directory.server.core.api.interceptor.Interceptor;
+import org.apache.directory.server.core.api.schema.SchemaPartition;
+import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
+import org.apache.directory.server.core.partition.ldif.LdifPartition;
+import org.apache.directory.server.ldap.LdapServer;
+import org.apache.directory.server.ldap.handlers.request.ExtendedRequestHandler;
+import org.apache.directory.server.protocol.shared.transport.TcpTransport;
+import org.apache.directory.server.protocol.shared.transport.Transport;
+import org.apache.directory.server.i18n.I18n;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.mina.common.DefaultIoFilterChainBuilder;
-import org.apache.mina.common.ExecutorThreadModel;
-import org.apache.mina.common.IoAcceptor;
-import org.apache.mina.common.IoFilterChainBuilder;
-import org.apache.mina.common.IoSession;
-import org.apache.mina.common.TransportType;
-import org.apache.mina.common.WriteFuture;
-import org.apache.mina.filter.SSLFilter;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.transport.socket.nio.SocketAcceptor;
-import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
-import org.apache.mina.transport.socket.nio.SocketSessionConfig;
-
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
-import com.novell.ldap.util.DN;
-
-import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 
 
 public class Server {
 	
 	static Logger logger;
 	
-	protected static IoAcceptor tcpAcceptor;
-	protected static ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance( "MyVD" );
-	public final static String VERSION = "0.8.5b2";
+
+	public final static String VERSION = "0.9.0";
 	
 	String configFile;
 	Properties props;
@@ -83,7 +77,13 @@ public class Server {
 
 	private ServerCore serverCore;
 
-	
+
+	private DefaultDirectoryService directoryService;
+
+
+	private LdapServer ldapServer;
+
+    
 	public InsertChain getGlobalChain() {
 		return globalChain;
 	}
@@ -103,7 +103,99 @@ public class Server {
 		
 	}
 	
-	public void startServer() throws InstantiationException, IllegalAccessException, ClassNotFoundException, LDAPException, LdapNamingException, IOException {
+	
+	
+    /**
+     * initialize the schema manager and add the schema partition to diectory service
+     *
+     * @throws Exception if the schema LDIF files are not found on the classpath
+     */
+    private void initSchemaPartition() throws Exception
+    {
+        InstanceLayout instanceLayout = directoryService.getInstanceLayout();
+        
+        File schemaPartitionDirectory = new File( instanceLayout.getPartitionsDirectory(), "schema" );
+
+        // Extract the schema on disk (a brand new one) and load the registries
+        if ( schemaPartitionDirectory.exists() )
+        {
+            System.out.println( "schema partition already exists, skipping schema extraction" );
+        }
+        else
+        {
+            SchemaLdifExtractor extractor = new DefaultSchemaLdifExtractor( instanceLayout.getPartitionsDirectory() );
+            extractor.extractOrCopy();
+        }
+
+        SchemaLoader loader = new LdifSchemaLoader( schemaPartitionDirectory );
+        SchemaManager schemaManager = new DefaultSchemaManager( loader );
+
+        // We have to load the schema now, otherwise we won't be able
+        // to initialize the Partitions, as we won't be able to parse
+        // and normalize their suffix Dn
+        schemaManager.loadAllEnabled();
+
+        List<Throwable> errors = schemaManager.getErrors();
+
+        if ( errors.size() != 0 )
+        {
+            throw new Exception( I18n.err( I18n.ERR_317, Exceptions.printErrors( errors ) ) );
+        }
+
+        directoryService.setSchemaManager( schemaManager );
+        
+        // Init the LdifPartition with schema
+        LdifPartition schemaLdifPartition = new LdifPartition( schemaManager );
+        schemaLdifPartition.setPartitionPath( schemaPartitionDirectory.toURI() );
+
+        // The schema partition
+        SchemaPartition schemaPartition = new SchemaPartition( schemaManager );
+        schemaPartition.setWrappedPartition( schemaLdifPartition );
+        directoryService.setSchemaPartition( schemaPartition );
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void startServer() throws Exception {
 		String portString;
 		
 		
@@ -119,37 +211,101 @@ public class Server {
 		this.globalChain = serverCore.getGlobalChain();
 		this.router = serverCore.getRouter();
 		
+		
+		String apachedsPath = this.configFile.substring(0,this.configFile.lastIndexOf(File.separator) + 1) + "apacheds-data";
+		
+		
+		this.directoryService = new DefaultDirectoryService();
+        directoryService.setShutdownHookEnabled(false);
+        directoryService.setAccessControlEnabled(false);
+        directoryService.setAllowAnonymousAccess(true);
+        directoryService.setInstanceLayout(new InstanceLayout(new File(apachedsPath)));
+        directoryService.setReferralManager(new MyVDReferalManager());
+        
+        
+        
+        
+        // first load the schema
+        initSchemaPartition();
+        
+     // then the system partition
+        // this is a MANDATORY partition
+        // DO NOT add this via addPartition() method, trunk code complains about duplicate partition
+        // while initializing 
+        JdbmPartition systemPartition = new JdbmPartition(directoryService.getSchemaManager());
+        systemPartition.setId( "system" );
+        systemPartition.setPartitionPath( new File( directoryService.getInstanceLayout().getPartitionsDirectory(), systemPartition.getId() ).toURI() );
+        systemPartition.setSuffixDn( new Dn( ServerDNConstants.SYSTEM_DN ) );
+        systemPartition.setSchemaManager( directoryService.getSchemaManager() );
+        
+        // mandatory to call this method to set the system partition
+        // Note: this system partition might be removed from trunk
+        directoryService.setSystemPartition( systemPartition );
+        
+        // Disable the ChangeLog system
+        directoryService.getChangeLog().setEnabled( false );
+        directoryService.setDenormalizeOpAttrsEnabled( true );
+        
+        String binaryAttributes = this.props.getProperty("server.binaryAttribs","");
+		StringTokenizer toker = new StringTokenizer(binaryAttributes);
+		
+		HashSet<String> binaryAttrs = new HashSet<String>();
+		while (toker.hasMoreTokens()) {
+			String token = toker.nextToken().toLowerCase();
+			binaryAttrs.add(token);
+			ApacheDSUtil.addBinaryAttributeToSchema(new DefaultAttribute(token), directoryService.getSchemaManager());
+		}
+        
+        
+        List<Interceptor> newlist = new ArrayList<Interceptor>();
+        newlist.add(new MyVDInterceptor(globalChain,router,directoryService.getSchemaManager(),binaryAttrs));
+        
+        directoryService.setInterceptors(newlist);
+        
+        directoryService.startup();
+        
+        
+        
+        
+        
+        
+        this.ldapServer = new LdapServer();
+        ldapServer.setDirectoryService(directoryService);
+		
+        ArrayList<TcpTransport> transports = new ArrayList<TcpTransport>();
+        
 		portString = props.getProperty("server.listener.port","");
 		if (! portString.equals("")) {
-			try {
-				startLDAP(portString,null);
-			} catch (Throwable t) {
-				logger.error("Could not start LDAP listener",t);
-			}
+			TcpTransport ldapTransport = new TcpTransport(Integer.parseInt(portString));
+	        transports.add(ldapTransport);
 		}
 		
+		
+        
 		portString = props.getProperty("server.secure.listener.port","");
 		
 		if (! portString.equals("")) {
 			String keyStorePath = props.getProperty("server.secure.keystore","");
+			
+			if (! keyStorePath.startsWith(File.separator)) {
+				keyStorePath = this.configFile.substring(0,this.configFile.lastIndexOf(File.separator) + 1) + keyStorePath;
+			}
+			
+			
 			logger.debug("Key store : " + keyStorePath);
 			
 			String keyStorePass = props.getProperty("server.secure.keypass","");
 			
 			KeyStore keystore;
 			try {
-				keystore = KeyStore.getInstance("JKS");
-				keystore.load(new FileInputStream(keyStorePath), keyStorePass.toCharArray());
-				KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-				kmf.init(keystore, keyStorePass.toCharArray());
-				SSLContext sslc = SSLContext.getInstance("SSLv3");
-				sslc.init(kmf.getKeyManagers(), null, null);
 				
-				SSLFilter sslFilter = new SSLFilter(sslc);
-				DefaultIoFilterChainBuilder chain = new DefaultIoFilterChainBuilder();
-		        chain.addLast( "SSL", sslFilter );
-		        
-		        startLDAP(portString,chain);
+				ldapServer.setKeystoreFile(keyStorePath);
+				ldapServer.setCertificatePassword(keyStorePass);
+				
+				TcpTransport ldapsTransport = new TcpTransport(Integer.parseInt(portString));
+				ldapsTransport.enableSSL(true);
+				transports.add(ldapsTransport);
+				
 			} catch (Throwable t) {
 				logger.error("Could not start LDAPS listener",t);
 				t.printStackTrace();
@@ -157,6 +313,26 @@ public class Server {
 		        
 		}
 		
+		Transport[] t = new Transport[transports.size()];
+		
+		int i=0;
+		for (Transport tt : transports) {
+			t[i] = tt;
+			i++;
+		}
+		
+		long maxSizeLimit = Long.parseLong(props.getProperty("server.listener.maxSizeLimit","0"));
+		ldapServer.setMaxSizeLimit(maxSizeLimit);
+		
+		int maxTimeLimit = Integer.parseInt(props.getProperty("server.listener.maxTimeLimit","0"));
+		ldapServer.setMaxTimeLimit(maxTimeLimit);
+		
+		
+		ldapServer.setTransports(t);
+        ldapServer.start();
+        ((ExtendedRequestHandler) ldapServer.getExtendedRequestHandler()).init(globalChain, router);
+		
+        
 		
 		
 	}
@@ -166,7 +342,7 @@ public class Server {
 		props.put("log4j.rootLogger", "info,console");
 		
 		//props.put("log4j.appender.console","org.apache.log4j.RollingFileAppender");
-		//props.put("log4j.appender.console.File","/home/mlb/myvd.log");
+	    //props.put("log4j.appender.console.File","/home/mlb/myvd.log");
 		props.put("log4j.appender.console","org.apache.log4j.ConsoleAppender");
 		props.put("log4j.appender.console.layout","org.apache.log4j.PatternLayout");
 		props.put("log4j.appender.console.layout.ConversionPattern","[%d][%t] %-5p %c{1} - %m%n");
@@ -177,7 +353,7 @@ public class Server {
 		logger = Logger.getLogger(Server.class.getName());
 	}
 
-	private void startLDAP(String portString,IoFilterChainBuilder chainBuilder) throws LdapNamingException, IOException {
+	/*private void startLDAP(String portString,IoFilterChainBuilder chainBuilder) throws LdapNamingException, IOException {
 		if (! portString.equals("")) {
 			logger.debug("Starting server on port : " + portString);
 			
@@ -223,17 +399,20 @@ public class Server {
             }
             
 			
-			/*minaRegistry = new SimpleServiceRegistry();
+			minaRegistry = new SimpleServiceRegistry();
 			Service service = new Service( "ldap", TransportType.SOCKET, new InetSocketAddress( Integer.parseInt(portString) ) );
-			*/
+			
 			logger.debug("LDAP listener started");
 		}
-	}
+	}*/
 	
-	public void stopServer() {
+	public void stopServer() throws Exception {
 		//this.minaRegistry.unbindAll();
 		logger.info("Shutting down server");
-		this.stopLDAP0(Integer.parseInt(props.getProperty("server.listener.port","389")));
+		this.ldapServer.stop();
+		this.directoryService.shutdown();
+		
+		//this.stopLDAP0(Integer.parseInt(props.getProperty("server.listener.port","389")));
 		for (int i=0,m=100;i<m;i++) {
 			try {
 				LDAPConnection con = new LDAPConnection();
@@ -304,7 +483,7 @@ public class Server {
 		return this.props;
 	}
 	
-	private void stopLDAP0( int port )
+	/*private void stopLDAP0( int port )
     {
         try
         {
@@ -364,5 +543,7 @@ public class Server {
 			
 		}
         
-    }
+    }*/
+	
+	
 }

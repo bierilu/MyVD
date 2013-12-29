@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPException;
@@ -54,7 +56,12 @@ import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
 
-public class UpdateDB implements Insert {
+public class UpdateDB extends TestCase implements Insert {
+	
+	public void testdonothing() {
+		
+	}
+	
 	String name ;
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {

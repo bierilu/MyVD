@@ -18,6 +18,7 @@ package net.sourceforge.myvd.test.chain;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import junit.framework.TestCase;
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.CompareInterceptorChain;
@@ -48,7 +49,11 @@ import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.util.DN;
 
-public class TestChain implements Insert {
+public class TestChain extends TestCase implements Insert {
+	
+	public void testdonothing() {
+		
+	}
 
 	String name;
 	
