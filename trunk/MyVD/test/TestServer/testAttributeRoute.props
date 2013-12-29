@@ -7,7 +7,15 @@ server.secure.keypass=start123
 server.numRootNameSpaces=1
 
 
-server.globalChain=
+server.globalChain=RouteByMail
+
+server.globalChain.RouteByMail.className=net.sourceforge.myvd.inserts.routing.RouteByAttributeValue
+server.globalChain.RouteByMail.config.numRoutes=2
+server.globalChain.RouteByMail.config.route.0=InternalServer=.*@internal.domain.com
+server.globalChain.RouteByMail.config.route.1=ExternalServer=.*@external.domain.com
+server.globalChain.RouteByMail.config.useDefault=true
+server.globalChain.RouteByMail.config.defaultNameSpace=LocalUsers
+server.globalChain.RouteByMail.config.attributeName=mail
 
 
 
