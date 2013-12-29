@@ -154,6 +154,10 @@ public class RouteByAttributeValue implements Insert {
 			chain.getRequest().put(RequestVariables.ROUTE_NAMESPACE,routes);
 		}
 		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Routes : '" + routes + "'");
+		}
+		
 		chain.nextSearch(base, scope, filter, attributes, typesOnly, results, constraints);
 		
 	}
@@ -215,7 +219,14 @@ public class RouteByAttributeValue implements Insert {
 					boolean found = false;
 					
 					for (RouteMap rm : this.maps) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Checking filter - '" + node.toString() + "', pattern='" + rm.p.toString() + "', matches=" + rm.p.matcher(node.getValue()).matches());
+						}
 						if (rm.p.matcher(node.getValue()).matches()) {
+							if (logger.isDebugEnabled()) {
+								logger.debug("Adding " + rm.name);
+							}
+							
 							routes.add(rm.name);
 							found = true;
 						}
@@ -223,6 +234,9 @@ public class RouteByAttributeValue implements Insert {
 					
 					if (! found) {
 						if (this.useDefault) {
+							if (logger.isDebugEnabled()) {
+								logger.debug("Default route being used : '" + this.defaultRoute + "'");
+							}
 							routes.add(this.defaultRoute);
 						}
 					}
