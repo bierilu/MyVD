@@ -33,8 +33,10 @@ public class StartMyVD {
 	
 	Server server;
 	int port;
+
+	private String apachedsPath;
 	
-	public void stopServer() {
+	public void stopServer() throws Exception {
 		if (this.server != null) {
 			this.server.stopServer();
 		}
@@ -53,12 +55,35 @@ public class StartMyVD {
 				break;
 			}
 		}
+		
+		
+		
 	}
 	
 	
-	
+	private void deletePath(File f) {
+		if (f.isFile()) {
+			f.delete();
+		} else {
+			if (f.listFiles() != null) {
+				for (File ff : f.listFiles()) {
+					deletePath(ff);
+				}
+			}
+			
+			f.delete();
+		}
+	}
 	
 	public boolean startServer(String configFile,int port) throws IOException,Exception {
+		
+		this.apachedsPath = configFile.substring(0,configFile.lastIndexOf(File.separator) + 1) + "apacheds-data";
+		File cfgDir = new File(this.apachedsPath);
+		
+		if (! cfgDir.exists()) {
+			cfgDir.mkdirs();
+		}
+		
 		this.port = port;
 		LDAPConnection con = new LDAPConnection();
 		try {

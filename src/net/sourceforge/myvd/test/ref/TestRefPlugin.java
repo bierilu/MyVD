@@ -33,7 +33,7 @@ import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
 import net.sourceforge.myvd.inserts.extensions.PasswordChangeOperation;
 import net.sourceforge.myvd.inserts.ldap.LDAPInterceptor;
-import net.sourceforge.myvd.protocol.ldap.LdapProtocolProvider;
+
 import net.sourceforge.myvd.router.Router;
 import net.sourceforge.myvd.server.Server;
 import net.sourceforge.myvd.test.chain.TestChain;
@@ -52,7 +52,7 @@ import net.sourceforge.myvd.types.Result;
 import net.sourceforge.myvd.types.Results;
 import net.sourceforge.myvd.types.SessionVariables;
 
-import org.apache.mina.common.TransportType;
+
 
 
 import com.novell.ldap.LDAPAttribute;

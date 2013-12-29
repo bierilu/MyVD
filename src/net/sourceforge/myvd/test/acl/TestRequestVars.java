@@ -19,6 +19,10 @@ package net.sourceforge.myvd.test.acl;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
@@ -46,8 +50,13 @@ import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
 
-public class TestRequestVars implements Insert {
+public class TestRequestVars extends TestCase implements Insert {
 
+	
+	public void testdonothing() {
+		
+	}
+	
 	String name;
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {

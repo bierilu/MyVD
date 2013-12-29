@@ -19,10 +19,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import net.sourceforge.myvd.protocol.ldap.mina.asn1.ber.tlv.TLV;
-
-import net.sourceforge.myvd.protocol.ldap.mina.ldap.codec.search.Filter;
-import net.sourceforge.myvd.protocol.ldap.mina.ldap.util.StringTools;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
@@ -383,137 +379,7 @@ public class FilterNode implements Cloneable {
 		}*/
 	}
 	
-	/**
-     * Compute the ConnectorFilter length Length(ConnectorFilter) =
-     * sum(filterSet.computeLength())
-     */
-    private int computeFilterSetLength()
-    {
-        int connectorFilterLength = 0;
 
-        if ( ( this.children != null ) && ( children.size() != 0 ) )
-        {
-            Iterator<FilterNode> filterIterator = this.children.iterator();
-
-            while ( filterIterator.hasNext() )
-            {
-                FilterNode filterNode = filterIterator.next();
-
-                connectorFilterLength += filterNode.computeLength();
-            }
-        }
-
-        return connectorFilterLength;
-    }
 	
-    /**
-     * Compute the AttributeValueFilter length
-     * 
-     * AttributeValueFilter :
-     * 
-     * 0xA(3, 5, 6, 8) L1
-     *  |
-     *  +--> 0x04 L2 attributeDesc
-     *  +--> 0x04 L3 assertionValue
-     *  
-     * 
-     * L2 = Length(attributeDesc)
-     * L3 = Length(assertionValue)
-     * L1 = 1 + Length(L2) + L2 
-     *      + 1 + Length(L3) + L3
-     * 
-     * Length(AttributeValueFilter) = Length(0xA?) + Length(L1)
-     *                                + 1 + Length(L2) + L2 
-     *                                + 1 + Length(L3) + L3 
-     */
-    private int computeAVALength()
-    {
-        int avaLength = 0;
-        int attributeDescLength = this.name.length();
 
-        avaLength = 1 + TLV.getNbBytes( attributeDescLength ) + attributeDescLength;
-
-        int assertionValueLength = StringTools.getBytesUtf8( this.value ).length;
-        
-        avaLength += 1 + TLV.getNbBytes( assertionValueLength ) + assertionValueLength;
-
-        return 1 + TLV.getNbBytes( avaLength ) + avaLength;
-    }
-	
-    /**
-     * Compute the PresentFilter length 
-     * PresentFilter : 
-     * 0x87 L1 present
-     * 
-     * Length(PresentFilter) = Length(0x87) + Length(super.computeLength()) +
-     *      super.computeLength()
-     */
-    private int computePresenceLength()
-    {
-        byte[] attributeDescriptionBytes = StringTools.getBytesUtf8( name );
-        return 1 + TLV.getNbBytes( attributeDescriptionBytes.length ) + attributeDescriptionBytes.length;
-    }
-    
-    /**
-     * Compute the SubstringFilter length 
-     * 
-     * SubstringFilter : 
-     * 0xA4 L1 
-     *   | 
-     *   +--> 0x04 L2 type 
-     *   +--> 0x30 L3 
-     *          | 
-     *         [+--> 0x80 L4 initial] 
-     *         [+--> 0x81 L5-1 any] 
-     *         [+--> 0x81 L5-2 any] 
-     *         [+--> ... 
-     *         [+--> 0x81 L5-i any] 
-     *         [+--> ... 
-     *         [+--> 0x81 L5-n any] 
-     *         [+--> 0x82 L6 final]
-     */
-    private int computeSubstrLength()
-    {
-        // The type
-        /*int typeLength = StringTools.getBytesUtf8( name ).length;
-        
-        int substringsFilterLength = 1 + TLV.getNbBytes( typeLength ) + typeLength;
-        int substringsFilterSequenceLength = 0;
-
-        String initialSubstrings = this.value.substring(0,value.indexOf('*'));
-        
-        if ( initialSubstrings.length() != 0 )
-        {
-            int initialLength = StringTools.getBytesUtf8( initialSubstrings ).length; 
-            substringsFilterSequenceLength += 1 + TLV.getNbBytes( initialLength )
-                + initialLength;
-        }
-
-        if ( anySubstrings != null )
-        {
-            Iterator anyIterator = anySubstrings.iterator();
-
-            while ( anyIterator.hasNext() )
-            {
-                String any = ( String ) anyIterator.next();
-                int anyLength = StringTools.getBytesUtf8( any ).length; 
-                substringsFilterSequenceLength += 1 + TLV.getNbBytes( anyLength ) + anyLength;
-            }
-        }
-
-        if ( finalSubstrings != null )
-        {
-            int finalLength = StringTools.getBytesUtf8( finalSubstrings ).length; 
-            substringsFilterSequenceLength += 1 + TLV.getNbBytes( finalLength )
-                + finalLength;
-        }
-
-        substringsFilterLength += 1 + TLV.getNbBytes( substringsFilterSequenceLength )
-            + substringsFilterSequenceLength;
-    	
-    	
-
-        return 1 + TLV.getNbBytes( substringsFilterLength ) + substringsFilterLength;*/
-    	return 0;
-    }
 }

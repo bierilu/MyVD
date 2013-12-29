@@ -1,4 +1,4 @@
 #!/bin/sh
 
-OPENDS_JAVA_HOME=/usr/java/64/jdk1.7.0_10
+OPENDS_JAVA_HOME=/usr/java/64/jdk1.7.0_40
 export OPENDS_JAVA_HOME

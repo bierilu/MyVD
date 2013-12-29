@@ -24,11 +24,14 @@ Configuring MyVD
 
 * Configuring the Listener
 
- The listener can be configured to listen on a secure port, a non secure port or both.  To configure a non secure port simply supply a port number.
+ The listener can be configured to listen on a secure port, a non secure port or both.  To configure a non secure port simply supply a port number.  In addition to the port number, you can
+ specify a maximum number of entries or a maximum time limit (in milli-seconds).  If not configured, the default is unlimited.
 
 +----------+
 #Listen on port 389
 server.listener.port=389
+server.listener.maxSizeLimit=1000
+server.listener.maxTimeLimit=60000
 +----------+
 
  To open a secure port you need to know the port, have a keystore to provide a key for encryption and the password for that keystore.
