@@ -11,7 +11,7 @@ Directory Inserts
  
 * LDAP Insert
 
- The LDAP insert is one of the core inserts.  This insert allows MyVD to communicate with any LDAPv3 compliant directory.  In addtion to LDAP directories, this isnert supports DSMLv2 and SPML.  In order to take advantage of the SPML feautures you must download the OpenSPML toolkit (http://www.openspml.org/) and it's dependencies.
+ The LDAP insert is one of the core inserts.  This insert allows MyVD to communicate with any LDAPv3 compliant directory.  In addtion to LDAP directories, this insert supports DSMLv2 and SPML.  In order to take advantage of the SPML feautures you must download the OpenSPML toolkit (http://www.openspml.org/) and it's dependencies.
 
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |Class Name           |net.sourceforge.myvd.inserts.ldap.LDAPInterceptor|                                    |
@@ -41,6 +41,8 @@ Directory Inserts
 |                     |ignoreRefs|"true" if referrals should be ignored.|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |maxMillis|The maximum number of millis seconds an operation can take.  Defaults to 30,000 (30 seconds)|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |maxStaleTimeMillis|The maximum number of milliseconds a connection can be locked before its considered stale.  Default is 60,000 (60 seconds)|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 
 

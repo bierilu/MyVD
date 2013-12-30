@@ -40,6 +40,7 @@ public class ConnectionWrapper {
 	
 	
 	
+	
 	public ConnectionWrapper(LDAPInterceptor interceptor) {
 		this.interceptor = interceptor;
 		this.locked = new Bool(false);
@@ -55,7 +56,38 @@ public class ConnectionWrapper {
 				this.locked.setValue(true);
 				return false;
 			} else {
-				return true;
+				
+				if ((System.currentTimeMillis() - this.lastAccessed) >= this.interceptor.getMaxStailTime()) {
+					logger.warn("Connection stale, re-creating");
+					final LDAPConnection localCon = this.con;
+					this.con = null;
+					new Thread() {
+
+						@Override
+						public void run() {
+							try {
+								localCon.disconnect();
+							} catch (LDAPException e) {
+								logger.warn("Could not close connection",e);
+							}
+						}
+						
+						
+					}.start();
+					try {
+						this.reConnect();
+					} catch (LDAPException e) {
+						logger.error("Could not reconnect",e);
+						this.con = null;
+					}
+					this.locked.setValue(true);
+					return false;
+				} else {
+					return true;
+				}
+				
+				
+				
 			}
 		}
 	}

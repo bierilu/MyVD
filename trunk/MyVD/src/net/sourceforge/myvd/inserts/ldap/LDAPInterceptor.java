@@ -97,6 +97,7 @@ public class LDAPInterceptor implements Insert {
 	
 	long maxIdleTime;
 	private int maxOpMillis;
+	private long maxStaleTime;
 	
 	public void configure(String name, Properties props,NameSpace nameSpace) throws LDAPException {
 		this.name = name;
@@ -150,6 +151,9 @@ public class LDAPInterceptor implements Insert {
 		this.maxOpMillis = Integer.parseInt(props.getProperty("maxMillis","30000"));
 		
 		logger.info("Maximum Operations Time (millis); " + this.maxOpMillis);
+		
+		this.maxStaleTime = Long.parseLong(props.getProperty("maxStaleTimeMillis","60000"));
+		logger.info("Maximum stale connection time in millis : " + this.maxStaleTime);
 		
 		this.pool = new LDAPConnectionPool(this, Integer.parseInt(props.getProperty("minimumConnections","5")), Integer.parseInt(props.getProperty("maximumConnections","30")), Integer.parseInt(props.getProperty("maximumRetries","5")),this.type,this.spmlImpl,this.isSoap);
 		
@@ -226,6 +230,9 @@ public class LDAPInterceptor implements Insert {
 			LDAPEntry remoteEntry = new LDAPEntry(this.getRemoteMappedDN(new DN(entry.getEntry().getDN())).toString(),entry.getEntry().getAttributeSet());
 			
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			
@@ -289,6 +296,9 @@ public class LDAPInterceptor implements Insert {
 		
 		try {
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			con.compare(this.getRemoteMappedDN(dn.getDN()).toString(),attrib.getAttribute(),constraints);
@@ -340,6 +350,9 @@ public class LDAPInterceptor implements Insert {
 		
 		try {
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			
@@ -367,6 +380,9 @@ public class LDAPInterceptor implements Insert {
 		
 		try {
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			
@@ -442,6 +458,9 @@ public class LDAPInterceptor implements Insert {
 			}
 			
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPSearchConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			
@@ -486,6 +505,9 @@ public class LDAPInterceptor implements Insert {
 		
 		try {
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			
@@ -512,6 +534,9 @@ public class LDAPInterceptor implements Insert {
 		try {
 			
 			if (this.maxOpMillis > 0) {
+				if (constraints == null) {
+					constraints = new LDAPConstraints();
+				}
 				constraints.setTimeLimit(this.maxOpMillis);
 			}
 			
@@ -573,6 +598,10 @@ public class LDAPInterceptor implements Insert {
 
 	public int getMaxTimeoutMillis() {
 		return this.maxOpMillis;
+	}
+
+	public long getMaxStailTime() {
+		return this.maxStaleTime;
 	}
 	
 	
