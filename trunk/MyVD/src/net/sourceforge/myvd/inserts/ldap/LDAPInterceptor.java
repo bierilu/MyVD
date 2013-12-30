@@ -96,6 +96,7 @@ public class LDAPInterceptor implements Insert {
 	String noMapBindFlag;
 	
 	long maxIdleTime;
+	private int maxOpMillis;
 	
 	public void configure(String name, Properties props,NameSpace nameSpace) throws LDAPException {
 		this.name = name;
@@ -146,7 +147,14 @@ public class LDAPInterceptor implements Insert {
 		
 		this.maxIdleTime = Long.parseLong(props.getProperty("maxIdle","0"));
 		
+		this.maxOpMillis = Integer.parseInt(props.getProperty("maxMillis","30000"));
+		
+		logger.info("Maximum Operations Time (millis); " + this.maxOpMillis);
+		
 		this.pool = new LDAPConnectionPool(this, Integer.parseInt(props.getProperty("minimumConnections","5")), Integer.parseInt(props.getProperty("maximumConnections","30")), Integer.parseInt(props.getProperty("maximumRetries","5")),this.type,this.spmlImpl,this.isSoap);
+		
+		
+		
 		
 		this.passThroughBindOnly = props.getProperty("passBindOnly","false").equalsIgnoreCase("true");
 		this.ignoreRefs = props.getProperty("ignoreRefs","false").equalsIgnoreCase("true");
@@ -216,6 +224,12 @@ public class LDAPInterceptor implements Insert {
 		
 		try {
 			LDAPEntry remoteEntry = new LDAPEntry(this.getRemoteMappedDN(new DN(entry.getEntry().getDN())).toString(),entry.getEntry().getAttributeSet());
+			
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
+			
 			con.add(remoteEntry,constraints);
 		} finally {
 			this.returnLDAPConnection(wrapper);
@@ -274,6 +288,9 @@ public class LDAPInterceptor implements Insert {
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
 			con.compare(this.getRemoteMappedDN(dn.getDN()).toString(),attrib.getAttribute(),constraints);
 		} finally {
 			this.returnLDAPConnection(wrapper);
@@ -293,7 +310,14 @@ public class LDAPInterceptor implements Insert {
 		
 		
 		try {
+			
+			
 			LDAPConnection con = wrapper.getConnection();
+			
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
 			con.delete(this.getRemoteMappedDN(dn.getDN()).toString(),constraints);
 		} finally {
 			this.returnLDAPConnection(wrapper); 
@@ -315,6 +339,10 @@ public class LDAPInterceptor implements Insert {
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
 			con.extendedOperation(op.getOp(),constraints);
 		} finally {
 			this.returnLDAPConnection(wrapper);
@@ -338,6 +366,10 @@ public class LDAPInterceptor implements Insert {
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
 			con.modify(this.getRemoteMappedDN(dn.getDN()).toString(),ldapMods,constraints);
 		} finally {
 			this.returnLDAPConnection(wrapper);
@@ -409,6 +441,10 @@ public class LDAPInterceptor implements Insert {
 			
 			}
 			
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
 			LDAPSearchResults res = con.search(remoteBase,scope.getValue(),filterVal,attribs,typesOnly.getValue(),constraints);
 			chain.addResult(results,new LDAPEntrySet(this,wrapper,res,remoteBase, scope.getValue(), filter.getValue(), attribs, typesOnly.getValue(), constraints), base, scope, filter, attributes, typesOnly, constraints);
 		} finally  {
@@ -449,6 +485,10 @@ public class LDAPInterceptor implements Insert {
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
 			con.rename(oldDN,newRdn.getDN().toString(),deleteOldRdn.getValue());
 		} finally {
 			this.returnLDAPConnection(wrapper);
@@ -470,6 +510,11 @@ public class LDAPInterceptor implements Insert {
 		LDAPConnection con = wrapper.getConnection();
 		
 		try {
+			
+			if (this.maxOpMillis > 0) {
+				constraints.setTimeLimit(this.maxOpMillis);
+			}
+			
 			con.rename(oldDN,newRdn.getDN().toString(),newPDN,deleteOldRdn.getValue());
 		} finally {
 			this.returnLDAPConnection(wrapper);
@@ -524,6 +569,10 @@ public class LDAPInterceptor implements Insert {
 
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
+	}
+
+	public int getMaxTimeoutMillis() {
+		return this.maxOpMillis;
 	}
 	
 	

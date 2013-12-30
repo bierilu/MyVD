@@ -22,6 +22,7 @@ import net.sourceforge.myvd.types.Password;
 
 import com.novell.ldap.DsmlConnection;
 import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.SPMLConnection;
@@ -66,9 +67,12 @@ public class ConnectionWrapper {
 		
 		
 		try {
+			LDAPConstraints constraints = new LDAPConstraints();
+			if (this.interceptor.getMaxTimeoutMillis() > 0) {
+				constraints.setTimeLimit(this.interceptor.getMaxTimeoutMillis());
+			}
 			
-			
-			con.bind(3,bindDN.toString(),password.getValue());
+			con.bind(3,bindDN.toString(),password.getValue(),constraints);
 			this.bindDN = bindDN;
 			this.pass = password;
 		} catch (LDAPException e) {

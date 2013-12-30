@@ -32,7 +32,7 @@ public class LDAPConnectionPool {
 	int maxRetries;
 	int maxCons;
 	int minCons;
-
+	
 	
 	LDAPConnectionType type;
 	
@@ -44,7 +44,8 @@ public class LDAPConnectionPool {
 		this.minCons = minCons;
 		this.maxCons = maxCons;
 		this.maxRetries = maxRetries;
-
+		
+		
 		this.type = type;
 		
 		this.pool = new ArrayList<ConnectionWrapper>();
