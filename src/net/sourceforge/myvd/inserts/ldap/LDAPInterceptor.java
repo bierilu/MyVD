@@ -98,6 +98,7 @@ public class LDAPInterceptor implements Insert {
 	long maxIdleTime;
 	private int maxOpMillis;
 	private long maxStaleTime;
+	private DistinguishedName localBase;
 	
 	public void configure(String name, Properties props,NameSpace nameSpace) throws LDAPException {
 		this.name = name;
@@ -106,6 +107,7 @@ public class LDAPInterceptor implements Insert {
 		this.remoteBase = new DN(props.getProperty("remoteBase"));
 		this.explodedRemoteBase = this.remoteBase.explodeDN(false);
 		this.explodedLocalBase = nameSpace.getBase().getDN().explodeDN(false);
+		this.localBase = nameSpace.getBase();
 		
 		this.usePaging = Boolean.parseBoolean(props.getProperty("usePaging", "false"));
 		if (this.usePaging) {
@@ -202,7 +204,12 @@ public class LDAPInterceptor implements Insert {
 	}
 
 	protected DN getRemoteMappedDN(DN dn) {
-		return utils.getRemoteMappedDN(dn,explodedLocalBase,explodedRemoteBase);
+		
+		//if ((dn.getRDNs().size() < this.explodedLocalBase.length) || (dn.equals(this.localBase.getDN()) || dn.isDescendantOf(this.localBase.getDN()))) {
+			return utils.getRemoteMappedDN(dn,explodedLocalBase,explodedRemoteBase);
+		//} else {
+		//	return dn;
+		//}
 	}
 	
 	protected DN getLocalMappedDN(DN dn) {
