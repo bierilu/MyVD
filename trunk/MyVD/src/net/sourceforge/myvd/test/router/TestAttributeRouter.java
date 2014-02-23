@@ -156,6 +156,26 @@ public class TestAttributeRouter extends TestCase {
 		
 	}
 	
+	public void testExternalWithInternalBase() throws Exception {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("127.0.0.1", 50983);
+		LDAPSearchResults res = con.search("ou=internal,o=mycompany,c=us",2, "(|(cn=testrouting)(mail=externaluser@external.domain.com))", new String[]{}, false);
+		
+		try {
+		if (res.hasMore()) {
+			LDAPEntry e1 = res.next();
+			Assert.fail("Results came back");
+		}
+		} catch  (LDAPException e) {
+			if (e.getResultCode() != 32) {
+				throw e;
+			}
+		}
+		
+		con.disconnect();
+		
+	}
+	
 	public void testDefault() throws Exception {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("127.0.0.1", 50983);

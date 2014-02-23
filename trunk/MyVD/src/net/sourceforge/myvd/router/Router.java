@@ -179,7 +179,13 @@ public class Router {
     			localBackends = new ArrayList<NameSpace>();
     			Iterator<String> it = list.iterator();
     			while (it.hasNext()) {
-    				localBackends.add(this.backends.get(it.next()));
+    				NameSpace lns = this.backends.get(it.next());
+    				
+    				if (lns.getBase().getDN().isDescendantOf(dn.getDN()) || dn.getDN().equals(lns.getBase().getDN()) || dn.getDN().isDescendantOf(lns.getBase().getDN())) {
+    					localBackends.add(lns);
+    				}
+    				
+    				
     			}
     		} else if (obj instanceof String) {
     			localBackends = new ArrayList<NameSpace>();

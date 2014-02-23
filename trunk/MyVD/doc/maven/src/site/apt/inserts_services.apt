@@ -197,4 +197,37 @@ scope-base#scope#grant/deny:permisions#scope#users
 |Configuration Options|schemaLDIF|Path to the ldif file.  NOTE: this ldap file MUST contain a full schema entry, including DN and objectClasses.  The DN should match the root of this insert.  The first line of the ldif file MUST be "version: 1"|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 
-  
+* Route by Attribute Value
+
+ The Route by Attribute Value Router is an insert that should be added to the global chain when requests must be routed to a particular namespace based on an attribute value.  An example would be
+ when using MyVD to route requests to different directories based on an email suffix.  Additionaly, a default route can be used when no other routes are available.  This router is only executed on searches
+ who's filters are equality ("=").  This filter is not applied to substring filters.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.routing.RouteByAttributeValue|                                    |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search|                     |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|attributeName|The name of the attribute to check
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |useDefault|true or false, If true then if no route is found a default one is used.  If false then if not route is found then MyVD will no route the request to a specific namespace|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |defaultNameSpace|The namespace from MyVD's configuration (the name of the namespace, not the DN base) to route to if no routing rules match|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |numRoutes|The number of routing rules being configured|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |route.X|Where X is a number between 0 and (numRoutes - 1) inclusively.  The value is namepsace=regex.  The namespace is the name of the namespace in the MyVD configuration.  The regex is a Java regular expression that will be tested against the values for the named attribute in the search's LDAP filter.  {{{http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html} Here}} is the Java pattern language.|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+
+* Required For Search
+
+ This insert should be installed on a namespace that should be allowed to fail when performing searches without causing an error to be returned to the client.  When an error does occur, it is logged
+ as a warning.
+
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.routing.RequiredForSearch|                                    |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Search|                     |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|required|true or false, If false, any errors that occur during a search are logged as a warning.  If true, this insert is not run.|
+*---------------------+-------------------------------------------------------+--------------------------------------+
