@@ -16,6 +16,8 @@ server.globalChain.RouteByMail.config.route.1=ExternalServer=.*@external.domain.
 server.globalChain.RouteByMail.config.useDefault=true
 server.globalChain.RouteByMail.config.defaultNameSpace=LocalUsers
 server.globalChain.RouteByMail.config.attributeName=mail
+server.globalChain.RouteByMail.config.ignorePattern=^[A-Z0-9a-z._%+-]+@[A-Z0-9a-z.-]+\\.[A-Za-z]{2,6}$
+server.globalChain.RouteByMail.config.ignoreNegative=true
 
 
 
