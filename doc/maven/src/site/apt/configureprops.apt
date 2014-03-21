@@ -98,6 +98,7 @@ server.namespaces=ns1,ns2
 server.ns1.chain=insert1,insert2
 server.ns1.nameSpace=ou=People,dc=domain,dc=com
 server.ns1.weight=100
+server.ns1.enabled=true
 
 #Configure insert1
 server.ns1.insert1.className=com.package.class1
@@ -113,6 +114,7 @@ server.ns1.insert2.config.option2=value2
 server.ns2.chain=insert2
 server.ns2.nameSpace=ou=Groups,dc=domain,dc=com
 server.ns2.weight=100
+server.ns2.enabled=true
 
 #Configure insert2
 server.ns1.insert2.className=com.package.class2
@@ -128,6 +130,7 @@ server.namespaces=Master,DB
 server.Master.chain=webservice
 server.Master.nameSpace=ou=People,dc=domain,dc=com
 server.Master.weight=100
+server.Master.enabled=true
 server.Master.webservice.className=com.mycompany.webservice.Insert
 server.Master.webservice.config.url=http://someserver.somehost.com/myservice
 
@@ -181,12 +184,14 @@ server.namespaces=Master,DB
 server.Master.chain=webservice
 server.Master.nameSpace=ou=People,dc=domain,dc=com
 server.Master.weight=100
+server.Master.enabled=true
 server.Master.webservice.className=com.mycompany.webservice.Insert
 server.Master.webservice.config.url=http://someserver.somehost.com/myservice
 
 server.DB.chain=kerberos,db
 server.DB.nameSpace=ou=People,dc=domain,dc=com
 server.DB.weight=100
+server.DB.enabled=true
 server.DB.kerberos.className=net.sourceforge.myvd.inserts.kerberos.KerberosInterceptor
 server.DB.db.className=net.sourceforge.myvd.inserts.jdbc.JdbcInterceptor
 server.DB.db.config.driver=com.db.driver.Driver
