@@ -214,6 +214,10 @@ scope-base#scope#grant/deny:permisions#scope#users
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |defaultNameSpace|The namespace from MyVD's configuration (the name of the namespace, not the DN base) to route to if no routing rules match|
 *---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |ignorePattern|A pattern that identifies requests that should be ignored by this router|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |ignoreNegative|If set to true, then this insert will ignore anything that DOESN'T match the ignorePattern configuration option|
+*---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |numRoutes|The number of routing rules being configured|
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |route.X|Where X is a number between 0 and (numRoutes - 1) inclusively.  The value is namepsace=regex.  The namespace is the name of the namespace in the MyVD configuration.  The regex is a Java regular expression that will be tested against the values for the named attribute in the search's LDAP filter.  {{{http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html} Here}} is the Java pattern language.|

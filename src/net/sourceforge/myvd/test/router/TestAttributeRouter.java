@@ -142,6 +142,20 @@ public class TestAttributeRouter extends TestCase {
 		
 	}
 	
+	public void testInternalWithOrMailNoRoute() throws Exception {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("127.0.0.1", 50983);
+		LDAPSearchResults res = con.search("ou=internal,o=mycompany,c=us",2, "(|(uid=internaluser)(mail=internaluser))", new String[]{}, false);
+		String chkRes = this.checkSearch(res, "internal-results.ldif");
+		
+		if (! chkRes.isEmpty()) {
+			Assert.fail(chkRes);
+		}
+		
+		con.disconnect();
+		
+	}
+	
 	public void testExternal() throws Exception {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("127.0.0.1", 50983);

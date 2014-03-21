@@ -44,6 +44,9 @@ public class RouteByAttributeValue implements Insert {
 	String defaultRoute;
 	boolean useDefault;
 	String attrName;
+	Pattern ignore;
+
+	private boolean ignoreNegative;
 	
 	
 	@Override
@@ -91,6 +94,22 @@ public class RouteByAttributeValue implements Insert {
 			this.maps.add(rm);
 		}
 		
+		String ignorePattern = props.getProperty("ignorePattern");;
+		if (ignorePattern == null) {
+			this.ignore = null;
+		} else {
+			logger.info("Ignore Pattern : '" + ignorePattern + "'");
+			this.ignore = Pattern.compile(ignorePattern);
+			
+			String ignoreNeg = props.getProperty("ignoreNegative");
+			if (ignoreNeg == null) {
+				this.ignoreNegative = false;
+			} else {
+				this.ignoreNegative = ignoreNeg.equalsIgnoreCase("true");
+			}
+		}
+		
+		 
 		
 		
 	}
@@ -237,7 +256,26 @@ public class RouteByAttributeValue implements Insert {
 							if (logger.isDebugEnabled()) {
 								logger.debug("Default route being used : '" + this.defaultRoute + "'");
 							}
-							routes.add(this.defaultRoute);
+							
+							
+							if (ignore == null) {
+								routes.add(this.defaultRoute);
+							} else {
+								boolean matches = ignore.matcher(node.getValue()).matches();
+								if (this.ignoreNegative && matches) {
+									routes.add(defaultRoute);
+								} else if (! this.ignoreNegative && ! matches) {
+									routes.add(defaultRoute);
+								}
+							}
+							
+							
+							
+							
+							
+							
+							
+							
 						}
 					}
 					
