@@ -124,27 +124,33 @@ public class ServerCore {
 			int weight = Integer.parseInt(props.getProperty(prefix + "weight","0"));
 			String nsBase = props.getProperty(prefix + "nameSpace");
 			
-
+			boolean enabled = props.getProperty(prefix + "enabled","true").equalsIgnoreCase("true");
 			
-			String nsChain = props.getProperty(prefix + "chain");
-			StringTokenizer chainToker = new StringTokenizer(nsChain,",");
+			if (! enabled) {
+				logger.warn("Namespace " + nsName + " disabled");
+				
+			} else {
 			
-			ArrayList<String> chainList = new ArrayList<String>();
-			
-			while (chainToker.hasMoreTokens()) {
-				chainList.add(chainToker.nextToken());
+				String nsChain = props.getProperty(prefix + "chain");
+				StringTokenizer chainToker = new StringTokenizer(nsChain,",");
+				
+				ArrayList<String> chainList = new ArrayList<String>();
+				
+				while (chainToker.hasMoreTokens()) {
+					chainList.add(chainToker.nextToken());
+				}
+				
+				Insert[] tchain = new Insert[chainList.size()];
+				InsertChain chain = new InsertChain(tchain);
+				chain.setProps(props);
+				
+				NameSpace ns = new NameSpace(nsName,new DistinguishedName(nsBase),weight,chain,false);
+				chain.setNameSpace(ns);
+				
+				this.configureChain(prefix,chainList,chain,ns);
+				
+				router.addBackend(nsName,new DN(nsBase),ns);
 			}
-			
-			Insert[] tchain = new Insert[chainList.size()];
-			InsertChain chain = new InsertChain(tchain);
-			chain.setProps(props);
-			
-			NameSpace ns = new NameSpace(nsName,new DistinguishedName(nsBase),weight,chain,false);
-			chain.setNameSpace(ns);
-			
-			this.configureChain(prefix,chainList,chain,ns);
-			
-			router.addBackend(nsName,new DN(nsBase),ns);
 		}
 		
 		
