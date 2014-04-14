@@ -94,3 +94,18 @@ Database Inserts
 |                     |objectClass                                            |The objectClass for objects that the mapping should be performed on|
 *---------------------+-------------------------------------------------------+--------------------------------------+
   
+* Simple DB Authentication
+
+ By default the JdbcInsert does not support authentication.  This insert, configured BEFORE the JdbcInsert
+ allows a a simple authentication using an un-salted one-way hash.
+ 
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Class Name           |net.sourceforge.myvd.inserts.jdbc.SimpleDBAuth         |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Scope                |Bind                                                   |                                      |
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|Configuration Options|sql                                                    |A SQL SELECT statement with two paramters.  The first parameter maps the bind DN's RDN and the second is the hashed password|
+*---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |hashFunction                                           |Eith "SHA" or "MD5" without quotes
+*---------------------+-------------------------------------------------------+--------------------------------------+
+  

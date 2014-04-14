@@ -70,7 +70,7 @@ import com.novell.ldap.LDAPSearchRequest;
 import com.novell.ldap.util.DN;
 import com.novell.ldap.util.RDN;
 
-public class JdbcInsert implements Insert {
+public class JdbcInsert implements Insert,JdbcPool {
 
 	static Logger logger = Logger.getLogger(JdbcInsert.class);
 	
@@ -625,7 +625,7 @@ public class JdbcInsert implements Insert {
 		return filter;
 	}
 
-	private Connection getCon() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public Connection getCon() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		return this.ds.getConnection();
 		
