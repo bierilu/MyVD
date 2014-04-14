@@ -157,6 +157,8 @@ public class Router {
     		} catch (LDAPException e) {
     			if (e.getResultCode() == LDAPException.INVALID_CREDENTIALS || e.getResultCode() == LDAPException.NO_SUCH_OBJECT) {
     				num++;
+    			} else {
+    				throw e;
     			}
     		}
     		
