@@ -534,6 +534,9 @@ public class JdbcInsert implements Insert,JdbcPool {
 			PreparedStatement ps = con.prepareStatement(querySQL);
 			
 			for (int i=0,m=vals.size();i<m;i++) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Adding parameter '" + (i + 1) + "'='" + vals.get(i));
+				}
 				ps.setObject(i + 1, vals.get(i));
 			}
 			
