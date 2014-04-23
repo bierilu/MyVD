@@ -107,6 +107,10 @@ public class SimpleDBAuth implements Insert {
 			this.md.reset();
 			String hashedPass = Hex.toHexString(this.md.digest(pwd.getValue()));
 			RDN rdn = (RDN) dn.getDN().getRDNs().get(0);
+			if (log.isDebugEnabled()) {
+				log.debug("User RDN : '" + rdn.getValue() + "'");
+				log.debug("Hashed Password : '" + hashedPass + "'");
+			}
 			
 			PreparedStatement ps = con.prepareStatement(this.sql);
 			ps.setString(1, rdn.getValue());
