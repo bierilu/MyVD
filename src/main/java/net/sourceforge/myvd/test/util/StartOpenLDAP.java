@@ -117,6 +117,16 @@ public class StartOpenLDAP {
 			con.connect("127.0.0.1",port);
 			con.disconnect();
 			
+			for (int i=0;i<10;i++) {
+				Thread.sleep(5000);
+				
+				try {
+					con.connect("127.0.0.1",port);
+					con.disconnect();
+				} catch (Exception e) {
+					throw e;
+				} 
+			}
 			
 			if (! servers.containsKey(port)) {
 				throw new Exception("Server on port " + port + "not stopped");
