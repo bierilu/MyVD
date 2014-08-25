@@ -194,8 +194,14 @@ public class StartOpenLDAP {
 			buf.append(line).append('\n');
 		}
 		
+		String tmpDir = System.getenv("TMP_DIR");
+		if (tmpDir != null && ! tmpDir.isEmpty()) {
+			this.clearData(tmpDir);
+		}
+		
 		String tmp = buf.toString().replaceAll("[%]PROJ_DIR[%]", System.getenv("PROJ_DIR"));
 		tmp = tmp.replaceAll("[%]SCHEMA_DIR[%]", System.getenv("SCHEMA_DIR"));
+		tmp = tmp.replaceAll("[%]TMP_DIR[%]", System.getenv("TMP_DIR"));
 		
 		PrintWriter out = new PrintWriter(new FileWriter(fullPath + "/slapd-gen.conf"));
 		out.println("# GENERATED FILE - DO NOT EDIT");
