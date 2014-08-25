@@ -658,6 +658,9 @@ public class JdbcInsert implements Insert,JdbcPool {
 			buf.setLength(buf.lastIndexOf(",") - 1);
 		}
 		
+		if (buf.charAt(buf.length() - 1) == ',') {
+			buf.setLength(buf.length() - 1);
+		}
 		
 		
 		
