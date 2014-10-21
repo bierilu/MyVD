@@ -18,8 +18,10 @@ package net.sourceforge.myvd.inserts.setrdn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.novell.ldap.LDAPAttribute;
@@ -44,13 +46,13 @@ import net.sourceforge.myvd.chain.RenameInterceptorChain;
 import net.sourceforge.myvd.chain.SearchInterceptorChain;
 import net.sourceforge.myvd.core.NameSpace;
 import net.sourceforge.myvd.inserts.Insert;
-
 import net.sourceforge.myvd.types.Attribute;
 import net.sourceforge.myvd.types.Bool;
 import net.sourceforge.myvd.types.DistinguishedName;
 import net.sourceforge.myvd.types.Entry;
 import net.sourceforge.myvd.types.ExtendedOperation;
 import net.sourceforge.myvd.types.Filter;
+import net.sourceforge.myvd.types.FilterNode;
 import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
@@ -61,8 +63,15 @@ public class SetRDN implements Insert {
 	String internalRDN;
 	String externalRDN;
 	
+	String objectClass;
+	
+	
 	HashMap<String,String> in2out, out2in;
-
+	HashSet<String> toIgnore;
+	
+	ArrayList<String> dnAttributes;
+	HashSet<String> dnAttrNames;
+	
 	public void add(AddInterceptorChain chain, Entry entry,
 			LDAPConstraints constraints) throws LDAPException {
 		
@@ -95,6 +104,23 @@ public class SetRDN implements Insert {
 		
 		this.internalRDN = props.getProperty("internalRDN");
 		this.externalRDN = props.getProperty("externalRDN");
+		this.objectClass = props.getProperty("objectClass");
+		
+		if (this.objectClass == null) {
+			this.objectClass = "inetOrgPerson";
+		}
+		
+		this.toIgnore = new HashSet<String>();
+		
+		this.dnAttributes = new ArrayList<String>();
+		this.dnAttrNames = new HashSet<String>();
+		String dnAttrs = props.getProperty("dnattributes");
+		if (dnAttrs != null) {
+			StringTokenizer toker = new StringTokenizer(dnAttrs,",",false);
+			String attrName = toker.nextToken();
+			this.dnAttributes.add(attrName);
+			this.dnAttrNames.add(attrName.toLowerCase());
+		}
 	}
 
 	public void delete(DeleteInterceptorChain chain, DistinguishedName dn,
@@ -136,6 +162,7 @@ public class SetRDN implements Insert {
 		chain.nextPostSearchEntry(entry, base, scope, filter, attributes, typesOnly, constraints);
 
 		this.setExternalDN(entry);
+		this.mapAttributes(entry.getEntry(), chain);
 	}
 
 	public void rename(RenameInterceptorChain chain, DistinguishedName dn,
@@ -177,15 +204,62 @@ public class SetRDN implements Insert {
 			Bool typesOnly, Results results, LDAPSearchConstraints constraints)
 			throws LDAPException {
 		
+		Filter newFilter = new Filter(filter.getRoot().toString());
+		mapFilter(newFilter.getRoot(),chain);
 		
 		DN internalBase = this.getInternalDN(base.getDN(), chain);
 		ArrayList<Attribute> attribs = this.createNewAttribs(attributes);
-		chain.nextSearch(new DistinguishedName(internalBase), scope, filter, attribs, typesOnly, results, constraints);
+		chain.nextSearch(new DistinguishedName(internalBase), scope, newFilter, attribs, typesOnly, results, constraints);
 
 	}
 	
+	private void mapFilter(FilterNode node,InterceptorChain chain) throws LDAPException {
+		switch (node.getType()) {
+			case EQUALS :
+			case GREATER_THEN:
+			case LESS_THEN:
+				if (this.dnAttrNames.contains(node.getName().toLowerCase())) {
+					String externalDN = node.getValue();
+					String internalDN = this.getInternalAttrDN(externalDN, chain);
+					node.setValue(internalDN);
+				}
+				break;
+			case PRESENCE:
+			case SUBSTR:
+				//do nothing
+				break;
+			case AND:
+			case OR:
+				for (FilterNode child : node.getChildren()) {
+					mapFilter(child,chain);
+				}
+				break;
+			case NOT: mapFilter(node.getNot(),chain);
+			
+		}
+	}
 	
 	private void setExternalDN(Entry entry) {
+		
+		if (this.toIgnore.contains(entry.getEntry().getDN())) {
+			//we know to ignore
+			return;
+		}
+		
+		boolean ocFound = false;
+		for (String oc : entry.getEntry().getAttribute("objectClass").getStringValueArray()) {
+			if (oc.equalsIgnoreCase(this.objectClass)) {
+				ocFound = true;
+				break;
+			}
+		}
+		
+		if (! ocFound) {
+			this.toIgnore.add(entry.getEntry().getDN());
+			return;
+		}
+		
+		
 		DN dn = new DN(entry.getEntry().getDN());
 		Vector<RDN> rdns = dn.getRDNs();
 		if (rdns.size() == 0 || ! rdns.get(0).getType().equalsIgnoreCase(this.internalRDN)) {
@@ -219,12 +293,181 @@ public class SetRDN implements Insert {
 		
 	}
 	
+	private void mapAttributes(LDAPEntry entry,PostSearchEntryInterceptorChain chain) throws LDAPException {
+		for (String attrName : this.dnAttributes) {
+			LDAPAttribute attr = entry.getAttribute(attrName);
+			
+			
+			if (attr != null) {
+				ArrayList<String> vals = new ArrayList<String>();
+				ArrayList<String> origVals = new ArrayList<String>();
+				
+				for (String val : attr.getStringValueArray()) {
+					String nval = this.getExternalAttrDN(val, chain);
+					vals.add(nval);
+					origVals.add(val);
+				}
+				
+				for (String val : origVals) {
+					attr.removeValue(val);
+				}
+				
+				for (String val : vals) {
+					attr.addValue(val);
+				}
+				
+			}
+		}
+	}
+	
 	private DN getInternalDN(DN externalDN,InterceptorChain chain) throws LDAPException {
 		return this.getInternalDN(externalDN, chain,null);
 	}
 	
+	
+	private String getExternalAttrDN(String internalDN,InterceptorChain chain) throws LDAPException {
+		if (this.toIgnore.contains(internalDN)) {
+			return internalDN;
+		}
+		
+		String externalDN = this.in2out.get(internalDN.toLowerCase());
+		if (externalDN != null) {
+			return externalDN;
+		}
+		
+		
+		DN internalDNdn = new DN(internalDN);
+		Vector rdns = internalDNdn.getRDNs();
+		DN base = new DN();
+		for (int i=1;i<rdns.size();i++) {
+			base.addRDNToBack((RDN) rdns.get(i));
+		}
+		
+		String internalRDNVal = ((RDN) rdns.get(0)).getValue();
+		String internalRDNName = ((RDN) rdns.get(0)).getType();
+		
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		attributes.add(new Attribute(this.externalRDN));
+		attributes.add(new Attribute(this.objectClass));
+		
+		StringBuffer b = new StringBuffer();
+		b.append("(&(objectClass=").append(this.objectClass).append(")(").append(internalRDNName).append('=').append(internalRDNVal).append("))");
+		//b.append('(').append(this.externalRDN).append('=').append(externalRDNs.get(0).getValue()).append(')');
+		Filter filter = new Filter(b.toString());
+		
+		
+		Results results = new Results(null,chain.getPositionInChain(this));
+		SearchInterceptorChain schain = chain.createSearchChain(chain.getPositionInChain(this));
+		
+		schain.nextSearch(new DistinguishedName(base), new Int(1), filter, attributes, new Bool(false), results, new LDAPSearchConstraints());
+		
+		results.start();
+		
+		
+		Entry entry = null;
+		
+		if (results.hasMore()) {
+			entry = results.next();
+		} else {
+			results.finish();
+			//Assume this isn't the correct obectClass
+			this.toIgnore.add(internalDN.toString());
+			return internalDN;
+		}
+		
+		String val = entry.getEntry().getAttribute(this.externalRDN).getStringValue();
+		
+		DN newExternal = new DN();
+		b.setLength(0);
+		b.append(this.externalRDN).append('=').append(val);
+		RDN rdn = new RDN(b.toString());
+		
+		newExternal.addRDN(rdn);
+		
+		for (int i=1;i<rdns.size();i++) {
+			newExternal.addRDNToBack((RDN) rdns.get(i));
+		}
+		
+		this.in2out.put(internalDN.toLowerCase() , newExternal.toString().toLowerCase());
+		return newExternal.toString();
+		
+	}
+	
+	private String getInternalAttrDN(String externalDN,InterceptorChain chain) throws LDAPException {
+		if (this.toIgnore.contains(externalDN)) {
+			return externalDN;
+		}
+		
+		String internalDN = this.out2in.get(externalDN.toLowerCase());
+		if (internalDN != null) {
+			return internalDN;
+		}
+		
+		
+		DN externalDNdn = new DN(externalDN);
+		Vector rdns = externalDNdn.getRDNs();
+		DN base = new DN();
+		for (int i=1;i<rdns.size();i++) {
+			base.addRDNToBack((RDN) rdns.get(i));
+		}
+		
+		String externalRDNVal = ((RDN) rdns.get(0)).getValue();
+		String externalRDNName = ((RDN) rdns.get(0)).getType();
+		
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		attributes.add(new Attribute(this.internalRDN));
+		attributes.add(new Attribute(this.objectClass));
+		
+		StringBuffer b = new StringBuffer();
+		b.append("(&(objectClass=").append(this.objectClass).append(")(").append(externalRDNName).append('=').append(externalRDNVal).append("))");
+		//b.append('(').append(this.externalRDN).append('=').append(externalRDNs.get(0).getValue()).append(')');
+		Filter filter = new Filter(b.toString());
+		
+		
+		Results results = new Results(null,chain.getPositionInChain(this) + 1);
+		SearchInterceptorChain schain = chain.createSearchChain(chain.getPositionInChain(this) + 1);
+		
+		schain.nextSearch(new DistinguishedName(base), new Int(1), filter, attributes, new Bool(false), results, new LDAPSearchConstraints());
+		
+		results.start();
+		
+		
+		Entry entry = null;
+		
+		if (results.hasMore()) {
+			entry = results.next();
+		} else {
+			results.finish();
+			//Assume this isn't the correct obectClass
+			this.toIgnore.add(externalDN.toString());
+			return externalDN;
+		}
+		
+		String val = entry.getEntry().getAttribute(this.internalRDN).getStringValue();
+		
+		DN newInternal = new DN();
+		b.setLength(0);
+		b.append(this.internalRDN).append('=').append(val);
+		RDN rdn = new RDN(b.toString());
+		
+		newInternal.addRDN(rdn);
+		
+		for (int i=1;i<rdns.size();i++) {
+			newInternal.addRDNToBack((RDN) rdns.get(i));
+		}
+		
+		this.out2in.put(externalDN.toLowerCase() , newInternal.toString().toLowerCase());
+		return newInternal.toString();
+		
+	}
+	
 	private DN getInternalDN(DN externalDN,InterceptorChain chain,LDAPEntry toadd) throws LDAPException {
 		Vector<RDN> externalRDNs =  externalDN.getRDNs();
+		
+		//first see if we can ignore
+		if (this.toIgnore.contains(externalDN.toString())) {
+			return externalDN;
+		}
 		
 		//check to make sure we need to do the mapping
 		if (externalRDNs.size() == 0 || ! externalRDNs.get(0).getType().equalsIgnoreCase(this.externalRDN)) {
@@ -252,8 +495,12 @@ public class SetRDN implements Insert {
 		if (toadd == null) {
 			ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 			attributes.add(new Attribute(this.internalRDN));
+			attributes.add(new Attribute(this.objectClass));
 			
-			Filter filter = new Filter("(" + this.externalRDN + "=" + externalRDNs.get(0).getValue() +")");
+			StringBuffer b = new StringBuffer();
+			b.append("(&(objectClass=").append(this.objectClass).append(")(").append(this.externalRDN).append('=').append(externalRDNs.get(0).getValue()).append("))");
+			//b.append('(').append(this.externalRDN).append('=').append(externalRDNs.get(0).getValue()).append(')');
+			Filter filter = new Filter(b.toString());
 			
 			schain.nextSearch(new DistinguishedName(base), new Int(1), filter, attributes, new Bool(false), results, new LDAPSearchConstraints());
 			
@@ -266,10 +513,13 @@ public class SetRDN implements Insert {
 				entry = results.next();
 			} else {
 				results.finish();
-				throw new LDAPException("No Such Object",LDAPException.NO_SUCH_OBJECT,"No Such Object");
+				//Assume this isn't the correct obectClass
+				this.toIgnore.add(externalDN.toString());
+				return externalDN;
 			}
 			
 			val = entry.getEntry().getAttribute(this.internalRDN).getStringValue();
+
 		} else {
 			val = toadd.getAttribute(this.internalRDN).getStringValue();
 		}
@@ -288,21 +538,38 @@ public class SetRDN implements Insert {
 	
 	private ArrayList<Attribute> createNewAttribs(ArrayList<Attribute> attributes) {
 		ArrayList<Attribute> newAttribs = new ArrayList<Attribute>();
-		Iterator<Attribute> it = attributes.iterator();
 		
-		while (it.hasNext()) {
-			Attribute attrib = it.next();
+		
+		boolean foundWC = false;
+		boolean foundOC = false;
+		boolean foundExternalRDN = false;
+		
+		for (Attribute attrib : attributes) {
 			if (attrib.getAttribute().equals(this.externalRDN)) {
-				continue;
-			} else {
-				newAttribs.add(new Attribute(attrib.getAttribute().getName()));
+				foundExternalRDN = true;
+				
+			} else if (attrib.getAttribute().getName().equals("*")) {
+				foundWC = true;
+			} else if (attrib.getAttribute().getName().equalsIgnoreCase("objectClass")) {
+				foundOC = true;
+			} 
+			
+			newAttribs.add(new Attribute(attrib.getAttribute().getName()));
+			
+		}
+		
+		if (! (newAttribs.size() == 0 || foundWC)) {
+			if (! foundExternalRDN) {
+				newAttribs.add(new Attribute(this.externalRDN));
+			}
+			
+			if (! foundOC) {
+				newAttribs.add(new Attribute(this.objectClass));
 			}
 		}
 		
-		if (newAttribs.size() != 0) {
-			
-			newAttribs.add(new Attribute(this.externalRDN));
-		}
+		
+		
 		return newAttribs;
 	}
 

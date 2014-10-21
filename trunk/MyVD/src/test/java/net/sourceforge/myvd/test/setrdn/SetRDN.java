@@ -193,6 +193,154 @@ public void testBaseSearch() throws LDAPException {
 		con.disconnect();
 	}
 	
+public void testGroupMemberBase() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","groupOfUniqueNames"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","Test Group"));
+	attribs.add(new LDAPAttribute("uniqueMember","uid=testCust,ou=external,o=mycompany,c=us"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=Test Group,ou=external,o=mycompany,c=us",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("cn=Test Group,ou=external,o=mycompany,c=us",0,"(objectClass=*)",new String[0],false);
+	
+	
+	
+	
+	
+	
+	
+	/*if (results.size() != 3) {
+		fail("incorrect number of result sets : " + results.size());
+		return;
+	}*/
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			} else if (size == 1) {
+				controlEntry = null;
+			} else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString());
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	
+	con.disconnect();
+}
+
+public void testGroupMemberFilter() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","groupOfUniqueNames"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","Test Group"));
+	attribs.add(new LDAPAttribute("uniqueMember","uid=testCust,ou=external,o=mycompany,c=us"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=Test Group,ou=external,o=mycompany,c=us",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("ou=external,o=mycompany,c=us",2,"(uniqueMember=uid=testCust,ou=external,o=mycompany,c=us)",new String[0],false);
+	
+	
+	
+	
+	
+	
+	
+	/*if (results.size() != 3) {
+		fail("incorrect number of result sets : " + results.size());
+		return;
+	}*/
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			} else if (size == 1) {
+				controlEntry = null;
+			} else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString());
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	
+	con.disconnect();
+}
+
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.stopServer();

@@ -6,13 +6,23 @@ server.globalChain=
 server.nameSpaces=ExternalServer
 
 
-server.ExternalServer.chain=SetRDN,LDAPExternalServer
+server.ExternalServer.chain=mapdn,SetRDN,LDAPExternalServer
 server.ExternalServer.nameSpace=ou=external,o=mycompany,c=us
 server.ExternalServer.weight=15
+
+server.ExternalServer.mapdn.className=net.sourceforge.myvd.inserts.mapping.DNAttributeMapper
+server.ExternalServer.mapdn.config.dnAttribs=uniqueMember
+server.ExternalServer.mapdn.config.urlAttribs
+server.ExternalServer.mapdn.config.remoteBase=dc=domain,dc=com
+server.ExternalServer.mapdn.config.localBase=o=mycompany,c=us
+
+
 
 server.ExternalServer.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
 server.ExternalServer.SetRDN.config.internalRDN=cn
 server.ExternalServer.SetRDN.config.externalRDN=uid
+server.ExternalServer.SetRDN.config.objectClass=inetOrgPerson
+server.ExternalServer.SetRDN.config.dnattributes=uniqueMember
 
 server.ExternalServer.LDAPExternalServer.className=net.sourceforge.myvd.inserts.ldap.LDAPInterceptor
 server.ExternalServer.LDAPExternalServer.config.host=localhost
