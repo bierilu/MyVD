@@ -247,10 +247,12 @@ public class SetRDN implements Insert {
 		}
 		
 		boolean ocFound = false;
-		for (String oc : entry.getEntry().getAttribute("objectClass").getStringValueArray()) {
-			if (oc.equalsIgnoreCase(this.objectClass)) {
-				ocFound = true;
-				break;
+		if (entry.getEntry().getAttribute("OBJECTCLASS") != null) {
+			for (String oc : entry.getEntry().getAttribute("OBJECTCLASS").getStringValueArray()) {
+				if (oc.equalsIgnoreCase(this.objectClass)) {
+					ocFound = true;
+					break;
+				}
 			}
 		}
 		
