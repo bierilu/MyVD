@@ -6,7 +6,7 @@ server.globalChain=
 server.nameSpaces=ExternalServer
 
 
-server.ExternalServer.chain=mapdn,SetRDN,LDAPExternalServer
+server.ExternalServer.chain=SetRDN,mapdn,LDAPExternalServer
 server.ExternalServer.nameSpace=ou=external,o=mycompany,c=us
 server.ExternalServer.weight=15
 
