@@ -24,6 +24,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPEntry;
@@ -58,6 +60,8 @@ import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
 
 public class SetRDN implements Insert {
+	
+	static Logger logger = Logger.getLogger(SetRDN.class.getName());
 	
 	String name;
 	String internalRDN;
@@ -358,8 +362,11 @@ public class SetRDN implements Insert {
 		Filter filter = new Filter(b.toString());
 		
 		
-		Results results = new Results(null,chain.getPositionInChain(this));
-		SearchInterceptorChain schain = chain.createSearchChain(chain.getPositionInChain(this));
+		Results results = new Results(null,chain.getPositionInChain(this) + 1);
+		SearchInterceptorChain schain = chain.createSearchChain(chain.getPositionInChain(this) + 1);
+		
+		
+		logger.info("Base : '" + base + "'" );
 		
 		schain.nextSearch(new DistinguishedName(base), new Int(1), filter, attributes, new Bool(false), results, new LDAPSearchConstraints());
 		
