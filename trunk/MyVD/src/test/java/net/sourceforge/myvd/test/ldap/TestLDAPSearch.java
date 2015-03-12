@@ -216,6 +216,81 @@ public void testEquals() throws LDAPException {
 	
 }
 
+public void testDoubleQuotesRDNs() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","customPerson"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","Test User"));
+	attribs.add(new LDAPAttribute("sn","User"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+	attribs.add(new LDAPAttribute("uid","testUser"));
+	attribs.add(new LDAPAttribute("userPassword","secret"));
+	attribs.add(new LDAPAttribute("sumNum","5"));
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=Test User,ou=internal,o=mycompany,c=us",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("o=\"mycompany\",c=\"us\"",2,"(cn=Test User)",new String[0],false);
+	
+	
+	
+	
+	
+	
+	
+	/*if (results.size() != 3) {
+		fail("incorrect number of result sets : " + results.size());
+		return;
+	}*/
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			} else if (size == 1) {
+				controlEntry = null;
+			} else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString());
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	con.disconnect();
+	
+}
+
 public void testGreaterThen() throws LDAPException {
 	
 	

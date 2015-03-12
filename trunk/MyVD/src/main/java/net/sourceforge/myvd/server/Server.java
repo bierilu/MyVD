@@ -68,7 +68,7 @@ public class Server {
 	static Logger logger;
 	
 
-	public final static String VERSION = "0.9.4.2";
+	public final static String VERSION = "0.9.4.3";
 	
 	String configFile;
 	Properties props;
@@ -189,7 +189,22 @@ public class Server {
 	
 	
 	
-	
+    private void deleteDir(File d) {
+    	if (d.isDirectory()) {
+    		File[] subs = d.listFiles();
+    		for (File f : subs) {
+    			deleteDir(f);
+    		}
+    		
+    		if (! d.delete()) {
+    			logger.error("Could not delete directory : '" + d.getAbsolutePath() + "'");
+    		}
+    	} else {
+    		if (! d.delete()) {
+    			logger.error("Could not delete file : '" + d.getAbsolutePath() + "'");
+    		}
+    	}
+    }
 	
 	
 	
@@ -213,6 +228,17 @@ public class Server {
 		
 		
 		String apachedsPath = this.configFile.substring(0,this.configFile.lastIndexOf(File.separator) + 1) + "apacheds-data";
+		
+		
+		
+		
+		
+		File cfgPath = new File(apachedsPath);
+		
+		if (cfgPath.isDirectory()) {
+			logger.warn("ApacheDS system partition exists, deleting to clear it out");
+			this.deleteDir(cfgPath);
+		}
 		
 		
 		this.directoryService = new DefaultDirectoryService();
@@ -448,7 +474,7 @@ public class Server {
 			
 			props.load(new FileInputStream(home + "/logging.conf"));
 			
-			if (! props.containsKey("log4j.rootLogger")) props.put("log4j.rootLogger", "debug,logfile");
+			if (! props.containsKey("	")) props.put("log4j.rootLogger", "debug,logfile");
 			if (! props.containsKey("log4j.appender.logfile")) props.put("log4j.appender.logfile", "org.apache.log4j.RollingFileAppender");
 			if (! props.containsKey("log4j.appender.logfile.File")) props.put("log4j.appender.logfile.File",loghome + "/logs/myvd.log");
 			if (! props.containsKey("log4j.appender.logfile.MaxFileSize")) props.put("log4j.appender.logfile.MaxFileSize","100KB");

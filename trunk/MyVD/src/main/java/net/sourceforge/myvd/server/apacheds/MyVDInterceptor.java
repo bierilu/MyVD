@@ -696,7 +696,7 @@ public class MyVDInterceptor extends BaseInterceptor {
 				}
 				
 				try {
-					chain.nextSearch(new DistinguishedName(search.getDn().toString()), new Int(search.getScope().getScope()), filter, attrs, new Bool(search.isTypesOnly()), res, new LDAPSearchConstraints());
+					chain.nextSearch(new DistinguishedName(search.getDn().toString().replaceAll("(\")", "")), new Int(search.getScope().getScope()), filter, attrs, new Bool(search.isTypesOnly()), res, new LDAPSearchConstraints());
 					res.start();
 				} catch (LDAPException e) {
 					throw this.generateException(e);
