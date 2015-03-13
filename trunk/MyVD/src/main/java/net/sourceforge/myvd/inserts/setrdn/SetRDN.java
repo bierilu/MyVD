@@ -89,7 +89,12 @@ public class SetRDN implements Insert {
 
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,
 			Password pwd, LDAPConstraints constraints) throws LDAPException {
-		chain.nextBind(new DistinguishedName(this.getInternalDN(dn.getDN(), chain)), pwd, constraints);
+		if (dn.toString().equalsIgnoreCase("anonymous")) {
+			chain.nextBind(dn, pwd, constraints);
+			
+		} else {
+			chain.nextBind(new DistinguishedName(this.getInternalDN(dn.getDN(), chain)), pwd, constraints);
+		}
 
 	}
 
