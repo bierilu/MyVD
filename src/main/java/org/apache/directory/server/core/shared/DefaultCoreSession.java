@@ -151,6 +151,7 @@ public class DefaultCoreSession implements CoreSession
         if (lsession != null) {
         	this.userSession = lsession;
         }
+        
     }
 
 
