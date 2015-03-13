@@ -1,12 +1,16 @@
 server.listener.port=50983
-server.globalChain=
-
+server.globalChain=SetRDN
+server.globalChain.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
+server.globalChain.SetRDN.config.internalRDN=cn
+server.globalChain.SetRDN.config.externalRDN=uid
+server.globalChain.SetRDN.config.objectClass=inetOrgPerson
+server.globalChain.SetRDN.config.dnattributes=uniqueMember
 #Test global
 
 server.nameSpaces=ExternalServer
 
 
-server.ExternalServer.chain=SetRDN,mapdn,LDAPExternalServer
+server.ExternalServer.chain=mapdn,LDAPExternalServer
 server.ExternalServer.nameSpace=ou=external,o=mycompany,c=us
 server.ExternalServer.weight=15
 

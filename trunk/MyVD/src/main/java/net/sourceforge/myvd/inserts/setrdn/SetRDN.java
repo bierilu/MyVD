@@ -89,7 +89,7 @@ public class SetRDN implements Insert {
 
 	public void bind(BindInterceptorChain chain, DistinguishedName dn,
 			Password pwd, LDAPConstraints constraints) throws LDAPException {
-		if (dn.toString().equalsIgnoreCase("anonymous")) {
+		if (dn.getDN() == null || dn.getDN().getRDNs().size() == 0) {
 			chain.nextBind(dn, pwd, constraints);
 			
 		} else {
@@ -126,9 +126,11 @@ public class SetRDN implements Insert {
 		String dnAttrs = props.getProperty("dnattributes");
 		if (dnAttrs != null) {
 			StringTokenizer toker = new StringTokenizer(dnAttrs,",",false);
-			String attrName = toker.nextToken();
-			this.dnAttributes.add(attrName);
-			this.dnAttrNames.add(attrName.toLowerCase());
+			while (toker.hasMoreTokens()) {
+				String attrName = toker.nextToken();
+				this.dnAttributes.add(attrName);
+				this.dnAttrNames.add(attrName.toLowerCase());
+			}
 		}
 	}
 
@@ -332,7 +334,12 @@ public class SetRDN implements Insert {
 	}
 	
 	private DN getInternalDN(DN externalDN,InterceptorChain chain) throws LDAPException {
-		return this.getInternalDN(externalDN, chain,null);
+		DN dn = this.getInternalDN(externalDN, chain,null);
+		if (dn != null) {
+			return dn;
+		} else {
+			return new DN(externalDN.toString());
+		}
 	}
 	
 	
