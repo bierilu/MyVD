@@ -114,6 +114,9 @@ public class LDAPInterceptor implements Insert {
 			this.pageSize = Integer.parseInt(props.getProperty("pageSize","500"));
 		}
 		
+		logger.info("usePaging - '" + this.usePaging + "'");
+		logger.info("pageSize - '" + this.pageSize + "'");
+		
 		this.proxyDN = (String) props.getProperty("proxyDN","");
 		
 		
