@@ -47,6 +47,78 @@ public class SetRDN extends TestCase {
 		//do nothing
 	}
 	
+	
+public void testUidSearch() throws LDAPException {
+		
+		
+		
+		
+		
+		LDAPAttributeSet attribs = new LDAPAttributeSet();
+		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+		//attribs.getAttribute("objectClass").addValue("customPerson");
+		attribs.add(new LDAPAttribute("cn","Test Cust"));
+		attribs.add(new LDAPAttribute("sn","Cust"));
+		//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+		attribs.add(new LDAPAttribute("uid","testCust"));
+		attribs.add(new LDAPAttribute("userPassword","secret"));
+		
+		//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+		LDAPEntry entry2 = new LDAPEntry("uid=testCust,ou=external,o=mycompany,c=us",attribs);
+		
+		
+		
+		
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+		LDAPSearchResults res = con.search("o=mycompany,c=us",2,"(uid=testcust)",new String[0],false);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		int size = 0;
+		
+			while (res.hasMore()) {
+				LDAPEntry fromDir = res.next();
+				LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+				
+				if (size == 0) {
+					controlEntry = entry2;
+				} else if (size == 1) {
+					controlEntry = null;
+				} else {
+					controlEntry = null;
+				}
+				
+				if (controlEntry == null) {
+					fail("Entry " + fromDir.getDN() + " should not be returned");
+					return;
+				}
+				
+				if (! Util.compareEntry(fromDir,controlEntry)) {
+					fail("The entry was not correct : " + fromDir.toString());
+					return;
+				}
+				
+				size++;
+			}
+		
+		
+		if (size != 1) {
+			fail("Not the correct number of entries : " + size);
+		}
+			
+		con.disconnect();
+		
+	}
+	
 	public void testEntry() throws LDAPException {
 		
 		
@@ -116,6 +188,12 @@ public class SetRDN extends TestCase {
 			
 		con.disconnect();
 		
+	}
+	
+	public void testAnonBind() throws LDAPException {
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		con.bind(3, "anonymous", new byte[0]);
 	}
 	
 public void testBaseSearch() throws LDAPException {

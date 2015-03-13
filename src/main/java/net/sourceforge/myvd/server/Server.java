@@ -68,7 +68,7 @@ public class Server {
 	static Logger logger;
 	
 
-	public final static String VERSION = "0.9.4.5";
+	public final static String VERSION = "0.9.4.6";
 	
 	String configFile;
 	Properties props;
