@@ -252,10 +252,10 @@ public class SetRDN implements Insert {
 	
 	private void setExternalDN(Entry entry) {
 		
-		if (this.toIgnore.contains(entry.getEntry().getDN())) {
+		/*if (this.toIgnore.contains(entry.getEntry().getDN())) {
 			//we know to ignore
 			return;
-		}
+		}*/
 		
 		boolean ocFound = false;
 		if (entry.getEntry().getAttribute("OBJECTCLASS") != null) {
@@ -280,7 +280,7 @@ public class SetRDN implements Insert {
 		}
 		
 		String dnlower = entry.getEntry().getDN().toLowerCase();
-		String strdn = this.in2out.get(dnlower);
+		String strdn = null;//this.in2out.get(dnlower);
 		
 		if (strdn != null) {
 			entry.setEntry(new LDAPEntry(strdn,entry.getEntry().getAttributeSet()));
@@ -344,11 +344,11 @@ public class SetRDN implements Insert {
 	
 	
 	private String getExternalAttrDN(String internalDN,InterceptorChain chain) throws LDAPException {
-		if (this.toIgnore.contains(internalDN)) {
+		/*if (this.toIgnore.contains(internalDN)) {
 			return internalDN;
-		}
+		}*/
 		
-		String externalDN = this.in2out.get(internalDN.toLowerCase());
+		String externalDN = null;//this.in2out.get(internalDN.toLowerCase());
 		if (externalDN != null) {
 			return externalDN;
 		}
@@ -415,11 +415,11 @@ public class SetRDN implements Insert {
 	}
 	
 	private String getInternalAttrDN(String externalDN,InterceptorChain chain) throws LDAPException {
-		if (this.toIgnore.contains(externalDN)) {
+		/*if (this.toIgnore.contains(externalDN)) {
 			return externalDN;
-		}
+		}*/
 		
-		String internalDN = this.out2in.get(externalDN.toLowerCase());
+		String internalDN = null;//this.out2in.get(externalDN.toLowerCase());
 		if (internalDN != null) {
 			return internalDN;
 		}
@@ -486,9 +486,9 @@ public class SetRDN implements Insert {
 		Vector<RDN> externalRDNs =  externalDN.getRDNs();
 		
 		//first see if we can ignore
-		if (this.toIgnore.contains(externalDN.toString())) {
+		/*if (this.toIgnore.contains(externalDN.toString())) {
 			return externalDN;
-		}
+		}*/
 		
 		//check to make sure we need to do the mapping
 		if (externalRDNs.size() == 0 || ! externalRDNs.get(0).getType().equalsIgnoreCase(this.externalRDN)) {
@@ -497,7 +497,7 @@ public class SetRDN implements Insert {
 		
 		
 		//check to see if we have it cached
-		String dnstr = this.out2in.get(externalDN.toString().toLowerCase());
+		String dnstr = null;//this.out2in.get(externalDN.toString().toLowerCase());
 		
 		if (dnstr != null) {
 			return new DN(dnstr);
