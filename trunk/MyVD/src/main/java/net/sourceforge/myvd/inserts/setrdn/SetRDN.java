@@ -504,8 +504,8 @@ public class SetRDN implements Insert {
 		}
 		
 		//we need to retrieve the attribute via a search
-		Results results = new Results(null,chain.getPositionInChain(this));
-		SearchInterceptorChain schain = chain.createSearchChain(chain.getPositionInChain(this));
+		Results results = new Results(null,chain.getPositionInChain(this) + 1);
+		SearchInterceptorChain schain = chain.createSearchChain(chain.getPositionInChain(this) + 1);
 		DN base = new DN();
 		for (int i=1,m=externalRDNs.size();i<m;i++) {
 			base.addRDNToBack(externalRDNs.get(i));

@@ -28,7 +28,7 @@ import net.sourceforge.myvd.test.util.StartOpenLDAP;
 import net.sourceforge.myvd.test.util.Util;
 import junit.framework.TestCase;
 
-public class SetRDN extends TestCase {
+public class SetRDNAD extends TestCase {
 
 	
 	private StartOpenLDAP externalServer;
@@ -58,17 +58,17 @@ public void testUidSearch() throws LDAPException {
 		
 		
 		
-		LDAPAttributeSet attribs = new LDAPAttributeSet();
-		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
-		//attribs.getAttribute("objectClass").addValue("customPerson");
-		attribs.add(new LDAPAttribute("cn","Test Cust"));
-		attribs.add(new LDAPAttribute("sn","Cust"));
-		//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
-		attribs.add(new LDAPAttribute("uid","testCust"));
-		attribs.add(new LDAPAttribute("userPassword","secret"));
-		
-		//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
-		LDAPEntry entry2 = new LDAPEntry("uid=testCust,ou=external,o=mycompany,c=us",attribs);
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","Test1 User"));
+	attribs.add(new LDAPAttribute("sn","User"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+	attribs.add(new LDAPAttribute("uid","tuser001"));
+	attribs.add(new LDAPAttribute("userPassword","secret"));
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("uid=tuser001,cn=users,dc=ad,dc=com",attribs);
 		
 		
 		
@@ -76,7 +76,7 @@ public void testUidSearch() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-		LDAPSearchResults res = con.search("o=mycompany,c=us",2,"(uid=testcust)",new String[0],false);
+		LDAPSearchResults res = con.search("dc=ad,dc=com",2,"(uid=tuser001)",new String[0],false);
 		
 		
 		
@@ -132,15 +132,14 @@ public void testUidSearchOnlyUID() throws LDAPException {
 	LDAPAttributeSet attribs = new LDAPAttributeSet();
 	attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
 	//attribs.getAttribute("objectClass").addValue("customPerson");
-	attribs.add(new LDAPAttribute("cn","Test Cust"));
-	attribs.add(new LDAPAttribute("sn","Cust"));
+	attribs.add(new LDAPAttribute("cn","Test1 User"));
+	attribs.add(new LDAPAttribute("sn","User"));
 	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
-	attribs.add(new LDAPAttribute("uid","testCust"));
+	attribs.add(new LDAPAttribute("uid","tuser001"));
 	attribs.add(new LDAPAttribute("userPassword","secret"));
 	
-	
 	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
-	LDAPEntry entry2 = new LDAPEntry("uid=testCust,ou=external,o=mycompany,c=us",attribs);
+	LDAPEntry entry2 = new LDAPEntry("uid=tuser001,cn=users,dc=ad,dc=com",attribs);
 	
 	
 	
@@ -148,7 +147,7 @@ public void testUidSearchOnlyUID() throws LDAPException {
 	LDAPConnection con = new LDAPConnection();
 	con.connect("localhost",50983);
 	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-	LDAPSearchResults res = con.search("o=mycompany,c=us",2,"(uid=testcust)",new String[] {"uid"},false);
+	LDAPSearchResults res = con.search("dc=ad,dc=com",2,"(uid=tuser001)",new String[] {"uid"},false);
 	
 	
 	
@@ -204,14 +203,14 @@ public void testUidSearchOnlyUID() throws LDAPException {
 		LDAPAttributeSet attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
 		//attribs.getAttribute("objectClass").addValue("customPerson");
-		attribs.add(new LDAPAttribute("cn","Test Cust"));
-		attribs.add(new LDAPAttribute("sn","Cust"));
+		attribs.add(new LDAPAttribute("cn","Test1 User"));
+		attribs.add(new LDAPAttribute("sn","User"));
 		//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
-		attribs.add(new LDAPAttribute("uid","testCust"));
+		attribs.add(new LDAPAttribute("uid","tuser001"));
 		attribs.add(new LDAPAttribute("userPassword","secret"));
 		
 		//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
-		LDAPEntry entry2 = new LDAPEntry("uid=testCust,ou=external,o=mycompany,c=us",attribs);
+		LDAPEntry entry2 = new LDAPEntry("uid=tuser001,cn=users,dc=ad,dc=com",attribs);
 		
 		
 		
@@ -219,7 +218,7 @@ public void testUidSearchOnlyUID() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-		LDAPSearchResults res = con.search("o=mycompany,c=us",2,"(cn=Test Cust)",new String[0],false);
+		LDAPSearchResults res = con.search("dc=ad,dc=com",2,"(cn=Test1 User)",new String[0],false);
 		
 		
 		
@@ -281,14 +280,14 @@ public void testBaseSearch() throws LDAPException {
 		LDAPAttributeSet attribs = new LDAPAttributeSet();
 		attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
 		//attribs.getAttribute("objectClass").addValue("customPerson");
-		attribs.add(new LDAPAttribute("cn","Test Cust"));
-		attribs.add(new LDAPAttribute("sn","Cust"));
+		attribs.add(new LDAPAttribute("cn","Test1 User"));
+		attribs.add(new LDAPAttribute("sn","User"));
 		//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
-		attribs.add(new LDAPAttribute("uid","testCust"));
+		attribs.add(new LDAPAttribute("uid","tuser001"));
 		attribs.add(new LDAPAttribute("userPassword","secret"));
 		
 		//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
-		LDAPEntry entry2 = new LDAPEntry("uid=testCust,ou=external,o=mycompany,c=us",attribs);
+		LDAPEntry entry2 = new LDAPEntry("uid=tuser001,cn=users,dc=ad,dc=com",attribs);
 		
 		
 		
@@ -296,7 +295,7 @@ public void testBaseSearch() throws LDAPException {
 		LDAPConnection con = new LDAPConnection();
 		con.connect("localhost",50983);
 		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-		LDAPSearchResults res = con.search("uid=testCust,ou=external,o=mycompany,c=us",0,"(objectClass=*)",new String[0],false);
+		LDAPSearchResults res = con.search("uid=tuser001,cn=users,dc=ad,dc=com",0,"(objectClass=*)",new String[0],false);
 		
 		
 		
@@ -356,13 +355,13 @@ public void testGroupMemberBase() throws LDAPException {
 	LDAPAttributeSet attribs = new LDAPAttributeSet();
 	attribs.add(new LDAPAttribute("objectClass","groupOfUniqueNames"));
 	//attribs.getAttribute("objectClass").addValue("customPerson");
-	attribs.add(new LDAPAttribute("cn","Test Group"));
-	attribs.add(new LDAPAttribute("uniqueMember","uid=testCust,ou=external,o=mycompany,c=us"));
+	attribs.add(new LDAPAttribute("cn","UNIX SUDO Users"));
+	attribs.add(new LDAPAttribute("uniqueMember","uid=tuser001,cn=users,dc=ad,dc=com"));
 	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
 
 	
 	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
-	LDAPEntry entry2 = new LDAPEntry("cn=Test Group,ou=external,o=mycompany,c=us",attribs);
+	LDAPEntry entry2 = new LDAPEntry("cn=UNIX SUDO Users,cn=users,dc=ad,dc=com",attribs);
 	
 	
 	
@@ -370,7 +369,7 @@ public void testGroupMemberBase() throws LDAPException {
 	LDAPConnection con = new LDAPConnection();
 	con.connect("localhost",50983);
 	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-	LDAPSearchResults res = con.search("cn=Test Group,ou=external,o=mycompany,c=us",0,"(objectClass=*)",new String[0],false);
+	LDAPSearchResults res = con.search("cn=UNIX SUDO Users,cn=users,dc=ad,dc=com",0,"(objectClass=*)",new String[0],false);
 	
 	
 	
@@ -424,19 +423,32 @@ public void testGroupMemberBase() throws LDAPException {
 public void testGroupMemberFilter() throws LDAPException {
 	
 	
-	
-	
-	
 	LDAPAttributeSet attribs = new LDAPAttributeSet();
 	attribs.add(new LDAPAttribute("objectClass","groupOfUniqueNames"));
 	//attribs.getAttribute("objectClass").addValue("customPerson");
-	attribs.add(new LDAPAttribute("cn","Test Group"));
-	attribs.add(new LDAPAttribute("uniqueMember","uid=testCust,ou=external,o=mycompany,c=us"));
+	attribs.add(new LDAPAttribute("cn","UNIX Users"));
+	LDAPAttribute attr = new LDAPAttribute("uniqueMember","uid=tuser001,cn=users,dc=ad,dc=com");
+	attr.addValue("uid=tuser002,cn=users,dc=ad,dc=com");
+	
+	attribs.add(attr);
+	
 	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
 
 	
 	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
-	LDAPEntry entry2 = new LDAPEntry("cn=Test Group,ou=external,o=mycompany,c=us",attribs);
+	LDAPEntry entry3 = new LDAPEntry("cn=UNIX Users,cn=users,dc=ad,dc=com",attribs);
+	
+	
+	attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","groupOfUniqueNames"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","UNIX SUDO Users"));
+	attribs.add(new LDAPAttribute("uniqueMember","uid=tuser001,cn=users,dc=ad,dc=com"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=UNIX SUDO Users,cn=users,dc=ad,dc=com",attribs);
 	
 	
 	
@@ -444,7 +456,7 @@ public void testGroupMemberFilter() throws LDAPException {
 	LDAPConnection con = new LDAPConnection();
 	con.connect("localhost",50983);
 	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
-	LDAPSearchResults res = con.search("ou=external,o=mycompany,c=us",2,"(uniqueMember=uid=testCust,ou=external,o=mycompany,c=us)",new String[0],false);
+	LDAPSearchResults res = con.search("dc=ad,dc=com",2,"(uniqueMember=uid=tuser001,cn=users,dc=ad,dc=com)",new String[0],false);
 	
 	
 	
@@ -466,9 +478,9 @@ public void testGroupMemberFilter() throws LDAPException {
 			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
 			
 			if (size == 0) {
-				controlEntry = entry2;
+				controlEntry = entry3;
 			} else if (size == 1) {
-				controlEntry = null;
+				controlEntry = entry2;
 			} else {
 				controlEntry = null;
 			}
@@ -479,7 +491,7 @@ public void testGroupMemberFilter() throws LDAPException {
 			}
 			
 			if (! Util.compareEntry(fromDir,controlEntry)) {
-				fail("The entry was not correct : " + fromDir.toString());
+				fail("The entry was not correct for " + size + " : " + fromDir.toString() + " / " + controlEntry);
 				return;
 			}
 			
@@ -487,7 +499,7 @@ public void testGroupMemberFilter() throws LDAPException {
 		}
 	
 	
-	if (size != 1) {
+	if (size != 2) {
 		fail("Not the correct number of entries : " + size);
 	}
 		
