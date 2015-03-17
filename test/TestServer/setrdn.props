@@ -1,16 +1,11 @@
 server.listener.port=50983
-server.globalChain=SetRDN
-server.globalChain.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
-server.globalChain.SetRDN.config.internalRDN=cn
-server.globalChain.SetRDN.config.externalRDN=uid
-server.globalChain.SetRDN.config.objectClass=inetOrgPerson
-server.globalChain.SetRDN.config.dnattributes=uniqueMember
+server.globalChain=
 #Test global
 
-server.nameSpaces=ExternalServer
+server.nameSpaces=ExternalServer,AD
 
 
-server.ExternalServer.chain=mapdn,LDAPExternalServer
+server.ExternalServer.chain=mapdn,SetRDN,LDAPExternalServer
 server.ExternalServer.nameSpace=ou=external,o=mycompany,c=us
 server.ExternalServer.weight=15
 
@@ -34,3 +29,37 @@ server.ExternalServer.LDAPExternalServer.config.port=12983
 server.ExternalServer.LDAPExternalServer.config.remoteBase=ou=external,dc=domain,dc=com
 server.ExternalServer.LDAPExternalServer.config.proxyDN=cn=admin,ou=external,dc=domain,dc=com
 server.ExternalServer.LDAPExternalServer.config.proxyPass=manager
+
+
+server.AD.chain=SetRDN,objmap,membertrans,mapdn,dump,ldap
+server.AD.nameSpace=dc=ad,dc=com
+server.AD.wieght=15
+
+server.AD.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
+server.AD.SetRDN.config.internalRDN=cn
+server.AD.SetRDN.config.externalRDN=uid
+server.AD.SetRDN.config.objectClass=inetOrgPerson
+server.AD.SetRDN.config.dnattributes=uniqueMember
+
+server.AD.objmap.className=net.sourceforge.myvd.inserts.mapping.AttributeValueMapper
+server.AD.objmap.config.mapping=objectClass.inetOrgPerson=user,objectClass.groupOfUniqueNames=group
+
+server.AD.membertrans.className=net.sourceforge.myvd.inserts.mapping.AttributeMapper
+server.AD.membertrans.config.mapping=uniqueMember=member,uid=samAccountName
+
+server.AD.mapdn.className=net.sourceforge.myvd.inserts.mapping.DNAttributeMapper
+server.AD.mapdn.config.dnAttribs=member
+server.AD.mapdn.config.urlAttribs=
+server.AD.mapdn.config.remoteBase=dc=test,dc=mydomain,dc=com
+server.AD.mapdn.config.localBase=dc=ad,dc=com
+
+server.AD.dump.className=net.sourceforge.myvd.inserts.DumpTransaction
+server.AD.dump.config.logLevel=info
+
+server.AD.ldap.className=net.sourceforge.myvd.inserts.ldap.LDAPInterceptor
+server.AD.ldap.config.host=localhost
+server.AD.ldap.config.port=13983
+server.AD.ldap.config.remoteBase=dc=test,dc=mydomain,dc=com
+server.AD.ldap.config.proxyDN=cn=admin,dc=test,dc=mydomain,dc=com
+server.AD.ldap.config.proxyPass=manager
+

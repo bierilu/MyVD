@@ -68,7 +68,7 @@ public class Server {
 	static Logger logger;
 	
 
-	public final static String VERSION = "0.9.4.7";
+	public final static String VERSION = "0.9.4.8";
 	
 	String configFile;
 	Properties props;
@@ -214,22 +214,17 @@ public class Server {
 		String portString;
 		
 		
+		
+		
+		
 		//this is a hack for testing.
 		if (logger == null) {
 			getDefaultLog();
 		}
 		
-		this.serverCore = new ServerCore(this.props);
-		
-		this.serverCore.startService();
-		
-		this.globalChain = serverCore.getGlobalChain();
-		this.router = serverCore.getRouter();
-		
-		
 		String apachedsPath = this.configFile.substring(0,this.configFile.lastIndexOf(File.separator) + 1) + "apacheds-data";
 		
-		
+		logger.info("ApacheDS System Directory Path : '" + apachedsPath + "'");
 		
 		
 		
@@ -239,6 +234,17 @@ public class Server {
 			logger.warn("ApacheDS system partition exists, deleting to clear it out");
 			this.deleteDir(cfgPath);
 		}
+		
+		
+		this.serverCore = new ServerCore(this.props);
+		
+		this.serverCore.startService();
+		
+		this.globalChain = serverCore.getGlobalChain();
+		this.router = serverCore.getRouter();
+		
+		
+		
 		
 		
 		this.directoryService = new DefaultDirectoryService();
@@ -474,7 +480,7 @@ public class Server {
 			
 			props.load(new FileInputStream(home + "/logging.conf"));
 			
-			if (! props.containsKey("	")) props.put("log4j.rootLogger", "debug,logfile");
+			if (! props.containsKey("log4j.rootLogger")) props.put("log4j.rootLogger", "info,logfile");
 			if (! props.containsKey("log4j.appender.logfile")) props.put("log4j.appender.logfile", "org.apache.log4j.RollingFileAppender");
 			if (! props.containsKey("log4j.appender.logfile.File")) props.put("log4j.appender.logfile.File",loghome + "/logs/myvd.log");
 			if (! props.containsKey("log4j.appender.logfile.MaxFileSize")) props.put("log4j.appender.logfile.MaxFileSize","100KB");
