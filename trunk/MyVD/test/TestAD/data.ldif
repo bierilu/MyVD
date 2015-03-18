@@ -22,6 +22,14 @@ sn: User
 samAccountName: tuser002
 userPassword: secret
 
+dn: cn=User\, Test3,cn=users,dc=test,dc=mydomain,dc=com
+objectClass: user
+cn: User, Test3
+sn: User
+samAccountName: tuser003
+userPassword: secret
+
+
 dn: cn=Domain Users,cn=users,dc=test,dc=mydomain,dc=com
 objectClass: group
 cn: Domain Users
@@ -36,3 +44,8 @@ dn: cn=UNIX SUDO Users,cn=users,dc=test,dc=mydomain,dc=com
 objectClass: group
 cn: UNIX SUDO Users
 member: cn=Test1 User,cn=users,dc=test,dc=mydomain,dc=com
+
+dn: cn=With Comma,cn=users,dc=test,dc=mydomain,dc=com
+objectClass: group
+cn: With Comma
+member: cn=User\, Test3,cn=users,dc=test,dc=mydomain,dc=com

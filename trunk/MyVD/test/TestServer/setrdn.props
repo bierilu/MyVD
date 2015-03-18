@@ -31,7 +31,7 @@ server.ExternalServer.LDAPExternalServer.config.proxyDN=cn=admin,ou=external,dc=
 server.ExternalServer.LDAPExternalServer.config.proxyPass=manager
 
 
-server.AD.chain=SetRDN,objmap,membertrans,mapdn,dump,ldap
+server.AD.chain=dump,SetRDN,objmap,membertrans,mapdn,ldap
 server.AD.nameSpace=dc=ad,dc=com
 server.AD.wieght=15
 
