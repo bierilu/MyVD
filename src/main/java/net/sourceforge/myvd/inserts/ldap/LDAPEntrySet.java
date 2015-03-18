@@ -103,7 +103,12 @@ public class LDAPEntrySet implements EntrySet {
 					}
 				}
 				
-				this.currEntry = new Entry(new LDAPEntry(interceptor.getLocalMappedDN(new DN(entry.getDN())).toString(),entry.getAttributeSet()),respControls);
+				String dn = entry.getDN();
+				
+
+				dn = dn.replaceAll("[\\\\][2][C]", "\\\\,");
+				
+				this.currEntry = new Entry(new LDAPEntry(interceptor.getLocalMappedDN(new DN(dn)).toString(),entry.getAttributeSet()),respControls);
 				this.entryFetched = false;
 				return true;
 			} else {

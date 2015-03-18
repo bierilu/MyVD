@@ -33,6 +33,7 @@ public class TestLDAPSearch extends TestCase {
 	private StartOpenLDAP internalServer;
 	private StartOpenLDAP externalServer;
 	private StartMyVD server;
+	private StartOpenLDAP adServer;
 	
 	public void setUp() throws Exception {
 		super.setUp();
@@ -45,6 +46,12 @@ public class TestLDAPSearch extends TestCase {
 		this.externalServer = new StartOpenLDAP();
 		this.externalServer.startServer(System.getenv("PROJ_DIR") + "/test/ExternalUsers",12983,"cn=admin,ou=external,dc=domain,dc=com","manager");
 		
+		
+		this.adServer = new StartOpenLDAP();
+		this.adServer.startServer(System.getenv("PROJ_DIR") + "/test/TestAD",13983,"cn=admin,dc=test,dc=mydomain,dc=com","manager");
+		
+		
+		
 		this.server = new StartMyVD();
 		this.server.startServer(System.getenv("PROJ_DIR") + "/test/TestServer/basicvd.props",50983);
 	}
@@ -56,6 +63,7 @@ public class TestLDAPSearch extends TestCase {
 		this.internalServer.stopServer();
 		this.externalServer.stopServer();
 		this.server.stopServer();
+		this.adServer.stopServer();
 	}
 	
 public void testPresence() throws LDAPException {
@@ -216,6 +224,8 @@ public void testEquals() throws LDAPException {
 	
 }
 
+
+
 public void testDoubleQuotesRDNs() throws LDAPException {
 	
 	
@@ -287,6 +297,162 @@ public void testDoubleQuotesRDNs() throws LDAPException {
 		fail("Not the correct number of entries : " + size);
 	}
 		
+	con.disconnect();
+	
+}
+
+
+
+
+
+public void testDoubleQuotesCommass() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","User, Test3"));
+	attribs.add(new LDAPAttribute("sn","User"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+	attribs.add(new LDAPAttribute("uid","tuser003"));
+	attribs.add(new LDAPAttribute("userPassword","secret"));
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=User\\, Test3,cn=users,dc=ad,dc=com",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("cn=\"User, Test3\",cn=\"users\",dc=\"ad\",dc=\"com\"",0,"(objectClass=*)",new String[0],false);
+	
+	
+	
+	
+	
+	
+	
+	/*if (results.size() != 3) {
+		fail("incorrect number of result sets : " + results.size());
+		return;
+	}*/
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			} else if (size == 1) {
+				controlEntry = null;
+			} else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString());
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	
+	con.disconnect();
+	
+}
+
+public void testRDNCommass() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","User, Test3"));
+	attribs.add(new LDAPAttribute("sn","User"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+	attribs.add(new LDAPAttribute("uid","tuser003"));
+	attribs.add(new LDAPAttribute("userPassword","secret"));
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=User\\, Test3,cn=users,dc=ad,dc=com",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("cn=User\\, Test3,cn=users,dc=ad,dc=com",0,"(objectClass=*)",new String[0],false);
+	
+	
+	
+	
+	
+	
+	
+	/*if (results.size() != 3) {
+		fail("incorrect number of result sets : " + results.size());
+		return;
+	}*/
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			} else if (size == 1) {
+				controlEntry = null;
+			} else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString() + " / " + controlEntry);
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	
 	con.disconnect();
 	
 }
@@ -956,4 +1122,148 @@ public void testAndNotOr() throws LDAPException {
 	con.disconnect();
 	
 }
+
+public void testGroupMemberComma() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","With Comma"));
+	
+	
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=With Comma,cn=users,dc=ad,dc=com",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("cn=\"users\",dc=\"ad\",dc=\"com\"",2,"(uniqueMember=cn=User\\\\, Test3,cn=users,dc=ad,dc=com)",new String[] {"cn"},false);
+	
+	
+	
+	
+	
+	
+	
+	/*if (results.size() != 3) {
+		fail("incorrect number of result sets : " + results.size());
+		return;
+	}*/
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			}  else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString());
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	
+	con.disconnect();
+	
+}
+
+/*
+public void testGroupMemberCommaQuotes() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","With Comma"));
+	
+	
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("cn=With Comma,cn=users,dc=ad,dc=com",attribs);
+	
+	
+	
+	
+	LDAPConnection con = new LDAPConnection();
+	con.connect("localhost",50983);
+	//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+	LDAPSearchResults res = con.search("cn=\"users\",dc=\"ad\",dc=\"com\"",2,"(uniqueMember=cn=\"User, Test3\",cn=\"users\",dc=\"ad\",dc=\"com\")",new String[] {"cn"},false);
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	int size = 0;
+	
+		while (res.hasMore()) {
+			LDAPEntry fromDir = res.next();
+			LDAPEntry controlEntry = null;//control.get(fromDir.getEntry().getDN());
+			
+			if (size == 0) {
+				controlEntry = entry2;
+			}  else {
+				controlEntry = null;
+			}
+			
+			if (controlEntry == null) {
+				fail("Entry " + fromDir.getDN() + " should not be returned");
+				return;
+			}
+			
+			if (! Util.compareEntry(fromDir,controlEntry)) {
+				fail("The entry was not correct : " + fromDir.toString());
+				return;
+			}
+			
+			size++;
+		}
+	
+	
+	if (size != 1) {
+		fail("Not the correct number of entries : " + size);
+	}
+		
+	
+	con.disconnect();
+	
+}*/
+
+
 }

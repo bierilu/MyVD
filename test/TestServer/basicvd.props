@@ -1,6 +1,7 @@
 server.listener.port=50983
 server.globalChain=passwordChange
 
+
 #Test global
 
 
@@ -9,7 +10,8 @@ server.globalChain.passwordChange.className=net.sourceforge.myvd.inserts.extensi
 server.globalChain.passwordChange.config.remoteBase=o=mycompany,c=us
 server.globalChain.passwordChange.config.localBase=o=mycompany,c=us
 
-server.nameSpaces=BaseServer,InternalServer,ExternalServer
+server.nameSpaces=BaseServer,InternalServer,ExternalServer,AD
+
 
 server.BaseServer.chain=LDAPBaseServer
 server.BaseServer.nameSpace=o=mycompany,c=us
@@ -58,3 +60,37 @@ server.ExternalServer.LDAPExternalServer.config.port=12983
 server.ExternalServer.LDAPExternalServer.config.remoteBase=ou=external,dc=domain,dc=com
 server.ExternalServer.LDAPExternalServer.config.proxyDN=cn=admin,ou=external,dc=domain,dc=com
 server.ExternalServer.LDAPExternalServer.config.proxyPass=manager
+
+
+server.AD.chain=objmap,membertrans,mapdn,dump,ldap
+server.AD.nameSpace=dc=ad,dc=com
+server.AD.wieght=15
+
+server.AD.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
+server.AD.SetRDN.config.internalRDN=cn
+server.AD.SetRDN.config.externalRDN=uid
+server.AD.SetRDN.config.objectClass=inetOrgPerson
+server.AD.SetRDN.config.dnattributes=uniqueMember
+
+server.AD.objmap.className=net.sourceforge.myvd.inserts.mapping.AttributeValueMapper
+server.AD.objmap.config.mapping=objectClass.inetOrgPerson=user,objectClass.groupOfUniqueNames=group
+
+server.AD.membertrans.className=net.sourceforge.myvd.inserts.mapping.AttributeMapper
+server.AD.membertrans.config.mapping=uniqueMember=member,uid=samAccountName
+
+server.AD.mapdn.className=net.sourceforge.myvd.inserts.mapping.DNAttributeMapper
+server.AD.mapdn.config.dnAttribs=member
+server.AD.mapdn.config.urlAttribs=
+server.AD.mapdn.config.remoteBase=dc=test,dc=mydomain,dc=com
+server.AD.mapdn.config.localBase=dc=ad,dc=com
+
+server.AD.dump.className=net.sourceforge.myvd.inserts.DumpTransaction
+server.AD.dump.config.logLevel=info
+
+server.AD.ldap.className=net.sourceforge.myvd.inserts.ldap.LDAPInterceptor
+server.AD.ldap.config.host=localhost
+server.AD.ldap.config.port=13983
+server.AD.ldap.config.remoteBase=dc=test,dc=mydomain,dc=com
+server.AD.ldap.config.proxyDN=cn=admin,dc=test,dc=mydomain,dc=com
+server.AD.ldap.config.proxyPass=manager
+
