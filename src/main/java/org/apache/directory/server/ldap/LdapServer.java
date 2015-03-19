@@ -43,6 +43,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import net.sourceforge.myvd.server.ssl.MyVDTrustManager;
+
 import org.apache.directory.api.ldap.codec.api.LdapApiServiceFactory;
 import org.apache.directory.api.ldap.model.constants.Loggers;
 import org.apache.directory.api.ldap.model.constants.SaslQoP;
@@ -269,6 +271,12 @@ public class LdapServer extends DirectoryBackedService
 
     /** the list of cipher suites to be used in LDAPS and StartTLS */
     private List<String> enabledCipherSuites = new ArrayList<String>();
+
+	private boolean tlsWantClientAuth;
+
+	private boolean tlsNeedClientAuth;
+
+	private ArrayList<String> tlsAllowedNames;
 
 
     /**
@@ -1785,9 +1793,40 @@ public class LdapServer extends DirectoryBackedService
 		SSLContext sslCtx;
 		// Initialize the SSLContext to work with our key managers.
         sslCtx = SSLContext.getInstance( "TLS" );
+        
+        
+        
         sslCtx.init( this.getKeyManagerFactory().getKeyManagers(), new TrustManager[]
-            { new NoVerificationTrustManager() }, new SecureRandom() );
+            { new MyVDTrustManager(this.keyStore,this.tlsAllowedNames) }, new SecureRandom() );
         
         return sslCtx;
+	}
+
+
+	public void setTlsWantClientAuth(boolean b) {
+		this.tlsWantClientAuth = b;
+		
+	}
+
+
+	public void setTlsNeedClientAuth(boolean b) {
+		this.tlsNeedClientAuth = b;
+		
+	}
+
+
+	public boolean isTlsWantClientAuth() {
+		return tlsWantClientAuth;
+	}
+
+
+	public boolean isTlsNeedClientAuth() {
+		return tlsNeedClientAuth;
+	}
+
+
+	public void setTlsAllowedNames(ArrayList<String> allowedNames) {
+		this.tlsAllowedNames = allowedNames;
+		
 	}
 }
