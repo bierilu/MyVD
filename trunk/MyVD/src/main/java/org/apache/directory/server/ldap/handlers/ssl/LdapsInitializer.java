@@ -51,6 +51,7 @@ public class LdapsInitializer
         {
         	sslCtx = server.getSSLContext();
         	
+        	
         }
         catch ( Exception e )
         {
@@ -59,14 +60,22 @@ public class LdapsInitializer
 
         DefaultIoFilterChainBuilder chain = new DefaultIoFilterChainBuilder();
         SslFilter sslFilter = new SslFilter( sslCtx );
-
+        
         List<String> cipherSuites = server.getEnabledCipherSuites();
         if( ( cipherSuites != null ) && !cipherSuites.isEmpty() )
         {
             sslFilter.setEnabledCipherSuites( cipherSuites.toArray( new String[cipherSuites.size()] ) );
         }
         
-        sslFilter.setWantClientAuth( true );
+        if (server.isTlsWantClientAuth()) {
+        	sslFilter.setWantClientAuth(true);
+        	
+        }
+        
+        if (server.isTlsNeedClientAuth()) {
+        	sslFilter.setNeedClientAuth(true);
+        }
+        
         chain.addLast( "sslFilter", sslFilter );
         return chain;
     }

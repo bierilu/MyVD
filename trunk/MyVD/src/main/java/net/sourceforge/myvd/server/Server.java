@@ -68,7 +68,7 @@ public class Server {
 	static Logger logger;
 	
 
-	public final static String VERSION = "0.9.4.10";
+	public final static String VERSION = "0.9.4.11";
 	
 	String configFile;
 	Properties props;
@@ -328,12 +328,28 @@ public class Server {
 			
 			String keyStorePass = props.getProperty("server.secure.keypass","");
 			
-			String clientMode = props.getProperty("server.secure.clientMode","none");
+			String clientMode = props.getProperty("server.secure.clientmode","none");
 			
+			ArrayList<String> allowedNames = new ArrayList<String>();
+			String allowedNamesStr = props.getProperty("server.secure.allowedAliases","");
+			toker = new StringTokenizer(allowedNamesStr,",",false);
 			
+			while (toker.hasMoreTokens()) {
+				allowedNames.add(toker.nextToken());
+			}
 			
 			KeyStore keystore;
 			try {
+				if (clientMode.equalsIgnoreCase("want")) {
+					ldapServer.setTlsWantClientAuth(true);
+				}
+				
+				if (clientMode.equalsIgnoreCase("need")) {
+					ldapServer.setTlsNeedClientAuth(true);
+				}
+				
+				ldapServer.setTlsAllowedNames(allowedNames);
+				
 				
 				ldapServer.setKeystoreFile(keyStorePath);
 				ldapServer.setCertificatePassword(keyStorePass);
