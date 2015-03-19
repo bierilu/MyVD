@@ -328,6 +328,10 @@ public class Server {
 			
 			String keyStorePass = props.getProperty("server.secure.keypass","");
 			
+			String clientMode = props.getProperty("server.secure.clientMode","none");
+			
+			
+			
 			KeyStore keystore;
 			try {
 				
@@ -336,6 +340,9 @@ public class Server {
 				
 				TcpTransport ldapsTransport = new TcpTransport(Integer.parseInt(portString));
 				ldapsTransport.enableSSL(true);
+				
+				
+				
 				transports.add(ldapsTransport);
 				
 			} catch (Throwable t) {

@@ -49,3 +49,9 @@ dn: cn=With Comma,cn=users,dc=test,dc=mydomain,dc=com
 objectClass: group
 cn: With Comma
 member: cn=User\, Test3,cn=users,dc=test,dc=mydomain,dc=com
+
+dn: cn=Parenthasis (are) in my (cn),cn=users,dc=test,dc=mydomain,dc=com
+objectClass: group
+cn: Parenthasis (are) in my (cn)
+member: cn=(I) dont (understand) why,cn=users,dc=test,dc=mydomain,dc=com
+

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+
 import net.sourceforge.myvd.chain.AddInterceptorChain;
 import net.sourceforge.myvd.chain.BindInterceptorChain;
 import net.sourceforge.myvd.chain.DeleteInterceptorChain;
@@ -22,6 +25,7 @@ import net.sourceforge.myvd.types.Int;
 import net.sourceforge.myvd.types.Password;
 import net.sourceforge.myvd.types.Results;
 import net.sourceforge.myvd.types.SessionVariables;
+import net.sourceforge.myvd.types.TlsParameters;
 
 import org.apache.directory.api.ldap.model.constants.AuthenticationLevel;
 import org.apache.directory.api.ldap.model.entry.Attribute;
@@ -69,7 +73,9 @@ import org.apache.directory.server.core.api.interceptor.context.RenameOperationC
 import org.apache.directory.server.core.api.interceptor.context.SearchOperationContext;
 import org.apache.directory.server.core.api.interceptor.context.UnbindOperationContext;
 import org.apache.directory.server.core.shared.DefaultCoreSession;
+import org.apache.log4j.Logger;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.ssl.SslFilter;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
@@ -81,6 +87,8 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 public class MyVDInterceptor extends BaseInterceptor {
 
+	static Logger logger = Logger.getLogger(MyVDInterceptor.class.getName());
+	
 	InsertChain globalChain;
 	Router router;
 	SchemaManager schemaManager;
@@ -102,6 +110,9 @@ public class MyVDInterceptor extends BaseInterceptor {
 		if (userSession.get(SessionVariables.BOUND_INTERCEPTORS) == null) {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
+		
+		
+		setTLSSessionParams(userSession,add.getSession());
 		
 		DistinguishedName bindDN;
 		byte[] password;
@@ -160,6 +171,33 @@ public class MyVDInterceptor extends BaseInterceptor {
 		}
 	}
 
+	private void setTLSSessionParams(HashMap<Object, Object> userSession,
+			CoreSession session) {
+		this.setTLSSessionParams(userSession, session.getIoSession());
+		
+	}
+
+	private void setTLSSessionParams(HashMap<Object, Object> userSession,
+			IoSession ioSession) {
+		
+		
+		SslFilter filter = (SslFilter) ioSession.getFilterChain().get("sslFilter");
+		
+		if (filter != null) {
+			SSLSession tlssession = filter.getSslSession(ioSession);
+			if (tlssession != null) {
+				try {
+					TlsParameters tlsParams = new TlsParameters(tlssession.getCipherSuite(),tlssession.getPeerCertificateChain());
+					userSession.put(SessionVariables.TLS_PARAMS, tlsParams);
+				} catch (SSLPeerUnverifiedException e) {
+					logger.warn("Could not get TLS information",e);
+				}
+			}
+		}
+		
+		
+	}
+
 	@Override
 	public void bind(BindOperationContext bindContext) throws LdapException {
 		HashMap<Object,Object> userRequest = new HashMap<Object,Object>();
@@ -198,7 +236,7 @@ public class MyVDInterceptor extends BaseInterceptor {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
 		
-		
+		setTLSSessionParams(userSession,bindContext.getIoSession());
 		
 		
 		
@@ -273,6 +311,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 		if (userSession.get(SessionVariables.BOUND_INTERCEPTORS) == null) {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
+		
+		setTLSSessionParams(userSession,del.getSession());
 		
 		DistinguishedName bindDN;
 		byte[] password;
@@ -396,6 +436,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
 		
+		setTLSSessionParams(userSession,lookup.getSession());
+		
 		DistinguishedName bindDN;
 		byte[] password;
 		
@@ -463,6 +505,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
 		
+		setTLSSessionParams(userSession,mod.getSession());
+		
 		DistinguishedName bindDN;
 		byte[] password;
 		
@@ -518,6 +562,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
 		
+		setTLSSessionParams(userSession,move.getSession());
+		
 		DistinguishedName bindDN;
 		byte[] password;
 		
@@ -558,6 +604,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
 		
+		setTLSSessionParams(userSession,move.getSession());
+		
 		DistinguishedName bindDN;
 		byte[] password;
 		
@@ -597,6 +645,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 		if (userSession.get(SessionVariables.BOUND_INTERCEPTORS) == null) {
 			userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 		}
+		
+		setTLSSessionParams(userSession,move.getSession());
 		
 		DistinguishedName bindDN;
 		byte[] password;
@@ -646,6 +696,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 					userSession.put(SessionVariables.BOUND_INTERCEPTORS,new ArrayList<String>());
 				}
 				
+				setTLSSessionParams(userSession,search.getSession());
+				
 				DistinguishedName bindDN;
 				byte[] password;
 				
@@ -688,6 +740,8 @@ public class MyVDInterceptor extends BaseInterceptor {
 				}
 				
 				sb.setLength(sb.length() - 1);*/
+				
+				
 				
 				Filter filter = this.generateMyVDFilter(search.getFilter());
 				
@@ -763,6 +817,7 @@ private Filter generateMyVDFilter(ExprNode root) {
 				
 				try {
 					String oid = this.schemaManager.getAttributeTypeRegistry().getOidByName(n.getAttribute());
+					
 					at = this.schemaManager.getAttributeType(oid);
 					isBinary = ! at.getSyntax().isHumanReadable();
 				} catch (LdapException e) {
