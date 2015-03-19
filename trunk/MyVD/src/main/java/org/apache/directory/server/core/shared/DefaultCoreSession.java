@@ -1133,4 +1133,13 @@ public class DefaultCoreSession implements CoreSession
 	public HashMap<Object, Object> getUserSession() {
 		return this.userSession;
 	}
+
+
+	@Override
+	public IoSession getIoSession() {
+		
+		
+		
+		return this.ioSession;
+	}
 }

@@ -161,15 +161,20 @@ public class FilterNode implements Cloneable {
 		return buf.toString();
 	}
 	
+	private StringBuffer addValue(String value,StringBuffer filter) {
+		filter.append(value.replaceAll("[(]", "\\(").replaceAll("[)]", "\\)"));
+		return filter;
+	}
+	
 	protected void toString(StringBuffer buf) {
 		Iterator<FilterNode> it;
 		
 		switch (this.type) {
 			case PRESENCE : buf.append('(').append(this.name).append("=*)"); break;
 			case SUBSTR:
-			case EQUALS : buf.append('(').append(this.name).append('=').append(this.value).append(')'); break;
-			case GREATER_THEN : buf.append('(').append(this.name).append(">=").append(this.value).append(')'); break;
-			case LESS_THEN : buf.append('(').append(this.name).append("<=").append(this.value).append(')'); break;
+			case EQUALS : buf.append('(').append(this.name).append('=').append(this.value.replaceAll("[(]", "\\\\28").replaceAll("[)]", "\\\\29")).append(')'); break;
+			case GREATER_THEN : buf.append('(').append(this.name).append(">=").append(this.value.replaceAll("[(]", "\\\\\28").replaceAll("[)]", "\\\\29")).append(')'); break;
+			case LESS_THEN : buf.append('(').append(this.name).append("<=").append(this.value.replaceAll("[(]", "\\\\28").replaceAll("[)]", "\\\\29)")).append(')'); break;
 			case AND : buf.append("(&");
 					   it = this.children.iterator();
 					   while (it.hasNext()) {

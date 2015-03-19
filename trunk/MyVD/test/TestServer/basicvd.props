@@ -62,9 +62,12 @@ server.ExternalServer.LDAPExternalServer.config.proxyDN=cn=admin,ou=external,dc=
 server.ExternalServer.LDAPExternalServer.config.proxyPass=manager
 
 
-server.AD.chain=objmap,membertrans,mapdn,dump,ldap
+server.AD.chain=removeDblQuotes,objmap,membertrans,mapdn,dump,ldap
 server.AD.nameSpace=dc=ad,dc=com
 server.AD.wieght=15
+
+server.AD.removeDblQuotes.className=net.sourceforge.myvd.inserts.mapping.RemoveDoubleQuotesFromDNFilter
+server.AD.removeDblQuotes.config.attributeNames=uniqueMember
 
 server.AD.SetRDN.className=net.sourceforge.myvd.inserts.setrdn.SetRDN
 server.AD.SetRDN.config.internalRDN=cn

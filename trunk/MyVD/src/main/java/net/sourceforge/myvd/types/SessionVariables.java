@@ -17,4 +17,5 @@ package net.sourceforge.myvd.types;
 
 public class SessionVariables {
 	public static final String BOUND_INTERCEPTORS = "VDAP_BOUND_INTERCEPTORS";
+	public static final String TLS_PARAMS = "MYVD_TLS_PARAMS";
 }

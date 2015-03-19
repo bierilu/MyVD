@@ -46,6 +46,7 @@ import org.apache.directory.server.constants.ServerDNConstants;
 import org.apache.directory.server.core.api.changelog.LogChange;
 import org.apache.directory.server.core.api.filtering.EntryFilteringCursor;
 import org.apache.directory.server.core.api.interceptor.context.OperationContext;
+import org.apache.mina.core.session.IoSession;
 
 
 /**
@@ -791,4 +792,10 @@ public interface CoreSession
      * 
      */
     public HashMap<Object,Object> getUserSession();
+    
+    /**
+     * Gives access to the current IoSession object
+     * @return
+     */
+    public IoSession getIoSession();
 }
