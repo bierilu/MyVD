@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import net.sourceforge.myvd.types.Password;
 
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.util.DN;
 
 public class LDAPConnectionPool {
@@ -197,5 +198,48 @@ public class LDAPConnectionPool {
 			}
 		}
 		
+	}
+	
+	public void executeHeartBeat() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Running heartbeats for '" + this.interceptor.getHost() + "'");
+		}
+		for (ConnectionWrapper wrapper : this.pool) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Checking for '" + this.interceptor.getHost() + "' / " + wrapper);
+			}
+			//skip locked connection
+			if (! wrapper.wasLocked()) {
+				
+				if (logger.isDebugEnabled()) {
+					logger.debug("Sending heartbeat to '" + this.interceptor.getHost() + "' / " + wrapper);
+				}
+				
+				//run a heartbeat
+				try {
+					LDAPSearchResults res = wrapper.getConnection().search("", 0, "(objectClass=*)", new String[]{"namingContexts"}, false);
+					res.hasMore();
+					res.next();
+					
+					if (logger.isDebugEnabled()) {
+						logger.debug("Heartbeat successful for '" + this.interceptor.getHost() + "' / " + wrapper);
+					}
+					
+				} catch (LDAPException e) {
+					logger.warn("Could not execute ldap heartbeat?, recreating connection",e);
+					try {
+						wrapper.reConnect();
+					} catch (LDAPException e1) {
+						logger.warn("Could not reconnect",e1);
+					}
+				}
+				
+				wrapper.unlock();
+			} else {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Connection locked for '" + this.interceptor.getHost() + "' / " + wrapper);
+				}
+			}
+		}
 	}
 }

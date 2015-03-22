@@ -396,6 +396,7 @@ public class Server {
 		Properties props = new Properties();
 		props.put("log4j.rootLogger", "info,console");
 		
+		
 		//props.put("log4j.appender.console","org.apache.log4j.RollingFileAppender");
 	    //props.put("log4j.appender.console.File","/home/mlb/myvd.log");
 		props.put("log4j.appender.console","org.apache.log4j.ConsoleAppender");
