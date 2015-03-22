@@ -100,6 +100,10 @@ public class LDAPInterceptor implements Insert {
 	private long maxStaleTime;
 	private DistinguishedName localBase;
 	
+	private long heartbeatIntervalMinis;
+	
+	private LDAPHeartBeat heartBeat;
+	
 	public void configure(String name, Properties props,NameSpace nameSpace) throws LDAPException {
 		this.name = name;
 		this.host = props.getProperty("host");
@@ -172,7 +176,13 @@ public class LDAPInterceptor implements Insert {
 		
 		this.noMapBindFlag = LDAPInterceptor.NO_MAP_BIND_DN + this.name;
 		
+		this.heartbeatIntervalMinis = Long.parseLong(props.getProperty("heartbeatIntervalMillis","0"));
+		logger.info("Heartbeat Interval in Milliseconds : '" + this.heartbeatIntervalMinis + "'");
 		
+		if (this.heartbeatIntervalMinis > 0) {
+			this.heartBeat = new LDAPHeartBeat(this);
+			new Thread(this.heartBeat).start();
+		}
 	}
 	
 	private ConnectionWrapper getConnection(DN bindDN,Password pass,boolean force,DN base,HashMap<Object,Object> session) throws LDAPException {
@@ -572,6 +582,10 @@ public class LDAPInterceptor implements Insert {
 	}
 
 	public void shutdown() {
+		if (this.heartBeat != null) {
+			this.heartBeat.stop();
+		}
+		
 		logger.info("Closing down all pools...");
 		this.pool.shutDownPool();
 		logger.info("Pool shutdown...");
@@ -612,6 +626,14 @@ public class LDAPInterceptor implements Insert {
 
 	public long getMaxStailTime() {
 		return this.maxStaleTime;
+	}
+
+	public LDAPConnectionPool getConnectionPool() {
+		return this.pool;
+	}
+
+	public long getHeartBeatMillis() {
+		return this.heartbeatIntervalMinis;
 	}
 	
 	

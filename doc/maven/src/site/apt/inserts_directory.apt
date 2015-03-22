@@ -44,6 +44,8 @@ Directory Inserts
 *---------------------+-------------------------------------------------------+--------------------------------------+
 |                     |maxStaleTimeMillis|The maximum number of milliseconds a connection can be locked before its considered stale.  Default is 60,000 (60 seconds)|
 *---------------------+-------------------------------------------------------+--------------------------------------+
+|                     |heartbeatIntervalMillis                                |The interval in milliseconds to perform a heart beet for pool connections.  0 means do not run a heartbeat|
+*---------------------+-------------------------------------------------------+--------------------------------------+
 
 
 * Kerberos Authenticator

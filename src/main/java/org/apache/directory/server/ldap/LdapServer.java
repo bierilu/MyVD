@@ -421,6 +421,7 @@ public class LdapServer extends DirectoryBackedService
             algorithm = KeyManagerFactory.getDefaultAlgorithm();
         }
 
+        /*
         keyManagerFactory = KeyManagerFactory.getInstance( algorithm );
 
         if ( Strings.isEmpty( certificatePassword ) )
@@ -430,7 +431,7 @@ public class LdapServer extends DirectoryBackedService
         else
         {
             keyManagerFactory.init( keyStore, certificatePassword.toCharArray() );
-        }
+        }*/
     }
 
 
