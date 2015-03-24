@@ -287,6 +287,10 @@ public class SetRDN implements Insert {
 			return;
 		}
 		
+		if ( entry.getEntry().getAttributeSet().getAttribute(this.externalRDN) == null) {
+			return;
+		}
+		
 		String val = entry.getEntry().getAttributeSet().getAttribute(this.externalRDN).getStringValue();
 		DN newdn = new DN();
 		RDN rdn = new RDN();
