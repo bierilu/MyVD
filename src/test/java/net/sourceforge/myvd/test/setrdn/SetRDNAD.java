@@ -123,6 +123,59 @@ public void testUidSearch() throws LDAPException {
 		
 	}
 
+public void testOCSearch() throws LDAPException {
+	
+	
+	
+	
+	
+	LDAPAttributeSet attribs = new LDAPAttributeSet();
+	attribs.add(new LDAPAttribute("objectClass","inetOrgPerson"));
+	//attribs.getAttribute("objectClass").addValue("customPerson");
+	attribs.add(new LDAPAttribute("cn","Test1 User"));
+	attribs.add(new LDAPAttribute("sn","User"));
+	//attribs.add(new LDAPAttribute("testAttrib", "testVal"));
+	attribs.add(new LDAPAttribute("uid","tuser001"));
+	attribs.add(new LDAPAttribute("userPassword","secret"));
+	
+	//attribs.add(new LDAPAttribute("globalTestAttrib","globalTestVal"));
+	LDAPEntry entry2 = new LDAPEntry("uid=tuser001,cn=users,dc=ad,dc=com",attribs);
+		
+		
+		
+		
+		LDAPConnection con = new LDAPConnection();
+		con.connect("localhost",50983);
+		//con.bind(3,"cn=admin,o=mycompany","manager".getBytes());
+		LDAPSearchResults res = con.search("cn=users,dc=ad,dc=com",1,"(objectClass=*)",new String[] {"objectClass","hasSubordinates"},false);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		int size = 0;
+		
+			while (res.hasMore()) {
+				LDAPEntry fromDir = res.next();
+				
+				
+				size++;
+			}
+		
+		
+		if (size != 8) {
+			fail("Not the correct number of entries : " + size);
+		}
+			
+		con.disconnect();
+		
+	}
+
 public void testUidSearchOnlyUID() throws LDAPException {
 	
 	
