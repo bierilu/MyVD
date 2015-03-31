@@ -190,7 +190,9 @@ public class MyVDInterceptor extends BaseInterceptor {
 					TlsParameters tlsParams = new TlsParameters(tlssession.getCipherSuite(),tlssession.getPeerCertificateChain());
 					userSession.put(SessionVariables.TLS_PARAMS, tlsParams);
 				} catch (SSLPeerUnverifiedException e) {
-					logger.warn("Could not get TLS information",e);
+					//no need to log this
+					//logger.warn("Could not get TLS information",e);
+					
 				}
 			}
 		}

@@ -33,6 +33,12 @@ public class LDAPHeartBeat implements Runnable {
 
 	@Override
 	public void run() {
+		try {
+			Thread.sleep(insert.getHeartBeatMillis());
+		} catch (InterruptedException e1) {
+			//do nothing
+		}
+		
 		while (stillRunning) {
 			this.insert.getConnectionPool().executeHeartBeat();
 			try {

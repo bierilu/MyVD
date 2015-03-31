@@ -218,15 +218,16 @@ public class LDAPConnectionPool {
 				//run a heartbeat
 				try {
 					LDAPSearchResults res = wrapper.getConnection().search("", 0, "(objectClass=*)", new String[]{"namingContexts"}, false);
-					res.hasMore();
-					res.next();
+					while (res.hasMore()) {
+						res.next();
+					}
 					
 					if (logger.isDebugEnabled()) {
 						logger.debug("Heartbeat successful for '" + this.interceptor.getHost() + "' / " + wrapper);
 					}
 					
 				} catch (LDAPException e) {
-					logger.warn("Could not execute ldap heartbeat?, recreating connection",e);
+					logger.warn("Could not execute ldap heartbeat for " + this.interceptor.getHost() + "/" + this.interceptor.getPort() + ", recreating connection",e);
 					try {
 						wrapper.reConnect();
 					} catch (LDAPException e1) {
