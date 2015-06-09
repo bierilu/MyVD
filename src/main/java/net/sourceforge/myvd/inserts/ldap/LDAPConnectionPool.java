@@ -57,6 +57,9 @@ public class LDAPConnectionPool {
 				ConnectionWrapper wrapper = new ConnectionWrapper(this.interceptor);
 				wrapper.unlock();
 				wrapper.reConnect();
+				
+
+				
 				this.pool.add(wrapper);
 			}
 		
@@ -217,7 +220,11 @@ public class LDAPConnectionPool {
 				
 				//run a heartbeat
 				try {
-					LDAPSearchResults res = wrapper.getConnection().search("", 0, "(objectClass=*)", new String[]{"namingContexts"}, false);
+					//reset the bind
+					wrapper.bind(new DN(interceptor.proxyDN),new Password(interceptor.proxyPass));
+					
+					//search
+					LDAPSearchResults res = wrapper.getConnection().search(interceptor.getRemoteBase().toString(), 0, "(objectClass=*)", new String[]{"1.1"}, false);
 					while (res.hasMore()) {
 						res.next();
 					}
