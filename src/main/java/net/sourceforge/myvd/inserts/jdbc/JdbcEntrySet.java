@@ -120,14 +120,21 @@ public class JdbcEntrySet implements EntrySet {
 			while (it.hasNext()) {
 				String attribName = it.next();
 				HashSet vals = attribs.get(attribName);
-				LDAPAttribute attrib = new LDAPAttribute(attribName);
-				ldapAttribs.add(attrib);
-				Iterator<String> valIt = vals.iterator();
-				while (valIt.hasNext()) {
-                    String nextValue = valIt.next();
-                    if (nextValue != null) {
-                        attrib.addValue(nextValue);
-                    }
+				
+				if (vals.size() > 0) {
+					LDAPAttribute attrib = new LDAPAttribute(attribName);
+					ldapAttribs.add(attrib);
+					Iterator<String> valIt = vals.iterator();
+					while (valIt.hasNext()) {
+	                    String nextValue = valIt.next();
+	                    if (nextValue != null) {
+	                        attrib.addValue(nextValue);
+	                    } else {
+	                    	if (attrib.size() == 0) {
+	                    		ldapAttribs.remove(attrib);
+	                    	}
+	                    }
+					}
 				}
 			}
 			
